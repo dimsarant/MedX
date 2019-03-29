@@ -1,3 +1,13 @@
+# Images Folder
+/images
+
+# Form Files
+*.form
+
+#Github Files
+*.gitattributes
+*.gitignore
+
 # Compiled class file
 *.class
 
