@@ -10,9 +10,9 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 public class StoreKeeper extends javax.swing.JFrame {
     
     // <editor-fold defaultstate="collapsed" desc="StoreKeeper Constructor">
-    public StoreKeeper(String user,Connection conndb) {
+    public StoreKeeper(String user,Connection condb) {
         initComponents();
-        conn=conndb;
+        conn=condb;
         this.setLocationRelativeTo(null);
         BackgroundImage.requestFocus();
         Button2.setVisible(false);
