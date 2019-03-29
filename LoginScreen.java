@@ -1,9 +1,7 @@
 package MedX;
 
     //<editor-fold defaultstate="collapsed" desc="Imports">
-import static MedX.CheckConnection.ConnectDb;
 import java.awt.Color;
-import static java.awt.Dialog.ModalityType.APPLICATION_MODAL;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 import java.util.Collections;
@@ -12,12 +10,11 @@ import java.sql.*;
 //</editor-fold>
 
 public class LoginScreen extends javax.swing.JFrame {
-    Connection conn=null;
     
     //<editor-fold defaultstate="collapsed" desc="LoginScreen Constructor">
-    public LoginScreen() {
-        conn=ConnectDb();
+    public LoginScreen(Connection condb) {
         initComponents();
+        conn=condb;
         this.setLocationRelativeTo(null);
         this.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.emptySet());
         this.getRootPane().setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK));
@@ -349,6 +346,7 @@ public class LoginScreen extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
     
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">
+    static Connection conn=null;
     int xMouse;
     int yMouse;
     int triesremaining=5;
@@ -654,6 +652,7 @@ public class LoginScreen extends javax.swing.JFrame {
         d.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_StoreKeeper_LoginActionPerformed
+
     // </editor-fold>
     
 }

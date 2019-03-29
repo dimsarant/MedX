@@ -4,7 +4,6 @@ package MedX;
 import java.awt.CardLayout;
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import javax.swing.DefaultListModel;
 import javax.swing.JToggleButton;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
@@ -13,8 +12,9 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 public class Doctor extends javax.swing.JFrame {
     
     // <editor-fold defaultstate="collapsed" desc="Doctor Constructor">
-    public Doctor(String user,Connection conn) {
+    public Doctor(String user,Connection condb) {
         initComponents();
+        conn=condb;
         this.setLocationRelativeTo(null);
         BackgroundImage.requestFocus();
         Button4.setVisible(false);  
@@ -1312,6 +1312,7 @@ public class Doctor extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">
+    static Connection conn=null;
     String Medicine_Selected;
     ArrayList Medicine_Total = new ArrayList();
     
@@ -1545,7 +1546,7 @@ public class Doctor extends javax.swing.JFrame {
     }//GEN-LAST:event_Button6ActionPerformed
 
     private void Logout_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Logout_ButtonActionPerformed
-        LoginScreen l = new LoginScreen();
+        LoginScreen l = new LoginScreen(conn);
         l.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_Logout_ButtonActionPerformed

@@ -10,8 +10,9 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 public class Manager extends javax.swing.JFrame {
     
     // <editor-fold defaultstate="collapsed" desc="Manager Constructor">
-    public Manager(String user,Connection conn) {
+    public Manager(String user,Connection conndb) {
         initComponents();
+        conn=conndb;
         this.setLocationRelativeTo(null);
         BackgroundImage.requestFocus();
         Button4.setVisible(false);
@@ -1209,7 +1210,7 @@ public class Manager extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">
-    
+    static Connection conn=null;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel BackgroundImage;
     private javax.swing.JLabel BackgroundMedX;
@@ -1365,7 +1366,7 @@ public class Manager extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
     // </editor-fold>
     
-    // <editor-fold defaultstate="collapsed" desc="Left Side Buttons Functionality">
+    // <editor-fold defaultstate="collapsed" desc="Home Page">
     public void Check_Button(JToggleButton button_clicked){
         CardLayout card = (CardLayout)MainPanel.getLayout();
         JToggleButton[] Button = new JToggleButton[7];
@@ -1434,7 +1435,7 @@ public class Manager extends javax.swing.JFrame {
     }//GEN-LAST:event_Button6ActionPerformed
 
     private void Logout_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Logout_ButtonActionPerformed
-        LoginScreen l = new LoginScreen();
+        LoginScreen l = new LoginScreen(conn);
         l.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_Logout_ButtonActionPerformed
@@ -1535,4 +1536,3 @@ public class Manager extends javax.swing.JFrame {
     // </editor-fold>
     
 }
-//test

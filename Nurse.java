@@ -12,8 +12,9 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 public class Nurse extends javax.swing.JFrame {
     
     // <editor-fold defaultstate="collapsed" desc="Nurse Constructor">
-    public Nurse(String user,Connection conn) {
+    public Nurse(String user,Connection condb) {
         initComponents();
+        conn=condb;
         this.setLocationRelativeTo(null);
         BackgroundImage.requestFocus();
         Button2.setVisible(false);
@@ -756,6 +757,7 @@ public class Nurse extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">
+    static Connection conn=null;
     String Medicine_Selected;
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -919,7 +921,7 @@ public class Nurse extends javax.swing.JFrame {
     }//GEN-LAST:event_Button6ActionPerformed
 
     private void Logout_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Logout_ButtonActionPerformed
-        LoginScreen l = new LoginScreen();
+        LoginScreen l = new LoginScreen(conn);
         l.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_Logout_ButtonActionPerformed

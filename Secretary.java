@@ -10,8 +10,9 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 public class Secretary extends javax.swing.JFrame {
     
     // <editor-fold defaultstate="collapsed" desc="Secretary Constructor">
-    public Secretary(String user,Connection conn) {
+    public Secretary(String user,Connection condb) {
         initComponents();
+        conn=condb;
         this.setLocationRelativeTo(null);
         BackgroundImage.requestFocus();
         Button4.setVisible(false);
@@ -1357,6 +1358,7 @@ public class Secretary extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">
+    static Connection conn=null;
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> Apointment_Doctor_Box;
@@ -1528,7 +1530,7 @@ public class Secretary extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
     // </editor-fold>
     
-    // <editor-fold defaultstate="collapsed" desc="Left Side Buttons Functionality">
+    // <editor-fold defaultstate="collapsed" desc="Home Page">
     public void Check_Button(JToggleButton button_clicked){
         CardLayout card = (CardLayout)MainPanel.getLayout();
         JToggleButton[] Button = new JToggleButton[7];
@@ -1597,7 +1599,7 @@ public class Secretary extends javax.swing.JFrame {
     }//GEN-LAST:event_Button6ActionPerformed
 
     private void Logout_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Logout_ButtonActionPerformed
-        LoginScreen l = new LoginScreen();
+        LoginScreen l = new LoginScreen(conn);
         l.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_Logout_ButtonActionPerformed

@@ -1,6 +1,10 @@
 package MedX;
 
+import static MedX.ConnectDb.ConnectDb;
+import java.sql.Connection;
+
 public class Main {
+    static Connection conn=null;
     
     public static void main(String[] args) {
         
@@ -18,9 +22,8 @@ public class Main {
           catch (javax.swing.UnsupportedLookAndFeelException ex) {java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);}
         //</editor-fold>
         
-        LoginScreen l = new LoginScreen();
+        conn=ConnectDb();
+        LoginScreen l = new LoginScreen(conn);
         l.setVisible(true);
     }        
 }
-
-//D:\wamp64\bin\mysql\mysql5.7.23\bin\mysql.exe -u root -p --default-character-set=greek

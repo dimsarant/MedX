@@ -3,8 +3,6 @@ package MedX;
     // <editor-fold defaultstate="collapsed" desc="Imports">
 import java.awt.CardLayout;
 import java.sql.Connection;
-import java.util.ArrayList;
-import javax.swing.DefaultListModel;
 import javax.swing.JToggleButton;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
     // </editor-fold>
@@ -12,8 +10,9 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 public class StoreKeeper extends javax.swing.JFrame {
     
     // <editor-fold defaultstate="collapsed" desc="StoreKeeper Constructor">
-    public StoreKeeper(String user,Connection conn) {
+    public StoreKeeper(String user,Connection conndb) {
         initComponents();
+        conn=conndb;
         this.setLocationRelativeTo(null);
         BackgroundImage.requestFocus();
         Button2.setVisible(false);
@@ -600,6 +599,7 @@ public class StoreKeeper extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">
+    static Connection conn=null;
     String Medicine_Selected;
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -745,13 +745,17 @@ public class StoreKeeper extends javax.swing.JFrame {
     }//GEN-LAST:event_Button6ActionPerformed
 
     private void Logout_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Logout_ButtonActionPerformed
-        LoginScreen l = new LoginScreen();
+        LoginScreen l = new LoginScreen(conn);
         l.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_Logout_ButtonActionPerformed
     // </editor-fold>
     
-   // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="Panel0">
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="Panel1">
+    // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel2">
     // </editor-fold>

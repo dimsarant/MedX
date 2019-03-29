@@ -2,7 +2,7 @@ package MedX;
 
 import java.sql.*;
 
-public class CheckConnection {
+public class ConnectDb {
     Connection conn=null;   
     public static Connection ConnectDb() { 
         try{
