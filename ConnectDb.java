@@ -8,11 +8,11 @@ public class ConnectDb {
     public static Connection ConnectDb() { 
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection conn=DriverManager.getConnection("jdbc:mysql://127.0.0.1:3308/medx", "root", "");
+            Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3308/medx", "medx", "");
             return conn;
            }
         catch(Exception e){
-            //JOptionPane.showMessageDialog(null,"Database connection not established\n"+e);
+            JOptionPane.showMessageDialog(null,"Database connection not established\n"+e);
             return null;}
     }
     
