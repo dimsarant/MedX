@@ -20,6 +20,7 @@ public class StoreKeeper extends javax.swing.JFrame {
         Button4.setVisible(false);  
         this.setTitle("MedX - Καλώς ήρθες αποθηκάριε - "+user);
         AutoCompleteDecorator.decorate(Rec_Name_List);
+        AutoCompleteDecorator.decorate(Order_Name_Box);
     }
     // </editor-fold>
 
@@ -29,7 +30,31 @@ public class StoreKeeper extends javax.swing.JFrame {
 
         MainPanel = new javax.swing.JPanel();
         Panel0 = new javax.swing.JPanel();
+        Hospital_Storage_Label = new javax.swing.JLabel();
+        Medicine_Label = new javax.swing.JLabel();
+        Medicine_List_Scroll = new javax.swing.JScrollPane();
+        Medicine_List = new javax.swing.JList<>();
+        Misc_Label = new javax.swing.JLabel();
+        Misc_List_Scroll = new javax.swing.JScrollPane();
+        Misc_List = new javax.swing.JList<>();
+        Remove_Misc_Button = new javax.swing.JButton();
+        Medicine_Warning = new javax.swing.JLabel();
+        Misc_Warning = new javax.swing.JLabel();
         Panel1 = new javax.swing.JPanel();
+        New_Order_Label = new javax.swing.JLabel();
+        Order_Type_Label = new javax.swing.JLabel();
+        Order_Name_Label = new javax.swing.JLabel();
+        Order_Quantity_Label = new javax.swing.JLabel();
+        Order_List_Scroll = new javax.swing.JScrollPane();
+        Order_List = new javax.swing.JList<>();
+        Remove_Order_Button = new javax.swing.JButton();
+        Order_Item_Box = new javax.swing.JComboBox<>();
+        Order_Name_Box = new javax.swing.JComboBox<>();
+        Order_Quantity = new javax.swing.JTextField();
+        Add_Order_Button = new javax.swing.JButton();
+        Confirm_Order_Button = new javax.swing.JButton();
+        Order_Total = new javax.swing.JLabel();
+        Order_Type_Label1 = new javax.swing.JLabel();
         Panel2 = new javax.swing.JPanel();
         Panel3 = new javax.swing.JPanel();
         Panel4 = new javax.swing.JPanel();
@@ -111,9 +136,194 @@ public class StoreKeeper extends javax.swing.JFrame {
         MainPanel.setLayout(new java.awt.CardLayout());
 
         Panel0.setLayout(null);
+
+        Hospital_Storage_Label.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        Hospital_Storage_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Hospital_Storage_Label.setText("ΑΠΟΘΗΚΗ ΝΟΣΟΚΟΜΕΙΟΥ");
+        Panel0.add(Hospital_Storage_Label);
+        Hospital_Storage_Label.setBounds(50, 20, 430, 30);
+
+        Medicine_Label.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Medicine_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Medicine_Label.setText("ΦΑΡΜΑΚΑ");
+        Panel0.add(Medicine_Label);
+        Medicine_Label.setBounds(40, 70, 190, 30);
+
+        Medicine_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Medicine_List.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        Medicine_List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        Medicine_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Medicine_List.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                Medicine_ListMouseReleased(evt);
+            }
+        });
+        Medicine_List_Scroll.setViewportView(Medicine_List);
+
+        Panel0.add(Medicine_List_Scroll);
+        Medicine_List_Scroll.setBounds(40, 100, 190, 280);
+
+        Misc_Label.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Misc_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Misc_Label.setText("ΔΙΑΦΟΡΑ");
+        Panel0.add(Misc_Label);
+        Misc_Label.setBounds(330, 70, 110, 30);
+
+        Misc_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Misc_List.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        Misc_List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        Misc_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Misc_List.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                Misc_ListMouseReleased(evt);
+            }
+        });
+        Misc_List_Scroll.setViewportView(Misc_List);
+
+        Panel0.add(Misc_List_Scroll);
+        Misc_List_Scroll.setBounds(290, 100, 190, 280);
+
+        Remove_Misc_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Delete_Icon.png"))); // NOI18N
+        Remove_Misc_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Remove_Misc_Button.setFocusable(false);
+        Remove_Misc_Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Remove_Misc_ButtonActionPerformed(evt);
+            }
+        });
+        Panel0.add(Remove_Misc_Button);
+        Remove_Misc_Button.setBounds(440, 70, 40, 30);
+
+        Medicine_Warning.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        Medicine_Warning.setForeground(new java.awt.Color(255, 0, 0));
+        Medicine_Warning.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Medicine_Warning.setText("ΕΛΛΕΙΜΜΑ ΑΠΟΘΕΜΑΤΩΝ !");
+        Medicine_Warning.setFocusable(false);
+        Panel0.add(Medicine_Warning);
+        Medicine_Warning.setBounds(290, 380, 190, 30);
+
+        Misc_Warning.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        Misc_Warning.setForeground(new java.awt.Color(255, 0, 0));
+        Misc_Warning.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Misc_Warning.setText("ΕΛΛΕΙΜΜΑ ΑΠΟΘΕΜΑΤΩΝ !");
+        Misc_Warning.setFocusable(false);
+        Panel0.add(Misc_Warning);
+        Misc_Warning.setBounds(40, 380, 190, 30);
+
         MainPanel.add(Panel0, "Panel0");
 
         Panel1.setLayout(null);
+
+        New_Order_Label.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        New_Order_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        New_Order_Label.setText("ΝΕΑ ΠΑΡΑΓΓΕΛΙΑ");
+        Panel1.add(New_Order_Label);
+        New_Order_Label.setBounds(50, 20, 430, 30);
+
+        Order_Type_Label.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Order_Type_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Order_Type_Label.setText("ΠροΪόν :");
+        Order_Type_Label.setFocusable(false);
+        Panel1.add(Order_Type_Label);
+        Order_Type_Label.setBounds(30, 120, 60, 40);
+
+        Order_Name_Label.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Order_Name_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Order_Name_Label.setText("Όνομα :");
+        Order_Name_Label.setFocusable(false);
+        Panel1.add(Order_Name_Label);
+        Order_Name_Label.setBounds(30, 180, 60, 40);
+
+        Order_Quantity_Label.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Order_Quantity_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Order_Quantity_Label.setText("Ποσότητα :");
+        Order_Quantity_Label.setFocusable(false);
+        Panel1.add(Order_Quantity_Label);
+        Order_Quantity_Label.setBounds(50, 240, 70, 30);
+
+        Order_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Order_List.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        Order_List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        Order_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Order_List_Scroll.setViewportView(Order_List);
+
+        Panel1.add(Order_List_Scroll);
+        Order_List_Scroll.setBounds(290, 100, 190, 270);
+
+        Remove_Order_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Delete_Icon.png"))); // NOI18N
+        Remove_Order_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Remove_Order_Button.setFocusable(false);
+        Remove_Order_Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Remove_Order_ButtonActionPerformed(evt);
+            }
+        });
+        Panel1.add(Remove_Order_Button);
+        Remove_Order_Button.setBounds(440, 70, 40, 30);
+
+        Order_Item_Box.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        Order_Item_Box.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Φάρμακα", "Διάφορα" }));
+        Order_Item_Box.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Order_Item_Box.setFocusable(false);
+        Panel1.add(Order_Item_Box);
+        Order_Item_Box.setBounds(90, 120, 170, 40);
+
+        Order_Name_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Order_Name_Box.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Φαρμακο 1 - 50€", "Φαρμακο 2 - 20€", "Φαρμακο 3 - 30€", "Φαρμακο 4 - 54€", "Φαρμακο 5 - 20€" }));
+        Panel1.add(Order_Name_Box);
+        Order_Name_Box.setBounds(90, 180, 170, 40);
+
+        Order_Quantity.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        Order_Quantity.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel1.add(Order_Quantity);
+        Order_Quantity.setBounds(130, 240, 80, 30);
+
+        Add_Order_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Plus_Icon.png"))); // NOI18N
+        Add_Order_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Add_Order_Button.setFocusable(false);
+        Add_Order_Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Add_Order_ButtonActionPerformed(evt);
+            }
+        });
+        Panel1.add(Add_Order_Button);
+        Add_Order_Button.setBounds(220, 240, 40, 30);
+
+        Confirm_Order_Button.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Confirm_Order_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Check_Icon.png"))); // NOI18N
+        Confirm_Order_Button.setText("ΕΠΙΒΕΒΑΙΩΣΗ");
+        Confirm_Order_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Confirm_Order_Button.setFocusable(false);
+        Confirm_Order_Button.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        Panel1.add(Confirm_Order_Button);
+        Confirm_Order_Button.setBounds(80, 330, 150, 40);
+
+        Order_Total.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        Order_Total.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Order_Total.setText("Συνολικό Κόστος :");
+        Order_Total.setFocusable(false);
+        Panel1.add(Order_Total);
+        Order_Total.setBounds(270, 380, 230, 30);
+
+        Order_Type_Label1.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Order_Type_Label1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Order_Type_Label1.setText("Προϊόντα");
+        Order_Type_Label1.setFocusable(false);
+        Panel1.add(Order_Type_Label1);
+        Order_Type_Label1.setBounds(330, 70, 100, 30);
+
         MainPanel.add(Panel1, "Panel1");
 
         Panel2.setLayout(null);
@@ -603,6 +813,7 @@ public class StoreKeeper extends javax.swing.JFrame {
     String Medicine_Selected;
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Add_Order_Button;
     private javax.swing.JLabel BackgroundImage;
     private javax.swing.JLabel BackgroundMedX;
     private javax.swing.JToggleButton Button0;
@@ -613,13 +824,19 @@ public class StoreKeeper extends javax.swing.JFrame {
     private javax.swing.JToggleButton Button5;
     private javax.swing.JToggleButton Button6;
     private javax.swing.JButton Cancel_Button;
+    private javax.swing.JButton Confirm_Order_Button;
     private javax.swing.JLabel Edit_Information_Label;
+    private javax.swing.JLabel Hospital_Storage_Label;
     private javax.swing.JList<String> Incoming_List;
     private javax.swing.JPanel Incoming_Panel;
     private javax.swing.JScrollPane Incoming_Scroll;
     private javax.swing.JButton Logout_Button;
     private javax.swing.JPanel MainPanel;
     private javax.swing.JPanel Main_Messages;
+    private javax.swing.JLabel Medicine_Label;
+    private javax.swing.JList<String> Medicine_List;
+    private javax.swing.JScrollPane Medicine_List_Scroll;
+    private javax.swing.JLabel Medicine_Warning;
     private javax.swing.JScrollPane Message_Area_Scroll;
     private javax.swing.JTabbedPane Message_Box;
     private javax.swing.JButton Message_Delete_Button;
@@ -631,8 +848,23 @@ public class StoreKeeper extends javax.swing.JFrame {
     private javax.swing.JScrollPane Message_Expanded_Scroll;
     private javax.swing.JTextArea Message_Expanded_Text;
     private javax.swing.JTextArea Message_Text;
+    private javax.swing.JLabel Misc_Label;
+    private javax.swing.JList<String> Misc_List;
+    private javax.swing.JScrollPane Misc_List_Scroll;
+    private javax.swing.JLabel Misc_Warning;
     private javax.swing.JPanel New_Message;
     private javax.swing.JButton New_Message_Button;
+    private javax.swing.JLabel New_Order_Label;
+    private javax.swing.JComboBox<String> Order_Item_Box;
+    private javax.swing.JList<String> Order_List;
+    private javax.swing.JScrollPane Order_List_Scroll;
+    private javax.swing.JComboBox<String> Order_Name_Box;
+    private javax.swing.JLabel Order_Name_Label;
+    private javax.swing.JTextField Order_Quantity;
+    private javax.swing.JLabel Order_Quantity_Label;
+    private javax.swing.JLabel Order_Total;
+    private javax.swing.JLabel Order_Type_Label;
+    private javax.swing.JLabel Order_Type_Label1;
     private javax.swing.JList<String> Outgoing_List;
     private javax.swing.JPanel Outgoing_Panel;
     private javax.swing.JScrollPane Outgoing_Scroll;
@@ -647,6 +879,8 @@ public class StoreKeeper extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> Rec_Type_List;
     private javax.swing.JLabel Recepient;
     private javax.swing.JButton Refresh_Button;
+    private javax.swing.JButton Remove_Misc_Button;
+    private javax.swing.JButton Remove_Order_Button;
     private javax.swing.JButton Return_Button_Message_Expanded;
     private javax.swing.JButton Send_Button;
     private javax.swing.JSeparator SeparatorHorTop;
@@ -752,16 +986,43 @@ public class StoreKeeper extends javax.swing.JFrame {
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel0">
+    private void Medicine_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Medicine_ListMouseReleased
+        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2) {
+            CardLayout card = (CardLayout)MainPanel.getLayout();
+            card.show(MainPanel, "Panel1");
+        }
+    }//GEN-LAST:event_Medicine_ListMouseReleased
+
+    private void Misc_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Misc_ListMouseReleased
+        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2) {
+            CardLayout card = (CardLayout)MainPanel.getLayout();
+            card.show(MainPanel, "Panel1");
+        }
+    }//GEN-LAST:event_Misc_ListMouseReleased
+
+    private void Remove_Misc_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Remove_Misc_ButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_Remove_Misc_ButtonActionPerformed
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel1">
+    private void Remove_Order_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Remove_Order_ButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_Remove_Order_ButtonActionPerformed
+
+    private void Add_Order_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Add_Order_ButtonActionPerformed
+        
+        
+    }//GEN-LAST:event_Add_Order_ButtonActionPerformed
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel2">
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel3">
-    
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="Panel4">
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel5">
@@ -797,7 +1058,6 @@ public class StoreKeeper extends javax.swing.JFrame {
         CardLayout card = (CardLayout)Panel5.getLayout();
         card.show(Panel5, "New_Message");
     }//GEN-LAST:event_New_Message_ButtonActionPerformed
-
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel6">

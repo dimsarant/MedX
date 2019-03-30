@@ -1495,6 +1495,10 @@ public class Manager extends javax.swing.JFrame {
     
     // </editor-fold>
     
+    // <editor-fold defaultstate="collapsed" desc="Panel4">
+    
+    // </editor-fold>
+    
     // <editor-fold defaultstate="collapsed" desc="Panel5">
     private void Return_Button_Message_ExpandedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Return_Button_Message_ExpandedActionPerformed
         CardLayout card = (CardLayout)Panel5.getLayout();

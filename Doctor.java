@@ -1639,6 +1639,10 @@ public class Doctor extends javax.swing.JFrame {
     
     // </editor-fold>
     
+    // <editor-fold defaultstate="collapsed" desc="Panel4">
+    
+    // </editor-fold>
+    
     // <editor-fold defaultstate="collapsed" desc="Panel5">
     private void Cancel_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Cancel_ButtonActionPerformed
         CardLayout card = (CardLayout)Panel5.getLayout();
