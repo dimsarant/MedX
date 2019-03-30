@@ -358,6 +358,7 @@ public class LoginScreen extends javax.swing.JFrame {
     String doctor="doctor";
     String nurse="nurse";
     String secretary="secretary";
+    String storekeeper="storekeeper";
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -3,6 +3,10 @@ package MedX;
     // <editor-fold defaultstate="collapsed" desc="Imports">
 import java.awt.CardLayout;
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
 import javax.swing.JToggleButton;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
     // </editor-fold>
@@ -21,6 +25,14 @@ public class StoreKeeper extends javax.swing.JFrame {
         this.setTitle("MedX - Καλώς ήρθες αποθηκάριε - "+user);
         AutoCompleteDecorator.decorate(Rec_Name_List);
         AutoCompleteDecorator.decorate(Order_Name_Box);
+        ArrayList items = new ArrayList();
+        items.add("");
+        items.add("Φάρμακα");
+        items.add("Διάφορα");
+        Order_Item_Box.setModel(new DefaultComboBoxModel(items.toArray()));
+        Order_Name_Box.setEnabled(false);
+        Order_Quantity.setEnabled(false);
+        Add_Order_Button.setEnabled(false);
     }
     // </editor-fold>
 
@@ -150,11 +162,6 @@ public class StoreKeeper extends javax.swing.JFrame {
         Medicine_Label.setBounds(40, 70, 190, 30);
 
         Medicine_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Medicine_List.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         Medicine_List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         Medicine_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Medicine_List.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -174,11 +181,6 @@ public class StoreKeeper extends javax.swing.JFrame {
         Misc_Label.setBounds(330, 70, 110, 30);
 
         Misc_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Misc_List.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         Misc_List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         Misc_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Misc_List.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -250,13 +252,13 @@ public class StoreKeeper extends javax.swing.JFrame {
         Order_Quantity_Label.setBounds(50, 240, 70, 30);
 
         Order_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Order_List.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        Order_List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         Order_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Order_List.setFocusable(false);
+        Order_List.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                Order_ListMouseReleased(evt);
+            }
+        });
         Order_List_Scroll.setViewportView(Order_List);
 
         Panel1.add(Order_List_Scroll);
@@ -264,6 +266,7 @@ public class StoreKeeper extends javax.swing.JFrame {
 
         Remove_Order_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Delete_Icon.png"))); // NOI18N
         Remove_Order_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Remove_Order_Button.setEnabled(false);
         Remove_Order_Button.setFocusable(false);
         Remove_Order_Button.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -274,19 +277,40 @@ public class StoreKeeper extends javax.swing.JFrame {
         Remove_Order_Button.setBounds(440, 70, 40, 30);
 
         Order_Item_Box.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        Order_Item_Box.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Φάρμακα", "Διάφορα" }));
         Order_Item_Box.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Order_Item_Box.setFocusable(false);
+        Order_Item_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Order_Item_BoxPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
         Panel1.add(Order_Item_Box);
         Order_Item_Box.setBounds(90, 120, 170, 40);
 
         Order_Name_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Order_Name_Box.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Φαρμακο 1 - 50€", "Φαρμακο 2 - 20€", "Φαρμακο 3 - 30€", "Φαρμακο 4 - 54€", "Φαρμακο 5 - 20€" }));
+        Order_Name_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Order_Name_BoxPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
         Panel1.add(Order_Name_Box);
         Order_Name_Box.setBounds(90, 180, 170, 40);
 
         Order_Quantity.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         Order_Quantity.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Order_Quantity.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                Order_QuantityKeyReleased(evt);
+            }
+        });
         Panel1.add(Order_Quantity);
         Order_Quantity.setBounds(130, 240, 80, 30);
 
@@ -305,11 +329,18 @@ public class StoreKeeper extends javax.swing.JFrame {
         Confirm_Order_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Check_Icon.png"))); // NOI18N
         Confirm_Order_Button.setText("ΕΠΙΒΕΒΑΙΩΣΗ");
         Confirm_Order_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Confirm_Order_Button.setEnabled(false);
         Confirm_Order_Button.setFocusable(false);
         Confirm_Order_Button.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        Confirm_Order_Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Confirm_Order_ButtonActionPerformed(evt);
+            }
+        });
         Panel1.add(Confirm_Order_Button);
         Confirm_Order_Button.setBounds(80, 330, 150, 40);
 
+        Order_Total.setVisible(false);
         Order_Total.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         Order_Total.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Order_Total.setText("Συνολικό Κόστος :");
@@ -811,6 +842,7 @@ public class StoreKeeper extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">
     static Connection conn=null;
     String Medicine_Selected;
+    ArrayList order = new ArrayList();
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Add_Order_Button;
@@ -952,8 +984,9 @@ public class StoreKeeper extends javax.swing.JFrame {
     
     private void Button0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button0ActionPerformed
         Check_Button(Button0);
+        Load_Storage();
     }//GEN-LAST:event_Button0ActionPerformed
-
+    
     private void Button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button1ActionPerformed
         Check_Button(Button1);
     }//GEN-LAST:event_Button1ActionPerformed
@@ -986,10 +1019,67 @@ public class StoreKeeper extends javax.swing.JFrame {
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel0">
+    private void Load_Storage(){
+        ArrayList Names = new ArrayList();
+        Names.clear();
+        Names.add("Xanax - Απόθεμα : 5");
+        Names.add("Lexapro - Απόθεμα : 3");
+        Names.add("Celexa - Απόθεμα : 5");
+        Names.add("Ativan - Απόθεμα : 10");
+        Names.add("Effexor - Απόθεμα : 5");
+        Names.add("Elavil - Απόθεμα : 10");
+        Medicine_List.setModel(new DefaultComboBoxModel(Names.toArray()));
+        Names.clear();
+        Names.add("Χαρτί Υγείας - Απόθεμα : 5");
+        Names.add("Γάζες - Απόθεμα : 10");
+        Names.add("Ενέσεις - Απόθεμα : 8");
+        Misc_List.setModel(new DefaultComboBoxModel(Names.toArray()));
+    }
+    
+    private void Load_Order_Name_Box(String type){
+        ArrayList Names = new ArrayList();
+        Names.clear();
+        Names.add("");
+        if(type.equals("Φάρμακα")){
+            Names.add("Xanax : 10€");
+            Names.add("Lexapro : 24€");
+            Names.add("Celexa : 43€");
+            Names.add("Ativan : 15€");
+            Names.add("Effexor : 9€");
+            Names.add("Elavil : 32€");
+        }
+        else if(type.equals("Διάφορα")){
+            Names.add("Χαρτί Υγείας : 5€");
+            Names.add("Γάζες : 10€");
+            Names.add("Ενέσεις : 6€");
+        }
+        Order_Name_Box.setModel(new DefaultComboBoxModel(Names.toArray()));
+    }
+        
+    private void Order_Item(String type,String name,Integer price) {
+        
+        Load_Order_Name_Box(type);
+        Order_Name_Box.setEnabled(true);
+        Order_Name_Box.setSelectedItem(name+" : "+price+"€");
+        Order_Quantity.setEnabled(true);
+        Order_Quantity.setText("");
+        Order_Quantity.requestFocus();
+    }
+    
     private void Medicine_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Medicine_ListMouseReleased
         if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2) {
             CardLayout card = (CardLayout)MainPanel.getLayout();
             card.show(MainPanel, "Panel1");
+            Button1.setSelected(true);
+            Button1.setEnabled(true);
+            Button0.setSelected(false);
+            Button0.setEnabled(false);
+            Check_Button(Button1);
+            String temp=Medicine_List.getSelectedValue();
+            String[] name=temp.split(" - | : ");
+            Integer price = 10;
+            Order_Item_Box.setSelectedItem("Φάρμακα");
+            Order_Item("Φάρμακα",name[0],price);
         }
     }//GEN-LAST:event_Medicine_ListMouseReleased
 
@@ -997,6 +1087,16 @@ public class StoreKeeper extends javax.swing.JFrame {
         if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2) {
             CardLayout card = (CardLayout)MainPanel.getLayout();
             card.show(MainPanel, "Panel1");
+            Button1.setSelected(true);
+            Button1.setEnabled(true);
+            Button0.setSelected(false);
+            Button0.setEnabled(false);
+            Check_Button(Button1);
+            String temp=Misc_List.getSelectedValue();
+            String[] name=temp.split(" - | : ");
+            Integer price = 10;
+            Order_Item_Box.setSelectedItem("Διάφορα");
+            Order_Item("Διάφορα",name[0],price);
         }
     }//GEN-LAST:event_Misc_ListMouseReleased
 
@@ -1006,14 +1106,97 @@ public class StoreKeeper extends javax.swing.JFrame {
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel1">
+    private void Order_Item_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Order_Item_BoxPopupMenuWillBecomeInvisible
+        if(Order_Item_Box.getSelectedIndex()<=0) {
+            Order_Name_Box.setEnabled(false);
+            Order_Quantity.setEnabled(false);
+            Order_Quantity.setEnabled(false);
+            Add_Order_Button.setEnabled(false);
+            Order_Name_Box.setSelectedItem("");
+            Order_Quantity.setText("");
+        }
+        else {
+            Order_Name_Box.setEnabled(true);
+            Load_Order_Name_Box((String)Order_Item_Box.getSelectedItem());
+        }
+    }//GEN-LAST:event_Order_Item_BoxPopupMenuWillBecomeInvisible
+
+    private void Order_Name_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Order_Name_BoxPopupMenuWillBecomeInvisible
+        if(Order_Name_Box.getSelectedIndex()<=0) {Order_Quantity.setEnabled(false);}
+        else Order_Quantity.setEnabled(true);
+    }//GEN-LAST:event_Order_Name_BoxPopupMenuWillBecomeInvisible
+
+    private void Order_QuantityKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Order_QuantityKeyReleased
+        if(Order_Quantity.getText().equals("")) Add_Order_Button.setEnabled(false);
+        else Add_Order_Button.setEnabled(true);
+    }//GEN-LAST:event_Order_QuantityKeyReleased
+    
+    private void Order_Cost(){
+        int totalcost=0;
+        for(int i=0;i<order.size();i++){
+            String temp=(String)order.get(i);
+            String[] tempsplit=temp.split(" : |€|#");
+            int price=Integer.parseInt(tempsplit[3]);
+            totalcost+=price;
+        }
+        if(order.isEmpty()){
+            Confirm_Order_Button.setEnabled(false);
+            Order_Total.setVisible(false);
+        }
+        else {
+            Order_Total.setText("Συνολικό Κόστος : "+totalcost+"€");
+            Order_Total.setVisible(true);
+            Confirm_Order_Button.setEnabled(true);
+        }
+    }
+    
+    private void Add_Order_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Add_Order_ButtonActionPerformed
+        DefaultListModel model = new DefaultListModel();
+        String temp=(String)Order_Name_Box.getSelectedItem();
+        String[] tempsplit=temp.split(" : |€");
+        String name=tempsplit[0];
+        int price=Integer.parseInt(tempsplit[1]);
+        int quantity=Integer.parseInt(Order_Quantity.getText());
+        price=price*quantity;
+        order.add("#"+quantity+" : "+name+" : "+price+"€");
+        for(int i=0;i<order.size();i++) {
+            model.addElement(order.get(i));
+        }
+        Order_List.setModel(model);
+        Order_Cost();
+    }//GEN-LAST:event_Add_Order_ButtonActionPerformed
+
     private void Remove_Order_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Remove_Order_ButtonActionPerformed
-        // TODO add your handling code here:
+        if(Order_List.getSelectedIndex() != -1) {
+            DefaultListModel model = new DefaultListModel();
+            int[] index = Order_List.getSelectedIndices();
+            for(int i=order.size()-1;i>=0;i--) {
+                for (int j=0;j<index.length;j++) {
+                    if(i==index[j]) order.remove(i);
+                }
+            }
+            for(int j=0;j<order.size();j++) {
+                model.addElement(order.get(j));
+            }
+            Order_List.setModel(model);
+            Order_Cost();
+            Remove_Order_Button.setEnabled(false);
+        }
     }//GEN-LAST:event_Remove_Order_ButtonActionPerformed
 
-    private void Add_Order_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Add_Order_ButtonActionPerformed
+    private void Order_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Order_ListMouseReleased
+        if(Order_List.getSelectedIndex() != -1) Remove_Order_Button.setEnabled(true);
+    }//GEN-LAST:event_Order_ListMouseReleased
+
+    private void Confirm_Order_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Confirm_Order_ButtonActionPerformed
+
+
+
+
         
+
         
-    }//GEN-LAST:event_Add_Order_ButtonActionPerformed
+    }//GEN-LAST:event_Confirm_Order_ButtonActionPerformed
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel2">
@@ -1058,6 +1241,7 @@ public class StoreKeeper extends javax.swing.JFrame {
         CardLayout card = (CardLayout)Panel5.getLayout();
         card.show(Panel5, "New_Message");
     }//GEN-LAST:event_New_Message_ButtonActionPerformed
+
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel6">

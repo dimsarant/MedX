@@ -8,7 +8,7 @@ public class ConnectDb {
     public static Connection ConnectDb() { 
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3308/medx", "medx", "");
+            Connection conn=DriverManager.getConnection("jdbc:mysql://127.0.0.1:3308/medx", "medx", "1234");
             return conn;
            }
         catch(Exception e){
