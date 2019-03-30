@@ -26,7 +26,7 @@ public class StoreKeeper extends javax.swing.JFrame {
         AutoCompleteDecorator.decorate(Rec_Name_List);
         AutoCompleteDecorator.decorate(Order_Name_Box);
         ArrayList items = new ArrayList();
-        items.add("");
+        items.add(null);
         items.add("Φάρμακα");
         items.add("Διάφορα");
         Order_Item_Box.setModel(new DefaultComboBoxModel(items.toArray()));
@@ -841,7 +841,6 @@ public class StoreKeeper extends javax.swing.JFrame {
 
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">
     static Connection conn=null;
-    String Medicine_Selected;
     ArrayList order = new ArrayList();
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1039,7 +1038,7 @@ public class StoreKeeper extends javax.swing.JFrame {
     private void Load_Order_Name_Box(String type){
         ArrayList Names = new ArrayList();
         Names.clear();
-        Names.add("");
+        Names.add(null);
         if(type.equals("Φάρμακα")){
             Names.add("Xanax : 10€");
             Names.add("Lexapro : 24€");
@@ -1062,7 +1061,7 @@ public class StoreKeeper extends javax.swing.JFrame {
         Order_Name_Box.setEnabled(true);
         Order_Name_Box.setSelectedItem(name+" : "+price+"€");
         Order_Quantity.setEnabled(true);
-        Order_Quantity.setText("");
+        Order_Quantity.setText(null);
         Order_Quantity.requestFocus();
     }
     
@@ -1112,8 +1111,8 @@ public class StoreKeeper extends javax.swing.JFrame {
             Order_Quantity.setEnabled(false);
             Order_Quantity.setEnabled(false);
             Add_Order_Button.setEnabled(false);
-            Order_Name_Box.setSelectedItem("");
-            Order_Quantity.setText("");
+            Order_Name_Box.setSelectedItem(null);
+            Order_Quantity.setText(null);
         }
         else {
             Order_Name_Box.setEnabled(true);
@@ -1127,7 +1126,7 @@ public class StoreKeeper extends javax.swing.JFrame {
     }//GEN-LAST:event_Order_Name_BoxPopupMenuWillBecomeInvisible
 
     private void Order_QuantityKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Order_QuantityKeyReleased
-        if(Order_Quantity.getText().equals("")) Add_Order_Button.setEnabled(false);
+        if(Order_Quantity.getText() == null) Add_Order_Button.setEnabled(false);
         else Add_Order_Button.setEnabled(true);
     }//GEN-LAST:event_Order_QuantityKeyReleased
     
@@ -1163,6 +1162,9 @@ public class StoreKeeper extends javax.swing.JFrame {
             model.addElement(order.get(i));
         }
         Order_List.setModel(model);
+        Order_Quantity.setText(null);
+        Add_Order_Button.setEnabled(false);
+        Panel1.requestFocus();
         Order_Cost();
     }//GEN-LAST:event_Add_Order_ButtonActionPerformed
 

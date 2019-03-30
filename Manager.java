@@ -105,11 +105,9 @@ public class Manager extends javax.swing.JFrame {
         Income_Total = new javax.swing.JTextField();
         Outcome_Label = new javax.swing.JLabel();
         Workers_Salary_Label = new javax.swing.JLabel();
-        Medicine_Costs_Label = new javax.swing.JLabel();
         Hospital_Costs_Label = new javax.swing.JLabel();
         Outcome_Total_Label = new javax.swing.JLabel();
         Workers_Salary = new javax.swing.JTextField();
-        Medicine_Costs = new javax.swing.JTextField();
         Hospital_Costs = new javax.swing.JTextField();
         Outcome_Total = new javax.swing.JTextField();
         Panel4 = new javax.swing.JPanel();
@@ -678,19 +676,12 @@ public class Manager extends javax.swing.JFrame {
         Panel3.add(Workers_Salary_Label);
         Workers_Salary_Label.setBounds(300, 70, 160, 20);
 
-        Medicine_Costs_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Medicine_Costs_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Medicine_Costs_Label.setText("ΚΟΣΤΟΣ ΦΑΡΜΑΚΩΝ");
-        Medicine_Costs_Label.setFocusable(false);
-        Panel3.add(Medicine_Costs_Label);
-        Medicine_Costs_Label.setBounds(300, 140, 160, 20);
-
         Hospital_Costs_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Hospital_Costs_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Hospital_Costs_Label.setText("ΕΞΟΔΑ ΝΟΣΟΚΟΜΕΙΟΥ");
         Hospital_Costs_Label.setFocusable(false);
         Panel3.add(Hospital_Costs_Label);
-        Hospital_Costs_Label.setBounds(300, 210, 160, 20);
+        Hospital_Costs_Label.setBounds(300, 140, 160, 20);
 
         Outcome_Total_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Outcome_Total_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -706,19 +697,12 @@ public class Manager extends javax.swing.JFrame {
         Panel3.add(Workers_Salary);
         Workers_Salary.setBounds(300, 90, 160, 40);
 
-        Medicine_Costs.setEditable(false);
-        Medicine_Costs.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Medicine_Costs.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Medicine_Costs.setDisabledTextColor(new java.awt.Color(204, 204, 204));
-        Panel3.add(Medicine_Costs);
-        Medicine_Costs.setBounds(300, 160, 160, 40);
-
         Hospital_Costs.setEditable(false);
         Hospital_Costs.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Hospital_Costs.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Hospital_Costs.setDisabledTextColor(new java.awt.Color(204, 204, 204));
         Panel3.add(Hospital_Costs);
-        Hospital_Costs.setBounds(300, 230, 160, 40);
+        Hospital_Costs.setBounds(300, 160, 160, 40);
 
         Outcome_Total.setEditable(false);
         Outcome_Total.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
@@ -1267,8 +1251,6 @@ public class Manager extends javax.swing.JFrame {
     private javax.swing.JButton Manager_Update_Button;
     private javax.swing.JTextField Manager_Username;
     private javax.swing.JLabel Manager_Username_Label;
-    private javax.swing.JTextField Medicine_Costs;
-    private javax.swing.JLabel Medicine_Costs_Label;
     private javax.swing.JTextField Medicines_Income;
     private javax.swing.JLabel Medicines_Income_Label;
     private javax.swing.JScrollPane Message_Area_Scroll;
