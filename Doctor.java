@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JToggleButton;
@@ -44,7 +45,7 @@ public class Doctor extends javax.swing.JFrame {
         Schedule_Expanded_Panel = new javax.swing.JPanel();
         Return_Button_Schedule = new javax.swing.JButton();
         Schedule_Expanded_Scroll = new javax.swing.JScrollPane();
-        Schedule_Expanded = new javax.swing.JList<>();
+        Schedule_Expanded_List = new javax.swing.JList<>();
         Panel1 = new javax.swing.JPanel();
         Main_Patient = new javax.swing.JPanel();
         CheckOut_Euro_Label = new javax.swing.JLabel();
@@ -54,7 +55,7 @@ public class Doctor extends javax.swing.JFrame {
         Insert = new javax.swing.JButton();
         Description_Scroll = new javax.swing.JScrollPane();
         Description = new javax.swing.JTextArea();
-        Kartela = new javax.swing.JButton();
+        Patient_Card_Button = new javax.swing.JButton();
         Patient_Cost = new javax.swing.JTextField();
         Patient_Cost_Label = new javax.swing.JLabel();
         Medicine_Label = new javax.swing.JLabel();
@@ -251,19 +252,19 @@ public class Doctor extends javax.swing.JFrame {
         Schedule_Expanded_Panel.add(Return_Button_Schedule);
         Return_Button_Schedule.setBounds(369, 389, 130, 30);
 
-        Schedule_Expanded.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Schedule_Expanded.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Όνμα Ασθενή 1", "Όνμα Ασθενή 2", "Όνμα Ασθενή 3", "Όνμα Ασθενή 4", "Όνμα Ασθενή 5" };
+        Schedule_Expanded_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Schedule_Expanded_List.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Όνoμα Ασθενή 1", "Όνoμα Ασθενή 2", "Όνoμα Ασθενή 3", "Όνoμα Ασθενή 4", "Όνoμα Ασθενή 5" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        Schedule_Expanded.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        Schedule_Expanded.addMouseListener(new java.awt.event.MouseAdapter() {
+        Schedule_Expanded_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Schedule_Expanded_List.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
-                Schedule_ExpandedMouseReleased(evt);
+                Schedule_Expanded_ListMouseReleased(evt);
             }
         });
-        Schedule_Expanded_Scroll.setViewportView(Schedule_Expanded);
+        Schedule_Expanded_Scroll.setViewportView(Schedule_Expanded_List);
 
         Schedule_Expanded_Panel.add(Schedule_Expanded_Scroll);
         Schedule_Expanded_Scroll.setBounds(20, 20, 480, 400);
@@ -329,20 +330,20 @@ public class Doctor extends javax.swing.JFrame {
         Main_Patient.add(Description_Scroll);
         Description_Scroll.setBounds(20, 90, 310, 270);
 
-        Kartela.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Kartela.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Card_Icon.png"))); // NOI18N
-        Kartela.setText("ΚΑΡΤΕΛΑ ΑΣΘΕΝΗ");
-        Kartela.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        Kartela.setFocusPainted(false);
-        Kartela.setFocusable(false);
-        Kartela.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-        Kartela.addActionListener(new java.awt.event.ActionListener() {
+        Patient_Card_Button.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Patient_Card_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Card_Icon.png"))); // NOI18N
+        Patient_Card_Button.setText("ΚΑΡΤΕΛΑ ΑΣΘΕΝΗ");
+        Patient_Card_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Patient_Card_Button.setFocusPainted(false);
+        Patient_Card_Button.setFocusable(false);
+        Patient_Card_Button.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        Patient_Card_Button.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                KartelaActionPerformed(evt);
+                Patient_Card_ButtonActionPerformed(evt);
             }
         });
-        Main_Patient.add(Kartela);
-        Kartela.setBounds(340, 15, 160, 40);
+        Main_Patient.add(Patient_Card_Button);
+        Patient_Card_Button.setBounds(340, 15, 160, 40);
 
         Patient_Cost.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         Patient_Cost.setHorizontalAlignment(javax.swing.JTextField.CENTER);
@@ -440,45 +441,51 @@ public class Doctor extends javax.swing.JFrame {
         Patient_Card.add(Return_Button_Card);
         Return_Button_Card.setBounds(369, 389, 130, 30);
 
-        Patient_Name.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Patient_Name.setEditable(false);
+        Patient_Name.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Patient_Name.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Patient_Name.setDisabledTextColor(new java.awt.Color(204, 204, 204));
-        Patient_Name.setEnabled(false);
+        Patient_Name.setFocusable(false);
         Patient_Card.add(Patient_Name);
         Patient_Name.setBounds(15, 30, 150, 40);
 
-        Patient_LastName.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Patient_LastName.setEditable(false);
+        Patient_LastName.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Patient_LastName.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Patient_LastName.setDisabledTextColor(new java.awt.Color(204, 204, 204));
-        Patient_LastName.setEnabled(false);
+        Patient_LastName.setFocusable(false);
         Patient_Card.add(Patient_LastName);
         Patient_LastName.setBounds(182, 30, 150, 40);
 
-        Patient_Telephone.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Patient_Telephone.setEditable(false);
+        Patient_Telephone.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Patient_Telephone.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Patient_Telephone.setDisabledTextColor(new java.awt.Color(204, 204, 204));
-        Patient_Telephone.setEnabled(false);
+        Patient_Telephone.setFocusable(false);
         Patient_Card.add(Patient_Telephone);
         Patient_Telephone.setBounds(350, 30, 150, 40);
 
-        Patient_Gender.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Patient_Gender.setEditable(false);
+        Patient_Gender.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Patient_Gender.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Patient_Gender.setDisabledTextColor(new java.awt.Color(204, 204, 204));
-        Patient_Gender.setEnabled(false);
+        Patient_Gender.setFocusable(false);
         Patient_Card.add(Patient_Gender);
         Patient_Gender.setBounds(15, 100, 150, 40);
 
-        Patient_Room.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Patient_Room.setEditable(false);
+        Patient_Room.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Patient_Room.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Patient_Room.setDisabledTextColor(new java.awt.Color(204, 204, 204));
-        Patient_Room.setEnabled(false);
+        Patient_Room.setFocusable(false);
         Patient_Card.add(Patient_Room);
         Patient_Room.setBounds(350, 100, 150, 40);
 
-        Patient_Age.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Patient_Age.setEditable(false);
+        Patient_Age.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Patient_Age.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Patient_Age.setDisabledTextColor(new java.awt.Color(204, 204, 204));
-        Patient_Age.setEnabled(false);
+        Patient_Age.setFocusable(false);
         Patient_Card.add(Patient_Age);
         Patient_Age.setBounds(180, 100, 150, 40);
 
@@ -1327,6 +1334,7 @@ public class Doctor extends javax.swing.JFrame {
 
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">
     static Connection conn=null;
+    String Patient_Selected=null;
     ArrayList Medicine_Total = new ArrayList();
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1377,7 +1385,6 @@ public class Doctor extends javax.swing.JFrame {
     private javax.swing.JScrollPane Incoming_Scroll;
     private javax.swing.JButton Insert;
     private javax.swing.JButton Insert_Surgery_Button;
-    private javax.swing.JButton Kartela;
     private javax.swing.JButton Logout_Button;
     private javax.swing.JPanel MainPanel;
     private javax.swing.JPanel Main_Messages;
@@ -1413,6 +1420,7 @@ public class Doctor extends javax.swing.JFrame {
     private javax.swing.JTextField Patient_Age;
     private javax.swing.JLabel Patient_Age_Label;
     private javax.swing.JPanel Patient_Card;
+    private javax.swing.JButton Patient_Card_Button;
     private javax.swing.JTextField Patient_Cost;
     private javax.swing.JLabel Patient_Cost_Label;
     private javax.swing.JTextArea Patient_Description;
@@ -1463,7 +1471,7 @@ public class Doctor extends javax.swing.JFrame {
     private javax.swing.JButton Return_Button_Card;
     private javax.swing.JButton Return_Button_Message_Expanded;
     private javax.swing.JButton Return_Button_Schedule;
-    private javax.swing.JList<String> Schedule_Expanded;
+    private javax.swing.JList<String> Schedule_Expanded_List;
     private javax.swing.JPanel Schedule_Expanded_Panel;
     private javax.swing.JScrollPane Schedule_Expanded_Scroll;
     private javax.swing.JLabel Schedule_Label;
@@ -1490,7 +1498,7 @@ public class Doctor extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
     // </editor-fold>
     
-    // <editor-fold defaultstate="collapsed" desc="Home Page">
+    //                                                                                      <editor-fold defaultstate="collapsed" desc="Home Page">
     public void Check_Button(JToggleButton button_clicked){
         CardLayout card = (CardLayout)MainPanel.getLayout();
         JToggleButton[] Button = new JToggleButton[7];
@@ -1537,7 +1545,7 @@ public class Doctor extends javax.swing.JFrame {
 
     private void Button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button1ActionPerformed
         Check_Button(Button1);
-        Load_Patients();
+        Load_Patient_Box();
         Load_Medicine();
         Check_Patient_Selected();
     }//GEN-LAST:event_Button1ActionPerformed
@@ -1569,7 +1577,7 @@ public class Doctor extends javax.swing.JFrame {
     }//GEN-LAST:event_Logout_ButtonActionPerformed
     // </editor-fold>
     
-    // <editor-fold defaultstate="collapsed" desc="Panel0">
+    //                                                                                      <editor-fold defaultstate="collapsed" desc="Panel0">
     private void Load_Schedule(){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 	LocalDate localDate = LocalDate.now();
@@ -1587,6 +1595,16 @@ public class Doctor extends javax.swing.JFrame {
         Schedule_List.setModel(model);
     }
     
+    private void Load_Schedule_Expanded() {
+        ArrayList Patients = new ArrayList();
+        Patients.clear();
+        Patients.add("Ασθενής 1 : 1234");
+        Patients.add("Ασθενής 2 : 5468");
+        Patients.add("Ασθενής 3 : 6984");
+        Patients.add("Ασθενής 4 : 6785");
+        Schedule_Expanded_List.setModel(new DefaultComboBoxModel(Patients.toArray()));
+    }
+    
     private void Return_Button_ScheduleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Return_Button_ScheduleActionPerformed
         CardLayout card = (CardLayout)Panel0.getLayout();
         card.show(Panel0, "Main_Schedule_Panel");
@@ -1596,10 +1614,11 @@ public class Doctor extends javax.swing.JFrame {
         if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2) {
             CardLayout card = (CardLayout)Panel0.getLayout();
             card.show(Panel0, "Schedule_Expanded_Panel");
+            Load_Schedule_Expanded();
         }
     }//GEN-LAST:event_Schedule_ListMouseReleased
 
-    private void Schedule_ExpandedMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Schedule_ExpandedMouseReleased
+    private void Schedule_Expanded_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Schedule_Expanded_ListMouseReleased
         if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2) {
             CardLayout card = (CardLayout)Panel1.getLayout();
             card.show(Panel1, "Patient_Card");
@@ -1608,28 +1627,27 @@ public class Doctor extends javax.swing.JFrame {
             Button0.setSelected(false);
             Button0.setEnabled(false);
             Check_Button(Button1);
+            Patient_Selected=Schedule_Expanded_List.getSelectedValue();
+            Load_Patient_Card();
         }
-    }//GEN-LAST:event_Schedule_ExpandedMouseReleased
+    }//GEN-LAST:event_Schedule_Expanded_ListMouseReleased
     // </editor-fold>
     
-    // <editor-fold defaultstate="collapsed" desc="Panel1">
-    private void KartelaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_KartelaActionPerformed
-        CardLayout card = (CardLayout)Panel1.getLayout();
-        card.show(Panel1, "Patient_Card");
-    }//GEN-LAST:event_KartelaActionPerformed
-    
-    private void Load_Patients(){
+    //                                                                                      <editor-fold defaultstate="collapsed" desc="Panel1">
+    private void Load_Patient_Box() {
         ArrayList Patients = new ArrayList();
         Patients.clear();
         Patients.add(null);
-        Patients.add("Ασθενής 1");
-        Patients.add("Ασθενής 2");
-        Patients.add("Ασθενής 3");
-        Patients.add("Ασθενής 4");
+        Patients.add("Ασθενής 1 : 1234");
+        Patients.add("Ασθενής 2 : 5468");
+        Patients.add("Ασθενής 3 : 6984");
+        Patients.add("Ασθενής 4 : 6785");
         Examine_Patient_Box.setModel(new DefaultComboBoxModel(Patients.toArray()));
+        if(!Patients.contains(Patient_Selected)) Patient_Selected=null;
+        Examine_Patient_Box.setSelectedItem(Patient_Selected);
     }
     
-    private void Load_Medicine(){
+    private void Load_Medicine() {
         ArrayList Medicines = new ArrayList();
         Medicines.clear();
         Medicines.add(null);
@@ -1647,19 +1665,40 @@ public class Doctor extends javax.swing.JFrame {
             Description.setEnabled(false);
             Medicine_Box_List.setEnabled(false);
             Patient_Cost.setEnabled(false);
-            Kartela.setEnabled(false);
+            Patient_Card_Button.setEnabled(false);
             Check_Out.setEnabled(false);
+            Description.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
+            Description.setEnabled(false);
+            Medicine_List.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
+            Medicine_List.setEnabled(false);
         }else{
             Description.setEnabled(true);
             Medicine_Box_List.setEnabled(true);
             Patient_Cost.setEnabled(true);
-            Kartela.setEnabled(true);
+            Patient_Card_Button.setEnabled(true);
             Check_Out.setEnabled(true);
+            Description.setBackground(javax.swing.UIManager.getDefaults().getColor("EditorPane.background"));
+            Description.setEnabled(true);
+            Medicine_List.setBackground(javax.swing.UIManager.getDefaults().getColor("EditorPane.background"));
+            Medicine_List.setEnabled(true);
         }
     }
     
+    private void Load_Patient_Card() {
+        Patient_Name.setText(Patient_Selected);
+    }
+    
+    private void Patient_Card_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Patient_Card_ButtonActionPerformed
+        CardLayout card = (CardLayout)Panel1.getLayout();
+        card.show(Panel1, "Patient_Card");
+        Load_Patient_Card();
+    }//GEN-LAST:event_Patient_Card_ButtonActionPerformed
+    
     private void Examine_Patient_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Examine_Patient_BoxPopupMenuWillBecomeInvisible
+        Patient_Selected=(String)Examine_Patient_Box.getSelectedItem();
         Check_Patient_Selected();
+        Patient_Cost.setText(null);
+        Insert.setEnabled(false);
     }//GEN-LAST:event_Examine_Patient_BoxPopupMenuWillBecomeInvisible
     
     private void Add_Medicine_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Add_Medicine_ButtonActionPerformed
@@ -1708,6 +1747,9 @@ public class Doctor extends javax.swing.JFrame {
     private void Return_Button_CardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Return_Button_CardActionPerformed
         CardLayout card = (CardLayout)Panel1.getLayout();
         card.show(Panel1, "Main_Patient");
+        Load_Patient_Box();
+        Load_Medicine();
+        Check_Patient_Selected();
     }//GEN-LAST:event_Return_Button_CardActionPerformed
 
     private void Patient_History_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Patient_History_ButtonActionPerformed
@@ -1721,7 +1763,7 @@ public class Doctor extends javax.swing.JFrame {
     }//GEN-LAST:event_Patient_History_ButtonActionPerformed
     // </editor-fold>
     
-    // <editor-fold defaultstate="collapsed" desc="Panel2">
+    //                                                                                      <editor-fold defaultstate="collapsed" desc="Panel2">
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel3">

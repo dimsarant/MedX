@@ -152,18 +152,21 @@ public class StoreKeeper extends javax.swing.JFrame {
         Hospital_Storage_Label.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         Hospital_Storage_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Hospital_Storage_Label.setText("ΑΠΟΘΗΚΗ ΝΟΣΟΚΟΜΕΙΟΥ");
+        Hospital_Storage_Label.setFocusable(false);
         Panel0.add(Hospital_Storage_Label);
         Hospital_Storage_Label.setBounds(50, 20, 430, 30);
 
         Medicine_Label.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Medicine_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Medicine_Label.setText("ΦΑΡΜΑΚΑ");
+        Medicine_Label.setFocusable(false);
         Panel0.add(Medicine_Label);
         Medicine_Label.setBounds(40, 70, 190, 30);
 
         Medicine_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Medicine_List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         Medicine_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Medicine_List.setFocusable(false);
         Medicine_List.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 Medicine_ListMouseReleased(evt);
@@ -177,12 +180,14 @@ public class StoreKeeper extends javax.swing.JFrame {
         Misc_Label.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Misc_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Misc_Label.setText("ΔΙΑΦΟΡΑ");
+        Misc_Label.setFocusable(false);
         Panel0.add(Misc_Label);
         Misc_Label.setBounds(330, 70, 110, 30);
 
         Misc_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Misc_List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         Misc_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Misc_List.setFocusable(false);
         Misc_List.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 Misc_ListMouseReleased(evt);
@@ -195,6 +200,7 @@ public class StoreKeeper extends javax.swing.JFrame {
 
         Remove_Misc_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Delete_Icon.png"))); // NOI18N
         Remove_Misc_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Remove_Misc_Button.setEnabled(false);
         Remove_Misc_Button.setFocusable(false);
         Remove_Misc_Button.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1017,7 +1023,7 @@ public class StoreKeeper extends javax.swing.JFrame {
     }//GEN-LAST:event_Logout_ButtonActionPerformed
     // </editor-fold>
     
-    // <editor-fold defaultstate="collapsed" desc="Panel0">
+    //                                                                                                              <editor-fold defaultstate="collapsed" desc="Panel0">
     private void Load_Storage(){
         ArrayList Names = new ArrayList();
         Names.clear();
@@ -1083,6 +1089,8 @@ public class StoreKeeper extends javax.swing.JFrame {
     }//GEN-LAST:event_Medicine_ListMouseReleased
 
     private void Misc_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Misc_ListMouseReleased
+        if(Misc_List.getSelectedIndex() != -1) Remove_Misc_Button.setEnabled(true);
+        else Remove_Misc_Button.setEnabled(false);
         if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2) {
             CardLayout card = (CardLayout)MainPanel.getLayout();
             card.show(MainPanel, "Panel1");
@@ -1100,11 +1108,29 @@ public class StoreKeeper extends javax.swing.JFrame {
     }//GEN-LAST:event_Misc_ListMouseReleased
 
     private void Remove_Misc_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Remove_Misc_ButtonActionPerformed
-        // TODO add your handling code here:
+        Remove_Misc_Button.setEnabled(false);
+        DefaultListModel model = new DefaultListModel();
+        ArrayList misc = new ArrayList(Misc_List.getModel().getSize());
+        ArrayList misc_new = new ArrayList();
+        for (int i = 0; i < Misc_List.getModel().getSize(); i++) {
+            misc.add(Misc_List.getModel().getElementAt(i));
+            String temp=(String)misc.get(i);
+            String[] tempsplit=temp.split(" - | : ");
+            int quantity=Integer.parseInt(tempsplit[2]);
+            if(Misc_List.getSelectedIndex()==i){
+                if(quantity>=5) quantity-=5;
+                else quantity-=quantity; //db update
+            }
+            misc_new.add(tempsplit[0]+" - "+tempsplit[1]+" : "+quantity);
+        }
+        for(int i=0;i<misc_new.size();i++) {
+            model.addElement(misc_new.get(i));
+        }
+        Misc_List.setModel(model);
     }//GEN-LAST:event_Remove_Misc_ButtonActionPerformed
     // </editor-fold>
     
-    // <editor-fold defaultstate="collapsed" desc="Panel1">
+    //                                                                                                      <editor-fold defaultstate="collapsed" desc="Panel1">
     private void Order_Item_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Order_Item_BoxPopupMenuWillBecomeInvisible
         if(Order_Item_Box.getSelectedIndex()<=0) {
             Order_Name_Box.setEnabled(false);

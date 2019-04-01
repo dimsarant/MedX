@@ -19,9 +19,7 @@ public class LoginScreen extends javax.swing.JFrame {
         this.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.emptySet());
         this.getRootPane().setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK));
         CloseButton.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK));
-        UsernameLabel.setVisible(true);
-        PasswordLabel.setVisible(true);
-        LoginScreen.requestFocus();
+        BackgroundImage.requestFocus();
     }
     //</editor-fold>
 
