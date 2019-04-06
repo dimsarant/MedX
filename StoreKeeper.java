@@ -166,7 +166,7 @@ public class StoreKeeper extends javax.swing.JFrame {
         Medicine_Label.setText("ΦΑΡΜΑΚΑ");
         Medicine_Label.setFocusable(false);
         Panel0.add(Medicine_Label);
-        Medicine_Label.setBounds(40, 70, 190, 30);
+        Medicine_Label.setBounds(20, 50, 230, 30);
 
         Medicine_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Medicine_List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -180,17 +180,16 @@ public class StoreKeeper extends javax.swing.JFrame {
         Medicine_List_Scroll.setViewportView(Medicine_List);
 
         Panel0.add(Medicine_List_Scroll);
-        Medicine_List_Scroll.setBounds(40, 100, 190, 280);
+        Medicine_List_Scroll.setBounds(20, 80, 230, 300);
 
         Misc_Label.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Misc_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Misc_Label.setText("ΔΙΑΦΟΡΑ");
         Misc_Label.setFocusable(false);
         Panel0.add(Misc_Label);
-        Misc_Label.setBounds(330, 70, 110, 30);
+        Misc_Label.setBounds(330, 50, 120, 30);
 
         Misc_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Misc_List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         Misc_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Misc_List.setFocusable(false);
         Misc_List.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -201,7 +200,7 @@ public class StoreKeeper extends javax.swing.JFrame {
         Misc_List_Scroll.setViewportView(Misc_List);
 
         Panel0.add(Misc_List_Scroll);
-        Misc_List_Scroll.setBounds(290, 100, 190, 280);
+        Misc_List_Scroll.setBounds(270, 80, 230, 300);
 
         Remove_Misc_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Delete_Icon.png"))); // NOI18N
         Remove_Misc_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -213,23 +212,25 @@ public class StoreKeeper extends javax.swing.JFrame {
             }
         });
         Panel0.add(Remove_Misc_Button);
-        Remove_Misc_Button.setBounds(440, 70, 40, 30);
+        Remove_Misc_Button.setBounds(460, 50, 40, 30);
 
+        Medicine_Warning.setVisible(false);
         Medicine_Warning.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         Medicine_Warning.setForeground(new java.awt.Color(255, 0, 0));
         Medicine_Warning.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Medicine_Warning.setText("ΕΛΛΕΙΜΜΑ ΑΠΟΘΕΜΑΤΩΝ !");
         Medicine_Warning.setFocusable(false);
         Panel0.add(Medicine_Warning);
-        Medicine_Warning.setBounds(290, 380, 190, 30);
+        Medicine_Warning.setBounds(20, 380, 230, 30);
 
+        Misc_Warning.setVisible(false);
         Misc_Warning.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         Misc_Warning.setForeground(new java.awt.Color(255, 0, 0));
         Misc_Warning.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Misc_Warning.setText("ΕΛΛΕΙΜΜΑ ΑΠΟΘΕΜΑΤΩΝ !");
         Misc_Warning.setFocusable(false);
         Panel0.add(Misc_Warning);
-        Misc_Warning.setBounds(40, 380, 190, 30);
+        Misc_Warning.setBounds(270, 380, 230, 30);
 
         MainPanel.add(Panel0, "Panel0");
 
@@ -509,10 +510,16 @@ public class StoreKeeper extends javax.swing.JFrame {
         Message_Text.setLineWrap(true);
         Message_Text.setRows(5);
         Message_Text.setWrapStyleWord(true);
+        Message_Text.setEnabled(false);
+        Message_Text.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                Message_TextKeyReleased(evt);
+            }
+        });
         Message_Area_Scroll.setViewportView(Message_Text);
 
         New_Message.add(Message_Area_Scroll);
-        Message_Area_Scroll.setBounds(20, 60, 480, 310);
+        Message_Area_Scroll.setBounds(20, 70, 480, 300);
 
         Send_Button.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Send_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Enter_Icon.png"))); // NOI18N
@@ -891,6 +898,7 @@ public class StoreKeeper extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">
     static Connection conn=null;
     String user=null;
+    String chosen_receiver=null;
     ArrayList order = new ArrayList();
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1032,8 +1040,9 @@ public class StoreKeeper extends javax.swing.JFrame {
     }
     
     private void Button0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button0ActionPerformed
+        Load_Medicine();
+        Load_Misc();
         Check_Button(Button0);
-        Load_Storage();
     }//GEN-LAST:event_Button0ActionPerformed
     
     private void Button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button1ActionPerformed
@@ -1071,21 +1080,38 @@ public class StoreKeeper extends javax.swing.JFrame {
     // </editor-fold>
     
     //                                                                                                              <editor-fold defaultstate="collapsed" desc="Panel0">
-    private void Load_Storage(){
-        ArrayList Names = new ArrayList();
-        Names.clear();
-        Names.add("Xanax - Απόθεμα : 5");
-        Names.add("Lexapro - Απόθεμα : 3");
-        Names.add("Celexa - Απόθεμα : 5");
-        Names.add("Ativan - Απόθεμα : 10");
-        Names.add("Effexor - Απόθεμα : 5");
-        Names.add("Elavil - Απόθεμα : 10");
-        Medicine_List.setModel(new DefaultComboBoxModel(Names.toArray()));
-        Names.clear();
-        Names.add("Χαρτί Υγείας - Απόθεμα : 5");
-        Names.add("Γάζες - Απόθεμα : 10");
-        Names.add("Ενέσεις - Απόθεμα : 8");
-        Misc_List.setModel(new DefaultComboBoxModel(Names.toArray()));
+    private void Load_Medicine(){
+        Medicine_Warning.setVisible(false);
+        ArrayList medicine = new ArrayList();
+        try{
+            String query = "select name,quantity from medicine";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                medicine.add(rs.getString("name")+" - Απόθεμα : "+rs.getString("quantity"));
+                if(rs.getInt("quantity")<10) Medicine_Warning.setVisible(true);
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        Medicine_List.setModel(new DefaultComboBoxModel(medicine.toArray()));
+    }
+    
+    private void Load_Misc(){
+        Misc_Warning.setVisible(false);
+        ArrayList misc = new ArrayList();
+        try{
+            String query = "select name,quantity from misc";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                misc.add(rs.getString("name")+" - Απόθεμα : "+rs.getString("quantity"));
+                if(rs.getInt("quantity")<10) Misc_Warning.setVisible(true);
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        Misc_List.setModel(new DefaultComboBoxModel(misc.toArray()));
     }
     
     private void Load_Order_Name_Box(String type){
@@ -1093,17 +1119,28 @@ public class StoreKeeper extends javax.swing.JFrame {
         Names.clear();
         Names.add(null);
         if(type.equals("Φάρμακα")){
-            Names.add("Xanax : 10€");
-            Names.add("Lexapro : 24€");
-            Names.add("Celexa : 43€");
-            Names.add("Ativan : 15€");
-            Names.add("Effexor : 9€");
-            Names.add("Elavil : 32€");
+            try{
+                String query = "select name,buy_price from medicine";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query);
+                while(rs.next()){
+                    Names.add(rs.getString("name")+" : "+rs.getString("buy_price")+"€");
+                }
+                rs.close();
+                stmt.close();
+            }catch(Exception e){System.out.println(e.getMessage());};
         }
         else if(type.equals("Διάφορα")){
-            Names.add("Χαρτί Υγείας : 5€");
-            Names.add("Γάζες : 10€");
-            Names.add("Ενέσεις : 6€");
+            try{
+                String query = "select name,buy_price from misc";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query);
+                while(rs.next()){
+                    Names.add(rs.getString("name")+" : "+rs.getString("buy_price")+"€");
+                }
+                rs.close();
+                stmt.close();
+            }catch(Exception e){System.out.println(e.getMessage());};
         }
         Order_Name_Box.setModel(new DefaultComboBoxModel(Names.toArray()));
     }
@@ -1129,7 +1166,17 @@ public class StoreKeeper extends javax.swing.JFrame {
             Check_Button(Button1);
             String temp=Medicine_List.getSelectedValue();
             String[] name=temp.split(" - | : ");
-            Integer price = 10;
+            Integer price=0;
+            try{
+                String query = "select buy_price from medicine where name='"+name[0]+"'";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query);
+                while(rs.next()){
+                    price = rs.getInt("buy_price");
+                }
+                rs.close();
+                stmt.close();
+            }catch(Exception e){System.out.println(e.getMessage());};
             Order_Item_Box.setSelectedItem("Φάρμακα");
             Order_Item("Φάρμακα",name[0],price);
         }
@@ -1148,7 +1195,17 @@ public class StoreKeeper extends javax.swing.JFrame {
             Check_Button(Button1);
             String temp=Misc_List.getSelectedValue();
             String[] name=temp.split(" - | : ");
-            Integer price = 10;
+            Integer price=0;
+            try{
+                String query = "select buy_price from misc where name='"+name[0]+"'";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query);
+                while(rs.next()){
+                    price = rs.getInt("buy_price");
+                }
+                rs.close();
+                stmt.close();
+            }catch(Exception e){System.out.println(e.getMessage());};
             Order_Item_Box.setSelectedItem("Διάφορα");
             Order_Item("Διάφορα",name[0],price);
         }
@@ -1156,24 +1213,27 @@ public class StoreKeeper extends javax.swing.JFrame {
 
     private void Remove_Misc_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Remove_Misc_ButtonActionPerformed
         Remove_Misc_Button.setEnabled(false);
-        DefaultListModel model = new DefaultListModel();
         ArrayList misc = new ArrayList(Misc_List.getModel().getSize());
-        ArrayList misc_new = new ArrayList();
         for (int i = 0; i < Misc_List.getModel().getSize(); i++) {
             misc.add(Misc_List.getModel().getElementAt(i));
             String temp=(String)misc.get(i);
             String[] tempsplit=temp.split(" - | : ");
             int quantity=Integer.parseInt(tempsplit[2]);
-            if(Misc_List.getSelectedIndex()==i){
-                if(quantity>=5) quantity-=5;
-                else quantity-=quantity; //db update
+            for(int j=0;j<Misc_List.getSelectedIndices().length;j++) {
+                if(Misc_List.getSelectedIndices()[j]==i){
+                    if(quantity>=5) quantity-=5;
+                    else quantity-=quantity;
+                    try{
+                        String query = "update misc set quantity=? where name='"+tempsplit[0]+"'";
+                        PreparedStatement pstmt = conn.prepareStatement(query);
+                        pstmt.setInt(1,quantity);
+                        pstmt.executeUpdate();
+                        pstmt.close();
+                    }catch(Exception e){System.out.println(e.getMessage());};
+                }
             }
-            misc_new.add(tempsplit[0]+" - "+tempsplit[1]+" : "+quantity);
         }
-        for(int i=0;i<misc_new.size();i++) {
-            model.addElement(misc_new.get(i));
-        }
-        Misc_List.setModel(model);
+        Load_Misc();
     }//GEN-LAST:event_Remove_Misc_ButtonActionPerformed
     // </editor-fold>
     
@@ -1264,13 +1324,103 @@ public class StoreKeeper extends javax.swing.JFrame {
     }//GEN-LAST:event_Order_ListMouseReleased
 
     private void Confirm_Order_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Confirm_Order_ButtonActionPerformed
-
-
-
-
-        
-
-        
+        int medicine_costs=0;
+        int hospital_costs=0;
+        ArrayList medicine_names = new ArrayList();
+        ArrayList medicine_quantity = new ArrayList();
+        ArrayList misc_names = new ArrayList();
+        ArrayList misc_quantity = new ArrayList();
+        try{
+            String query = "select name,quantity from medicine";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                medicine_names.add(rs.getString("name"));
+                medicine_quantity.add(rs.getInt("quantity"));
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        try{
+            String query = "select name,quantity from misc";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                misc_names.add(rs.getString("name"));
+                misc_quantity.add(rs.getInt("quantity"));
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        for (int i = 0; i < order.size(); i++) {
+            String temp=(String)order.get(i);
+            String[] tempsplit=temp.split("#| : |€");
+            for(int j=0;j<medicine_names.size();j++){
+                if(medicine_names.get(j).equals(tempsplit[2])){
+                    int quantity=(Integer)medicine_quantity.get(j)+Integer.parseInt(tempsplit[1]);
+                    medicine_costs+=Integer.parseInt(tempsplit[3]);
+                    try{
+                        String query = "update medicine set quantity=? where name='"+tempsplit[2]+"'";
+                        PreparedStatement pstmt = conn.prepareStatement(query);
+                        pstmt.setInt(1,quantity);
+                        pstmt.executeUpdate();
+                        pstmt.close();
+                    }catch(Exception e){System.out.println(e.getMessage());};
+                }
+            }
+            for(int j=0;j<misc_names.size();j++){
+                if(misc_names.get(j).equals(tempsplit[2])){
+                    int quantity=(Integer)misc_quantity.get(j)+Integer.parseInt(tempsplit[1]);
+                    hospital_costs+=Integer.parseInt(tempsplit[3]);
+                    try{
+                        String query = "update misc set quantity=? where name='"+tempsplit[2]+"'";
+                        PreparedStatement pstmt = conn.prepareStatement(query);
+                        pstmt.setInt(1,quantity);
+                        pstmt.executeUpdate();
+                        pstmt.close();
+                    }catch(Exception e){System.out.println(e.getMessage());};
+                }
+            }
+        }
+        try{
+            String query = "select medicine_costs from money where type='Outcome'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                medicine_costs+=rs.getInt("medicine_costs");
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        try{
+                String query = "update money set medicine_costs=? where type='Outcome'";
+                PreparedStatement pstmt = conn.prepareStatement(query);
+                pstmt.setInt(1,medicine_costs);
+                pstmt.executeUpdate();
+                pstmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        try{
+            String query = "select hospital_costs from money where type='Outcome'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                hospital_costs+=rs.getInt("hospital_costs");
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        try{
+                String query = "update money set hospital_costs=? where type='Outcome'";
+                PreparedStatement pstmt = conn.prepareStatement(query);
+                pstmt.setInt(1,hospital_costs);
+                pstmt.executeUpdate();
+                pstmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        Confirm_Order_Button.setEnabled(false);
+        order.clear();
+        DefaultListModel model = (DefaultListModel) Order_List.getModel();
+        model.removeAllElements();
+        Order_Cost();
     }//GEN-LAST:event_Confirm_Order_ButtonActionPerformed
     // </editor-fold>
     
@@ -1318,14 +1468,19 @@ public class StoreKeeper extends javax.swing.JFrame {
         Rec_Type_Box.setModel(new DefaultComboBoxModel(jobs.toArray()));
     }
     
-    private void Load_Rec_Name_Box(String name){
+    private void Load_Rec_Name_Box(String job){
         ArrayList names = new ArrayList();
         names.add(null);
-        names.add("Γιατρός");
-        names.add("Νοσηλευτής");
-        names.add("Γραμματέας");
-        names.add("Αποθηκάριος");
-        names.add("Διευθυντής");
+        try{
+            String query = "select username,name,lastname from users where job='"+job+"' and username!='"+user+"' order by name ASC";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                names.add(rs.getString("name")+" "+rs.getString("lastname")+" | "+rs.getString("username"));
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){};
         Rec_Name_Box.setModel(new DefaultComboBoxModel(names.toArray()));
     }
     
@@ -1373,6 +1528,9 @@ public class StoreKeeper extends javax.swing.JFrame {
     }//GEN-LAST:event_Outgoing_ListMouseReleased
 
     private void Rec_Type_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Rec_Type_BoxPopupMenuWillBecomeInvisible
+        Send_Button.setEnabled(false);
+        Message_Text.setEnabled(false);
+        Message_Text.setText("");
         if(Rec_Type_Box.getSelectedItem() == null) {
             Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
             Rec_Name_Box.setEnabled(false);
@@ -1386,16 +1544,28 @@ public class StoreKeeper extends javax.swing.JFrame {
     }//GEN-LAST:event_Rec_Type_BoxPopupMenuWillBecomeInvisible
 
     private void Rec_Name_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Rec_Name_BoxPopupMenuWillBecomeInvisible
-        if(Rec_Name_Box.getSelectedItem() == null) Send_Button.setEnabled(false);
-        else Send_Button.setEnabled(true);
+        Send_Button.setEnabled(false);
+        Message_Text.setText("");
+        if(Rec_Name_Box.getSelectedItem() == null) Message_Text.setEnabled(false);
+        else {
+            String temp=String.valueOf(Rec_Name_Box.getSelectedItem());
+            String[] receiver=temp.split(" \\| ");
+            chosen_receiver=receiver[1];
+            Message_Text.setEnabled(true);
+        }
     }//GEN-LAST:event_Rec_Name_BoxPopupMenuWillBecomeInvisible
+
+    private void Message_TextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Message_TextKeyReleased
+        if(Message_Text.getText().equals("")) Send_Button.setEnabled(false);
+        else Send_Button.setEnabled(true);
+    }//GEN-LAST:event_Message_TextKeyReleased
 
     private void Send_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Send_ButtonActionPerformed
         try{  //insert stoixeia
             String query = "insert into messages (sender,receiver,owner,message) values (?,?,?,?)";
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1,user);
-            pstmt.setString(2,String.valueOf(Rec_Name_Box.getSelectedItem()));
+            pstmt.setString(2,chosen_receiver);
             pstmt.setString(3,user);
             pstmt.setString(4,Message_Text.getText());
             pstmt.executeUpdate();
@@ -1405,8 +1575,8 @@ public class StoreKeeper extends javax.swing.JFrame {
             String query = "insert into messages (sender,receiver,owner,message) values (?,?,?,?)";
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1,user);
-            pstmt.setString(2,String.valueOf(Rec_Name_Box.getSelectedItem()));
-            pstmt.setString(3,String.valueOf(Rec_Name_Box.getSelectedItem()));
+            pstmt.setString(2,chosen_receiver);
+            pstmt.setString(3,chosen_receiver);
             pstmt.setString(4,Message_Text.getText());
             pstmt.executeUpdate();
             pstmt.close();

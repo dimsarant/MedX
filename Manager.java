@@ -2,6 +2,7 @@ package MedX;
 
     // <editor-fold defaultstate="collapsed" desc="Imports">
 import java.awt.CardLayout;
+import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -72,6 +73,7 @@ public class Manager extends javax.swing.JFrame {
         Chosen_Doctor_LastName = new javax.swing.JTextField();
         Chosen_Doctor_LastName_Label = new javax.swing.JLabel();
         New_Worker_Button = new javax.swing.JButton();
+        Insert_Success_Label = new javax.swing.JLabel();
         New_Worker_Panel = new javax.swing.JPanel();
         Cancel_New_Worker_Button = new javax.swing.JButton();
         Insert_New_Worker_Button = new javax.swing.JButton();
@@ -97,6 +99,7 @@ public class Manager extends javax.swing.JFrame {
         Worker_Telephone_Label = new javax.swing.JLabel();
         Worker_Adress_Label = new javax.swing.JLabel();
         Worker_Salary_Label = new javax.swing.JLabel();
+        Insert_Error_Label = new javax.swing.JLabel();
         Panel3 = new javax.swing.JPanel();
         SeparatorHorTop1 = new javax.swing.JSeparator();
         SeparatorHorBot1 = new javax.swing.JSeparator();
@@ -115,9 +118,11 @@ public class Manager extends javax.swing.JFrame {
         Income_Total = new javax.swing.JTextField();
         Outcome_Label = new javax.swing.JLabel();
         Workers_Salary_Label = new javax.swing.JLabel();
+        Medicine_Costs_Label = new javax.swing.JLabel();
         Hospital_Costs_Label = new javax.swing.JLabel();
         Outcome_Total_Label = new javax.swing.JLabel();
         Workers_Salary = new javax.swing.JTextField();
+        Medicine_Costs = new javax.swing.JTextField();
         Hospital_Costs = new javax.swing.JTextField();
         Outcome_Total = new javax.swing.JTextField();
         Panel4 = new javax.swing.JPanel();
@@ -380,6 +385,7 @@ public class Manager extends javax.swing.JFrame {
         Salary_Confirm_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Check_Icon.png"))); // NOI18N
         Salary_Confirm_Button.setText("Επιβεβαίωση");
         Salary_Confirm_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Salary_Confirm_Button.setEnabled(false);
         Salary_Confirm_Button.setFocusable(false);
         Salary_Confirm_Button.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         Salary_Confirm_Button.addActionListener(new java.awt.event.ActionListener() {
@@ -400,6 +406,15 @@ public class Manager extends javax.swing.JFrame {
         Doctor_Salary.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         Doctor_Salary.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Doctor_Salary.setDisabledTextColor(new java.awt.Color(204, 204, 204));
+        Doctor_Salary.setEnabled(false);
+        Doctor_Salary.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                Doctor_SalaryKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                Doctor_SalaryKeyTyped(evt);
+            }
+        });
         Main_Salary_Panel.add(Doctor_Salary);
         Doctor_Salary.setBounds(350, 330, 140, 40);
 
@@ -437,6 +452,7 @@ public class Manager extends javax.swing.JFrame {
         New_Worker_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/New_Message_Icon.png"))); // NOI18N
         New_Worker_Button.setText("ΝΕΟΣ ΕΡΓΑΖΟΜΕΝΟΣ");
         New_Worker_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        New_Worker_Button.setEnabled(false);
         New_Worker_Button.setFocusable(false);
         New_Worker_Button.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -445,6 +461,14 @@ public class Manager extends javax.swing.JFrame {
         });
         Main_Salary_Panel.add(New_Worker_Button);
         New_Worker_Button.setBounds(313, 20, 177, 40);
+
+        Insert_Success_Label.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        Insert_Success_Label.setForeground(new java.awt.Color(51, 204, 0));
+        Insert_Success_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Insert_Success_Label.setText("ΕΠΙΤΥΧΗΣ ΕΙΣΑΓΩΓΗ");
+        Insert_Success_Label.setFocusable(false);
+        Main_Salary_Panel.add(Insert_Success_Label);
+        Insert_Success_Label.setBounds(20, 380, 310, 40);
 
         Panel2.add(Main_Salary_Panel, "Main_Salary_Panel");
 
@@ -470,6 +494,7 @@ public class Manager extends javax.swing.JFrame {
         Insert_New_Worker_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Enter_Icon.png"))); // NOI18N
         Insert_New_Worker_Button.setText("ΕΙΣΑΓΩΓΗ");
         Insert_New_Worker_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Insert_New_Worker_Button.setEnabled(false);
         Insert_New_Worker_Button.setFocusPainted(false);
         Insert_New_Worker_Button.setFocusable(false);
         Insert_New_Worker_Button.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
@@ -485,10 +510,15 @@ public class Manager extends javax.swing.JFrame {
         Insert_Worker_Data_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Insert_Worker_Data_Label.setText("ΕΙΣΑΓΕΤΕ ΤΑ ΣΤΟΙΧΕΙΑ ΤΟΥ ΕΡΓΑΖΟΜΕΝΟΥ");
         New_Worker_Panel.add(Insert_Worker_Data_Label);
-        Insert_Worker_Data_Label.setBounds(60, 10, 380, 40);
+        Insert_Worker_Data_Label.setBounds(20, 10, 480, 40);
 
         Worker_Username.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Worker_Username.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Worker_Username.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                Worker_UsernameKeyReleased(evt);
+            }
+        });
         New_Worker_Panel.add(Worker_Username);
         Worker_Username.setBounds(20, 80, 150, 40);
 
@@ -550,6 +580,14 @@ public class Manager extends javax.swing.JFrame {
 
         Worker_Salary.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Worker_Salary.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Worker_Salary.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                Worker_SalaryKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                Worker_SalaryKeyTyped(evt);
+            }
+        });
         New_Worker_Panel.add(Worker_Salary);
         Worker_Salary.setBounds(350, 280, 150, 40);
 
@@ -606,6 +644,14 @@ public class Manager extends javax.swing.JFrame {
         Worker_Salary_Label.setText("ΜΙΣΘΟΣ");
         New_Worker_Panel.add(Worker_Salary_Label);
         Worker_Salary_Label.setBounds(350, 260, 150, 20);
+
+        Insert_Error_Label.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        Insert_Error_Label.setForeground(new java.awt.Color(255, 51, 51));
+        Insert_Error_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Insert_Error_Label.setText("ΥΠΑΡΧΕΙ ΛΑΘΟΣ ΣΤΑ ΣΤΟΙΧΕΙΑ");
+        Insert_Error_Label.setFocusable(false);
+        New_Worker_Panel.add(Insert_Error_Label);
+        Insert_Error_Label.setBounds(20, 330, 480, 40);
 
         Panel2.add(New_Worker_Panel, "New_Worker_Panel");
 
@@ -700,12 +746,19 @@ public class Manager extends javax.swing.JFrame {
         Panel3.add(Workers_Salary_Label);
         Workers_Salary_Label.setBounds(300, 70, 160, 20);
 
+        Medicine_Costs_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Medicine_Costs_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Medicine_Costs_Label.setText("ΕΞΟΔΑ ΑΠΟ ΦΑΡΜΑΚΑ");
+        Medicine_Costs_Label.setFocusable(false);
+        Panel3.add(Medicine_Costs_Label);
+        Medicine_Costs_Label.setBounds(300, 140, 160, 20);
+
         Hospital_Costs_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Hospital_Costs_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Hospital_Costs_Label.setText("ΕΞΟΔΑ ΝΟΣΟΚΟΜΕΙΟΥ");
         Hospital_Costs_Label.setFocusable(false);
         Panel3.add(Hospital_Costs_Label);
-        Hospital_Costs_Label.setBounds(300, 140, 160, 20);
+        Hospital_Costs_Label.setBounds(300, 210, 160, 20);
 
         Outcome_Total_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Outcome_Total_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -721,12 +774,19 @@ public class Manager extends javax.swing.JFrame {
         Panel3.add(Workers_Salary);
         Workers_Salary.setBounds(300, 90, 160, 40);
 
+        Medicine_Costs.setEditable(false);
+        Medicine_Costs.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Medicine_Costs.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Medicine_Costs.setDisabledTextColor(new java.awt.Color(204, 204, 204));
+        Panel3.add(Medicine_Costs);
+        Medicine_Costs.setBounds(300, 160, 160, 40);
+
         Hospital_Costs.setEditable(false);
         Hospital_Costs.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Hospital_Costs.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Hospital_Costs.setDisabledTextColor(new java.awt.Color(204, 204, 204));
         Panel3.add(Hospital_Costs);
-        Hospital_Costs.setBounds(300, 160, 160, 40);
+        Hospital_Costs.setBounds(300, 230, 160, 40);
 
         Outcome_Total.setEditable(false);
         Outcome_Total.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
@@ -873,10 +933,16 @@ public class Manager extends javax.swing.JFrame {
         Message_Text.setLineWrap(true);
         Message_Text.setRows(5);
         Message_Text.setWrapStyleWord(true);
+        Message_Text.setEnabled(false);
+        Message_Text.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                Message_TextKeyReleased(evt);
+            }
+        });
         Message_Area_Scroll.setViewportView(Message_Text);
 
         New_Message.add(Message_Area_Scroll);
-        Message_Area_Scroll.setBounds(20, 60, 480, 310);
+        Message_Area_Scroll.setBounds(20, 70, 480, 300);
 
         Send_Button.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Send_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Enter_Icon.png"))); // NOI18N
@@ -1259,7 +1325,9 @@ public class Manager extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">
     static Connection conn=null;
     String user=null;
+    String chosen_job=null;
     String chosen_worker=null;
+    String chosen_receiver=null;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Account_Update_Button;
     private javax.swing.JTextField Adress;
@@ -1295,7 +1363,9 @@ public class Manager extends javax.swing.JFrame {
     private javax.swing.JList<String> Incoming_List;
     private javax.swing.JPanel Incoming_Panel;
     private javax.swing.JScrollPane Incoming_Scroll;
+    private javax.swing.JLabel Insert_Error_Label;
     private javax.swing.JButton Insert_New_Worker_Button;
+    private javax.swing.JLabel Insert_Success_Label;
     private javax.swing.JLabel Insert_Worker_Data_Label;
     private javax.swing.JTextField LastName;
     private javax.swing.JLabel LastName_Label;
@@ -1304,6 +1374,8 @@ public class Manager extends javax.swing.JFrame {
     private javax.swing.JPanel Main_Messages;
     private javax.swing.JPanel Main_Salary_Panel;
     private javax.swing.JPanel Main_Schedule_Panel;
+    private javax.swing.JTextField Medicine_Costs;
+    private javax.swing.JLabel Medicine_Costs_Label;
     private javax.swing.JTextField Medicines_Income;
     private javax.swing.JLabel Medicines_Income_Label;
     private javax.swing.JScrollPane Message_Area_Scroll;
@@ -1462,11 +1534,13 @@ public class Manager extends javax.swing.JFrame {
     }//GEN-LAST:event_Button1ActionPerformed
 
     private void Button2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button2ActionPerformed
+        Insert_Success_Label.setVisible(false);
         Check_Button(Button2);
         Load_Worker_Type_Box();
     }//GEN-LAST:event_Button2ActionPerformed
 
     private void Button3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button3ActionPerformed
+        Load_Money();
         Check_Button(Button3);
     }//GEN-LAST:event_Button3ActionPerformed
 
@@ -1519,7 +1593,9 @@ public class Manager extends javax.swing.JFrame {
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel1">
-    
+    private void Worker_Schedule_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Worker_Schedule_ListMouseReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_Worker_Schedule_ListMouseReleased
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel2">
@@ -1532,6 +1608,7 @@ public class Manager extends javax.swing.JFrame {
         jobs.add("Αποθηκάριος");
         jobs.add("Διευθυντής");
         Worker_Type_Box.setModel(new DefaultComboBoxModel(jobs.toArray()));
+        Worker_Type_Box.setSelectedItem(chosen_job);
     }
     
     private void Load_Workers_Name_List() {
@@ -1542,7 +1619,7 @@ public class Manager extends javax.swing.JFrame {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while(rs.next()){
-                workers.add(rs.getString("username")+" - "+rs.getString("name")+" "+rs.getString("lastname"));
+                workers.add(rs.getString("name")+" "+rs.getString("lastname")+" | "+rs.getString("username"));
             }
             rs.close();
             stmt.close();
@@ -1550,15 +1627,34 @@ public class Manager extends javax.swing.JFrame {
         Workers_Name_List.setModel(new DefaultComboBoxModel(workers.toArray()));
     }
     
+    public void Int_Typed(KeyEvent e) {
+      char c = e.getKeyChar();
+      if (!( ((c >= '0') && (c <= '9')) || (c == KeyEvent.VK_BACK_SPACE) || (c == KeyEvent.VK_DELETE))) {
+        getToolkit().beep();
+        e.consume();
+      }
+    }
+    
     private void Worker_Type_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Worker_Type_BoxPopupMenuWillBecomeInvisible
+        Insert_Success_Label.setVisible(false);
+        chosen_job=String.valueOf(Worker_Type_Box.getSelectedItem());
+        Chosen_Doctor_Name.setText(null);
+        Chosen_Doctor_LastName.setText(null);
+        Doctor_Salary.setText(null);
+        Doctor_Salary.setEnabled(false);
+        Salary_Confirm_Button.setEnabled(false);
+        if(Worker_Type_Box.getSelectedItem()==null) New_Worker_Button.setEnabled(false);
+        else New_Worker_Button.setEnabled(true);
         Load_Workers_Name_List();
     }//GEN-LAST:event_Worker_Type_BoxPopupMenuWillBecomeInvisible
 
     private void Workers_Name_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Workers_Name_ListMouseReleased
-        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2) {
+        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2 && Workers_Name_List.getSelectedIndex() != -1) {
+            Insert_Success_Label.setVisible(false);
+            Doctor_Salary.setEnabled(true);
             String temp=Workers_Name_List.getSelectedValue();
-            String[] name=temp.split(" - ");
-            chosen_worker=name[0];
+            String[] name=temp.split(" \\| ");
+            chosen_worker=name[1];
             try{
                 String query = "select name,lastname,salary from users inner join salaries on salaries.username=users.username where users.username='"+chosen_worker+"'";
                 Statement stmt = conn.createStatement();
@@ -1583,15 +1679,53 @@ public class Manager extends javax.swing.JFrame {
             pstmt.close();
         }catch(Exception e){System.out.println(e.getMessage());};
     }//GEN-LAST:event_Salary_Confirm_ButtonActionPerformed
-    
-    private void Worker_Schedule_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Worker_Schedule_ListMouseReleased
-        // TODO add your handling code here:
-    }//GEN-LAST:event_Worker_Schedule_ListMouseReleased
 
+    private void Doctor_SalaryKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Doctor_SalaryKeyTyped
+        Int_Typed(evt);
+    }//GEN-LAST:event_Doctor_SalaryKeyTyped
+
+    private void Doctor_SalaryKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Doctor_SalaryKeyReleased
+        if(Doctor_Salary.getText().equals("")) Salary_Confirm_Button.setEnabled(false);
+        else Salary_Confirm_Button.setEnabled(true);
+    }//GEN-LAST:event_Doctor_SalaryKeyReleased
+    
     private void New_Worker_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_New_Worker_ButtonActionPerformed
+        Worker_Username.setText(null);
+        Worker_Password.setText(null);
+        Worker_Email.setText(null);
+        Worker_Name.setText(null);
+        Worker_Lastname.setText(null);
+        Worker_Birth_Year.setSelectedItem(null);
+        Worker_Birth_Month.setSelectedItem(null);
+        Worker_Birth_Day.setSelectedItem(null);        
+        Worker_Telephone0.setText(null);
+        Worker_Telephone1.setText(null);
+        Worker_Adress.setText(null);
+        Worker_Salary.setText(null);
+        Insert_New_Worker_Button.setEnabled(false);
+        Insert_Error_Label.setVisible(false);
+        if(String.valueOf(Worker_Type_Box.getSelectedItem()).equals("Γιατρός")) Insert_Worker_Data_Label.setText("ΕΙΣΑΓΕΤΕ ΤΑ ΣΤΟΙΧΕΙΑ ΤΟΥ ΓΙΑΤΡΟΥ");
+        if(String.valueOf(Worker_Type_Box.getSelectedItem()).equals("Νοσηλευτής")) Insert_Worker_Data_Label.setText("ΕΙΣΑΓΕΤΕ ΤΑ ΣΤΟΙΧΕΙΑ ΤΟΥ ΝΟΣΗΛΕΥΤΗ");
+        if(String.valueOf(Worker_Type_Box.getSelectedItem()).equals("Γραμματέας")) Insert_Worker_Data_Label.setText("ΕΙΣΑΓΕΤΕ ΤΑ ΣΤΟΙΧΕΙΑ ΤΟΥ ΓΡΑΜΜΑΤΕΑ");
+        if(String.valueOf(Worker_Type_Box.getSelectedItem()).equals("Αποθηκάριος")) Insert_Worker_Data_Label.setText("ΕΙΣΑΓΕΤΕ ΤΑ ΣΤΟΙΧΕΙΑ ΤΟΥ ΑΠΟΘΗΚΑΡΙΟΥ");
+        if(String.valueOf(Worker_Type_Box.getSelectedItem()).equals("Διευθυντής")) Insert_Worker_Data_Label.setText("ΕΙΣΑΓΕΤΕ ΤΑ ΣΤΟΙΧΕΙΑ ΤΟΥ ΔΙΕΥΘΥΝΤΗ");
         CardLayout card = (CardLayout)Panel2.getLayout();
         card.show(Panel2, "New_Worker_Panel");
     }//GEN-LAST:event_New_Worker_ButtonActionPerformed
+
+    private void Worker_UsernameKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Worker_UsernameKeyReleased
+        if(Worker_Username.getText().equals("") || Worker_Salary.getText().equals("")) Insert_New_Worker_Button.setEnabled(false);
+        else Insert_New_Worker_Button.setEnabled(true);
+    }//GEN-LAST:event_Worker_UsernameKeyReleased
+
+    private void Worker_SalaryKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Worker_SalaryKeyTyped
+        Int_Typed(evt);
+    }//GEN-LAST:event_Worker_SalaryKeyTyped
+
+    private void Worker_SalaryKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Worker_SalaryKeyReleased
+        if(Worker_Username.getText().equals("") || Worker_Salary.getText().equals("")) Insert_New_Worker_Button.setEnabled(false);
+        else Insert_New_Worker_Button.setEnabled(true);
+    }//GEN-LAST:event_Worker_SalaryKeyReleased
 
     private void Cancel_New_Worker_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Cancel_New_Worker_ButtonActionPerformed
         CardLayout card = (CardLayout)Panel2.getLayout();
@@ -1602,7 +1736,7 @@ public class Manager extends javax.swing.JFrame {
         try{  //insert stoixeia
             String query = "insert into users (job,username,password,email,name,lastname,birth_date,tel_0,tel_1,address,start_date) values (?,?,?,?,?,?,?,?,?,?,?)";
             PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setString(1,String.valueOf(Worker_Type_Box.getSelectedItem()) );
+            pstmt.setString(1,String.valueOf(Worker_Type_Box.getSelectedItem()));
             pstmt.setString(2,Worker_Username.getText());
             pstmt.setString(3,Worker_Password.getText());
             pstmt.setString(4,Worker_Email.getText());
@@ -1618,7 +1752,11 @@ public class Manager extends javax.swing.JFrame {
             pstmt.setDate(11,Date.valueOf(dtf.format(localDate)));
             pstmt.executeUpdate();
             pstmt.close();
-        }catch(Exception e){System.out.println(e.getMessage());};
+            CardLayout card = (CardLayout)Panel2.getLayout();
+            card.show(Panel2, "Main_Salary_Panel");
+            Load_Workers_Name_List();
+            Insert_Success_Label.setVisible(true);
+        }catch(Exception e){Insert_Error_Label.setVisible(true); System.out.println(e.getMessage());};
         try{  //insert misthos
             String query = "insert into salaries (username,salary) values (?,?)";
             PreparedStatement pstmt = conn.prepareStatement(query);
@@ -1627,12 +1765,51 @@ public class Manager extends javax.swing.JFrame {
             pstmt.executeUpdate();
             pstmt.close();
         }catch(Exception e){System.out.println(e.getMessage());};
-        Load_Workers_Name_List();
     }//GEN-LAST:event_Insert_New_Worker_ButtonActionPerformed
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel3">
-    
+    private void Load_Money(){
+        int income=0;
+        int outcome=0;
+        try{
+            String query = "select sum(salary) as money from salaries";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                Workers_Salary.setText(rs.getString("money")+"€");
+                outcome+=rs.getInt("money");
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        try{
+            String query = "select medicine_costs,hospital_costs from money where type='Outcome'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                Medicine_Costs.setText(rs.getString("medicine_costs")+"€");
+                Hospital_Costs.setText(rs.getString("hospital_costs")+"€");
+                outcome+=rs.getInt("medicine_costs")+rs.getInt("hospital_costs");
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        try{
+            String query = "select patients_income,medicine_income from money where type='Income'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                Patients_Income.setText(rs.getString("patients_income")+"€");
+                Medicines_Income.setText(rs.getString("medicine_income")+"€");
+                income+=rs.getInt("patients_income")+rs.getInt("medicine_income");
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        Income_Total.setText(income+"€");
+        Outcome_Total.setText(outcome+"€");
+    }
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel4">
@@ -1652,7 +1829,7 @@ public class Manager extends javax.swing.JFrame {
             }
             rs.close();
             stmt.close();
-            }catch(Exception e){};
+        }catch(Exception e){};
         Incoming_List.setModel(new DefaultComboBoxModel(messages.toArray()));
     }
     
@@ -1668,7 +1845,7 @@ public class Manager extends javax.swing.JFrame {
             }
             rs.close();
             stmt.close();
-            }catch(Exception e){};
+        }catch(Exception e){};
         Outgoing_List.setModel(new DefaultComboBoxModel(messages.toArray()));
     }
     
@@ -1683,14 +1860,19 @@ public class Manager extends javax.swing.JFrame {
         Rec_Type_Box.setModel(new DefaultComboBoxModel(jobs.toArray()));
     }
     
-    private void Load_Rec_Name_Box(String name){
+    private void Load_Rec_Name_Box(String job){
         ArrayList names = new ArrayList();
         names.add(null);
-        names.add("Γιατρός");
-        names.add("Νοσηλευτής");
-        names.add("Γραμματέας");
-        names.add("Αποθηκάριος");
-        names.add("Διευθυντής");
+        try{
+            String query = "select username,name,lastname from users where job='"+job+"' and username!='"+user+"' order by name ASC";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                names.add(rs.getString("name")+" "+rs.getString("lastname")+" | "+rs.getString("username"));
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){};
         Rec_Name_Box.setModel(new DefaultComboBoxModel(names.toArray()));
     }
     
@@ -1743,6 +1925,9 @@ public class Manager extends javax.swing.JFrame {
     }//GEN-LAST:event_New_Message_ButtonActionPerformed
 
     private void Rec_Type_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Rec_Type_BoxPopupMenuWillBecomeInvisible
+        Send_Button.setEnabled(false);
+        Message_Text.setEnabled(false);
+        Message_Text.setText("");
         if(Rec_Type_Box.getSelectedItem() == null) {
             Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
             Rec_Name_Box.setEnabled(false);
@@ -1755,12 +1940,17 @@ public class Manager extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_Rec_Type_BoxPopupMenuWillBecomeInvisible
 
+    private void Message_TextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Message_TextKeyReleased
+        if(Message_Text.getText().equals("")) Send_Button.setEnabled(false);
+        else Send_Button.setEnabled(true);
+    }//GEN-LAST:event_Message_TextKeyReleased
+
     private void Send_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Send_ButtonActionPerformed
         try{  //insert stoixeia
             String query = "insert into messages (sender,receiver,owner,message) values (?,?,?,?)";
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1,user);
-            pstmt.setString(2,String.valueOf(Rec_Name_Box.getSelectedItem()));
+            pstmt.setString(2,chosen_receiver);
             pstmt.setString(3,user);
             pstmt.setString(4,Message_Text.getText());
             pstmt.executeUpdate();
@@ -1770,8 +1960,8 @@ public class Manager extends javax.swing.JFrame {
             String query = "insert into messages (sender,receiver,owner,message) values (?,?,?,?)";
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1,user);
-            pstmt.setString(2,String.valueOf(Rec_Name_Box.getSelectedItem()));
-            pstmt.setString(3,String.valueOf(Rec_Name_Box.getSelectedItem()));
+            pstmt.setString(2,chosen_receiver);
+            pstmt.setString(3,chosen_receiver);
             pstmt.setString(4,Message_Text.getText());
             pstmt.executeUpdate();
             pstmt.close();
@@ -1783,8 +1973,15 @@ public class Manager extends javax.swing.JFrame {
     }//GEN-LAST:event_Send_ButtonActionPerformed
 
     private void Rec_Name_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Rec_Name_BoxPopupMenuWillBecomeInvisible
-        if(Rec_Name_Box.getSelectedItem() == null) Send_Button.setEnabled(false);
-        else Send_Button.setEnabled(true);
+        Send_Button.setEnabled(false);
+        Message_Text.setText("");
+        if(Rec_Name_Box.getSelectedItem() == null) Message_Text.setEnabled(false);
+        else {
+            String temp=String.valueOf(Rec_Name_Box.getSelectedItem());
+            String[] receiver=temp.split(" \\| ");
+            chosen_receiver=receiver[1];
+            Message_Text.setEnabled(true);
+        }
     }//GEN-LAST:event_Rec_Name_BoxPopupMenuWillBecomeInvisible
 
     private void Refresh_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Refresh_ButtonActionPerformed

@@ -1026,10 +1026,16 @@ public class Doctor extends javax.swing.JFrame {
         Message_Text.setLineWrap(true);
         Message_Text.setRows(5);
         Message_Text.setWrapStyleWord(true);
+        Message_Text.setEnabled(false);
+        Message_Text.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                Message_TextKeyReleased(evt);
+            }
+        });
         Message_Area_Scroll.setViewportView(Message_Text);
 
         New_Message.add(Message_Area_Scroll);
-        Message_Area_Scroll.setBounds(20, 60, 480, 310);
+        Message_Area_Scroll.setBounds(20, 70, 480, 300);
 
         Send_Button.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Send_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Enter_Icon.png"))); // NOI18N
@@ -1412,6 +1418,7 @@ public class Doctor extends javax.swing.JFrame {
     static Connection conn=null;
     String user=null;
     String Patient_Selected=null;
+    String chosen_receiver=null;
     ArrayList Medicine_Total = new ArrayList();
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1913,14 +1920,19 @@ public class Doctor extends javax.swing.JFrame {
         Rec_Type_Box.setModel(new DefaultComboBoxModel(jobs.toArray()));
     }
     
-    private void Load_Rec_Name_Box(String name){
+    private void Load_Rec_Name_Box(String job){
         ArrayList names = new ArrayList();
         names.add(null);
-        names.add("Γιατρός");
-        names.add("Νοσηλευτής");
-        names.add("Γραμματέας");
-        names.add("Αποθηκάριος");
-        names.add("Διευθυντής");
+        try{
+            String query = "select username,name,lastname from users where job='"+job+"' and username!='"+user+"' order by name ASC";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                names.add(rs.getString("name")+" "+rs.getString("lastname")+" | "+rs.getString("username"));
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){};
         Rec_Name_Box.setModel(new DefaultComboBoxModel(names.toArray()));
     }
     
@@ -1968,6 +1980,9 @@ public class Doctor extends javax.swing.JFrame {
     }//GEN-LAST:event_Outgoing_ListMouseReleased
 
     private void Rec_Type_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Rec_Type_BoxPopupMenuWillBecomeInvisible
+        Send_Button.setEnabled(false);
+        Message_Text.setEnabled(false);
+        Message_Text.setText("");
         if(Rec_Type_Box.getSelectedItem() == null) {
             Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
             Rec_Name_Box.setEnabled(false);
@@ -1981,16 +1996,28 @@ public class Doctor extends javax.swing.JFrame {
     }//GEN-LAST:event_Rec_Type_BoxPopupMenuWillBecomeInvisible
 
     private void Rec_Name_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Rec_Name_BoxPopupMenuWillBecomeInvisible
-        if(Rec_Name_Box.getSelectedItem() == null) Send_Button.setEnabled(false);
-        else Send_Button.setEnabled(true);
+        Send_Button.setEnabled(false);
+        Message_Text.setText("");
+        if(Rec_Name_Box.getSelectedItem() == null) Message_Text.setEnabled(false);
+        else {
+            String temp=String.valueOf(Rec_Name_Box.getSelectedItem());
+            String[] receiver=temp.split(" \\| ");
+            chosen_receiver=receiver[1];
+            Message_Text.setEnabled(true);
+        }
     }//GEN-LAST:event_Rec_Name_BoxPopupMenuWillBecomeInvisible
+
+    private void Message_TextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Message_TextKeyReleased
+        if(Message_Text.getText().equals("")) Send_Button.setEnabled(false);
+        else Send_Button.setEnabled(true);
+    }//GEN-LAST:event_Message_TextKeyReleased
 
     private void Send_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Send_ButtonActionPerformed
         try{  //insert stoixeia
             String query = "insert into messages (sender,receiver,owner,message) values (?,?,?,?)";
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1,user);
-            pstmt.setString(2,String.valueOf(Rec_Name_Box.getSelectedItem()));
+            pstmt.setString(2,chosen_receiver);
             pstmt.setString(3,user);
             pstmt.setString(4,Message_Text.getText());
             pstmt.executeUpdate();
@@ -2000,8 +2027,8 @@ public class Doctor extends javax.swing.JFrame {
             String query = "insert into messages (sender,receiver,owner,message) values (?,?,?,?)";
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1,user);
-            pstmt.setString(2,String.valueOf(Rec_Name_Box.getSelectedItem()));
-            pstmt.setString(3,String.valueOf(Rec_Name_Box.getSelectedItem()));
+            pstmt.setString(2,chosen_receiver);
+            pstmt.setString(3,chosen_receiver);
             pstmt.setString(4,Message_Text.getText());
             pstmt.executeUpdate();
             pstmt.close();
