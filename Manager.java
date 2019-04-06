@@ -3,6 +3,15 @@ package MedX;
     // <editor-fold defaultstate="collapsed" desc="Imports">
 import java.awt.CardLayout;
 import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JToggleButton;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
     // </editor-fold>
@@ -10,15 +19,16 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 public class Manager extends javax.swing.JFrame {
     
     // <editor-fold defaultstate="collapsed" desc="Manager Constructor">
-    public Manager(String user,Connection conndb) {
+    public Manager(String name,Connection conndb) {
         initComponents();
         conn=conndb;
+        user=name;
         this.setLocationRelativeTo(null);
         BackgroundImage.requestFocus();
         Button4.setVisible(false);
         this.setTitle("MedX - Καλώς ήρθες διευθυντή - "+user);
         AutoCompleteDecorator.decorate(Worker_Name_List);
-        AutoCompleteDecorator.decorate(Rec_Name_List);
+        AutoCompleteDecorator.decorate(Rec_Name_Box);
     }
     // </editor-fold>
     
@@ -61,7 +71,7 @@ public class Manager extends javax.swing.JFrame {
         Chosen_Doctor_Name_Label = new javax.swing.JLabel();
         Chosen_Doctor_LastName = new javax.swing.JTextField();
         Chosen_Doctor_LastName_Label = new javax.swing.JLabel();
-        New_Patient_Button = new javax.swing.JButton();
+        New_Worker_Button = new javax.swing.JButton();
         New_Worker_Panel = new javax.swing.JPanel();
         Cancel_New_Worker_Button = new javax.swing.JButton();
         Insert_New_Worker_Button = new javax.swing.JButton();
@@ -76,7 +86,7 @@ public class Manager extends javax.swing.JFrame {
         Worker_Birth_Day = new javax.swing.JComboBox<>();
         Worker_Telephone0 = new javax.swing.JTextField();
         Worker_Telephone1 = new javax.swing.JTextField();
-        Manager_Adress1 = new javax.swing.JTextField();
+        Worker_Adress = new javax.swing.JTextField();
         Worker_Salary = new javax.swing.JTextField();
         Worker_Username_Label = new javax.swing.JLabel();
         Worker_Password_Label = new javax.swing.JLabel();
@@ -124,8 +134,8 @@ public class Manager extends javax.swing.JFrame {
         Outgoing_List = new javax.swing.JList<>();
         New_Message = new javax.swing.JPanel();
         Recepient = new javax.swing.JLabel();
-        Rec_Type_List = new javax.swing.JComboBox<>();
-        Rec_Name_List = new javax.swing.JComboBox<>();
+        Rec_Type_Box = new javax.swing.JComboBox<>();
+        Rec_Name_Box = new javax.swing.JComboBox<>();
         Message_Area_Scroll = new javax.swing.JScrollPane();
         Message_Text = new javax.swing.JTextArea();
         Send_Button = new javax.swing.JButton();
@@ -140,27 +150,27 @@ public class Manager extends javax.swing.JFrame {
         Message_Expanded_DateTime_Label = new javax.swing.JLabel();
         Message_Delete_Button = new javax.swing.JButton();
         Panel6 = new javax.swing.JPanel();
-        Manager_Username = new javax.swing.JTextField();
-        Manager_Password = new javax.swing.JTextField();
-        Manager_Name = new javax.swing.JTextField();
-        Manager_LastName = new javax.swing.JTextField();
-        Manager_Birthday = new javax.swing.JTextField();
-        Manager_Telephone0 = new javax.swing.JTextField();
-        Manager_Telephone1 = new javax.swing.JTextField();
-        Manager_Adress = new javax.swing.JTextField();
-        Manager_Start_Work = new javax.swing.JTextField();
-        Manager_Email = new javax.swing.JTextField();
-        Manager_Update_Button = new javax.swing.JButton();
+        Username = new javax.swing.JTextField();
+        Password = new javax.swing.JTextField();
+        Email = new javax.swing.JTextField();
+        Name = new javax.swing.JTextField();
+        LastName = new javax.swing.JTextField();
+        Birth_Date = new javax.swing.JTextField();
+        Tel_0 = new javax.swing.JTextField();
+        Tel_1 = new javax.swing.JTextField();
+        Adress = new javax.swing.JTextField();
+        Start_Date = new javax.swing.JTextField();
+        Account_Update_Button = new javax.swing.JButton();
         Edit_Information_Label = new javax.swing.JLabel();
-        Manager_Name_Label = new javax.swing.JLabel();
-        Manager_LastName_Label = new javax.swing.JLabel();
-        Manager_Birthday_Label = new javax.swing.JLabel();
-        Manager_Telephone_Label = new javax.swing.JLabel();
-        Manager_Adress_Label = new javax.swing.JLabel();
-        Manager_Start_Work_Label = new javax.swing.JLabel();
-        Manager_Email_Label = new javax.swing.JLabel();
-        Manager_Username_Label = new javax.swing.JLabel();
-        Manager_Password_Label = new javax.swing.JLabel();
+        Username_Label = new javax.swing.JLabel();
+        Password_Label = new javax.swing.JLabel();
+        Email_Label = new javax.swing.JLabel();
+        Name_Label = new javax.swing.JLabel();
+        LastName_Label = new javax.swing.JLabel();
+        Birth_Date_Label = new javax.swing.JLabel();
+        Tel_Label = new javax.swing.JLabel();
+        Adress_Label = new javax.swing.JLabel();
+        Start_Date_Label = new javax.swing.JLabel();
         Button0 = new javax.swing.JToggleButton();
         Button1 = new javax.swing.JToggleButton();
         Button2 = new javax.swing.JToggleButton();
@@ -341,17 +351,26 @@ public class Manager extends javax.swing.JFrame {
         Worker_Type_Box.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Γιατρός", "Νοσοκόμος", "Γραμματέας", "Διευθυντής" }));
         Worker_Type_Box.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Worker_Type_Box.setFocusable(false);
+        Worker_Type_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Worker_Type_BoxPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
         Main_Salary_Panel.add(Worker_Type_Box);
         Worker_Type_Box.setBounds(160, 20, 140, 40);
 
         Workers_Name_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Workers_Name_List.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Όνομα Επώνυμο 1", "Όνομα Επώνυμο 2", "Όνομα Επώνυμο 3", "Όνομα Επώνυμο 4", "Όνομα Επώνυμο 5", "Όνομα Επώνυμο 6", "Όνομα Επώνυμο 7", "Όνομα Επώνυμο 8", "Όνομα Επώνυμο 9", "Όνομα Επώνυμο 10" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         Workers_Name_List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         Workers_Name_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Workers_Name_List.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                Workers_Name_ListMouseReleased(evt);
+            }
+        });
         Workers_Name_Scroll.setViewportView(Workers_Name_List);
 
         Main_Salary_Panel.add(Workers_Name_Scroll);
@@ -363,6 +382,11 @@ public class Manager extends javax.swing.JFrame {
         Salary_Confirm_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Salary_Confirm_Button.setFocusable(false);
         Salary_Confirm_Button.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        Salary_Confirm_Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Salary_Confirm_ButtonActionPerformed(evt);
+            }
+        });
         Main_Salary_Panel.add(Salary_Confirm_Button);
         Salary_Confirm_Button.setBounds(350, 385, 140, 30);
 
@@ -409,18 +433,18 @@ public class Manager extends javax.swing.JFrame {
         Main_Salary_Panel.add(Chosen_Doctor_LastName_Label);
         Chosen_Doctor_LastName_Label.setBounds(185, 310, 150, 20);
 
-        New_Patient_Button.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        New_Patient_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/New_Message_Icon.png"))); // NOI18N
-        New_Patient_Button.setText("ΝΕΟΣ ΕΡΓΑΖΟΜΕΝΟΣ");
-        New_Patient_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        New_Patient_Button.setFocusable(false);
-        New_Patient_Button.addActionListener(new java.awt.event.ActionListener() {
+        New_Worker_Button.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        New_Worker_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/New_Message_Icon.png"))); // NOI18N
+        New_Worker_Button.setText("ΝΕΟΣ ΕΡΓΑΖΟΜΕΝΟΣ");
+        New_Worker_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        New_Worker_Button.setFocusable(false);
+        New_Worker_Button.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                New_Patient_ButtonActionPerformed(evt);
+                New_Worker_ButtonActionPerformed(evt);
             }
         });
-        Main_Salary_Panel.add(New_Patient_Button);
-        New_Patient_Button.setBounds(313, 20, 177, 40);
+        Main_Salary_Panel.add(New_Worker_Button);
+        New_Worker_Button.setBounds(313, 20, 177, 40);
 
         Panel2.add(Main_Salary_Panel, "Main_Salary_Panel");
 
@@ -519,10 +543,10 @@ public class Manager extends javax.swing.JFrame {
         New_Worker_Panel.add(Worker_Telephone1);
         Worker_Telephone1.setBounds(20, 300, 150, 20);
 
-        Manager_Adress1.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Manager_Adress1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        New_Worker_Panel.add(Manager_Adress1);
-        Manager_Adress1.setBounds(185, 280, 150, 40);
+        Worker_Adress.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Worker_Adress.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        New_Worker_Panel.add(Worker_Adress);
+        Worker_Adress.setBounds(185, 280, 150, 40);
 
         Worker_Salary.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Worker_Salary.setHorizontalAlignment(javax.swing.JTextField.CENTER);
@@ -738,6 +762,11 @@ public class Manager extends javax.swing.JFrame {
         Refresh_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Refresh_Button.setFocusPainted(false);
         Refresh_Button.setFocusable(false);
+        Refresh_Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Refresh_ButtonActionPerformed(evt);
+            }
+        });
         Main_Messages.add(Refresh_Button);
         Refresh_Button.setBounds(465, 0, 50, 28);
 
@@ -803,23 +832,41 @@ public class Manager extends javax.swing.JFrame {
         New_Message.setPreferredSize(new java.awt.Dimension(400, 350));
         New_Message.setLayout(null);
 
-        Recepient.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Recepient.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Recepient.setText("ΠΑΡΑΛΗΠΤΗΣ:");
         Recepient.setFocusable(false);
         New_Message.add(Recepient);
-        Recepient.setBounds(20, 10, 100, 40);
+        Recepient.setBounds(20, 10, 82, 40);
 
-        Rec_Type_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Rec_Type_List.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Γιατρός", "Νοσοκόμος", "Γραμματέας", "Διευθυντής" }));
-        Rec_Type_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        Rec_Type_List.setFocusable(false);
-        New_Message.add(Rec_Type_List);
-        Rec_Type_List.setBounds(120, 10, 100, 40);
+        Rec_Type_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Rec_Type_Box.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Γιατρός", "Νοσοκόμος", "Γραμματέας", "Διευθυντής" }));
+        Rec_Type_Box.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Rec_Type_Box.setFocusable(false);
+        Rec_Type_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Rec_Type_BoxPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
+        New_Message.add(Rec_Type_Box);
+        Rec_Type_Box.setBounds(110, 10, 110, 40);
 
-        Rec_Name_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Rec_Name_List.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        New_Message.add(Rec_Name_List);
-        Rec_Name_List.setBounds(230, 10, 270, 40);
+        Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
+        Rec_Name_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Rec_Name_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Rec_Name_BoxPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
+        New_Message.add(Rec_Name_Box);
+        Rec_Name_Box.setBounds(230, 10, 270, 40);
 
         Message_Text.setColumns(20);
         Message_Text.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
@@ -835,8 +882,14 @@ public class Manager extends javax.swing.JFrame {
         Send_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Enter_Icon.png"))); // NOI18N
         Send_Button.setText("ΑΠΟΣΤΟΛΗ");
         Send_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Send_Button.setEnabled(false);
         Send_Button.setFocusable(false);
         Send_Button.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        Send_Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Send_ButtonActionPerformed(evt);
+            }
+        });
         New_Message.add(Send_Button);
         Send_Button.setBounds(110, 390, 130, 30);
 
@@ -914,6 +967,11 @@ public class Manager extends javax.swing.JFrame {
         Message_Delete_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Message_Delete_Button.setFocusable(false);
         Message_Delete_Button.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        Message_Delete_Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Message_Delete_ButtonActionPerformed(evt);
+            }
+        });
         Message_Expanded.add(Message_Delete_Button);
         Message_Delete_Button.setBounds(20, 390, 200, 30);
 
@@ -923,68 +981,73 @@ public class Manager extends javax.swing.JFrame {
 
         Panel6.setLayout(null);
 
-        Manager_Username.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Manager_Username.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Panel6.add(Manager_Username);
-        Manager_Username.setBounds(20, 80, 150, 40);
+        Username.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Username.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel6.add(Username);
+        Username.setBounds(20, 80, 150, 40);
 
-        Manager_Password.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Manager_Password.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Panel6.add(Manager_Password);
-        Manager_Password.setBounds(185, 80, 150, 40);
+        Password.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Password.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel6.add(Password);
+        Password.setBounds(185, 80, 150, 40);
 
-        Manager_Name.setEditable(false);
-        Manager_Name.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Manager_Name.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Panel6.add(Manager_Name);
-        Manager_Name.setBounds(20, 180, 150, 40);
+        Email.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Email.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel6.add(Email);
+        Email.setBounds(350, 80, 150, 40);
 
-        Manager_LastName.setEditable(false);
-        Manager_LastName.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Manager_LastName.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Panel6.add(Manager_LastName);
-        Manager_LastName.setBounds(185, 180, 150, 40);
+        Name.setEditable(false);
+        Name.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Name.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel6.add(Name);
+        Name.setBounds(20, 180, 150, 40);
 
-        Manager_Birthday.setEditable(false);
-        Manager_Birthday.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Manager_Birthday.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Panel6.add(Manager_Birthday);
-        Manager_Birthday.setBounds(350, 180, 150, 40);
+        LastName.setEditable(false);
+        LastName.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        LastName.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel6.add(LastName);
+        LastName.setBounds(185, 180, 150, 40);
 
-        Manager_Telephone0.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Manager_Telephone0.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Panel6.add(Manager_Telephone0);
-        Manager_Telephone0.setBounds(20, 280, 150, 20);
+        Birth_Date.setEditable(false);
+        Birth_Date.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Birth_Date.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel6.add(Birth_Date);
+        Birth_Date.setBounds(350, 180, 150, 40);
 
-        Manager_Telephone1.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Manager_Telephone1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Panel6.add(Manager_Telephone1);
-        Manager_Telephone1.setBounds(20, 300, 150, 20);
+        Tel_0.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Tel_0.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel6.add(Tel_0);
+        Tel_0.setBounds(20, 280, 150, 20);
 
-        Manager_Adress.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Manager_Adress.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Panel6.add(Manager_Adress);
-        Manager_Adress.setBounds(185, 280, 150, 40);
+        Tel_1.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Tel_1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel6.add(Tel_1);
+        Tel_1.setBounds(20, 300, 150, 20);
 
-        Manager_Start_Work.setEditable(false);
-        Manager_Start_Work.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Manager_Start_Work.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Panel6.add(Manager_Start_Work);
-        Manager_Start_Work.setBounds(350, 280, 150, 40);
+        Adress.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Adress.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel6.add(Adress);
+        Adress.setBounds(185, 280, 150, 40);
 
-        Manager_Email.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Manager_Email.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Panel6.add(Manager_Email);
-        Manager_Email.setBounds(350, 80, 150, 40);
+        Start_Date.setEditable(false);
+        Start_Date.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Start_Date.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel6.add(Start_Date);
+        Start_Date.setBounds(350, 280, 150, 40);
 
-        Manager_Update_Button.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Manager_Update_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Enter_Icon.png"))); // NOI18N
-        Manager_Update_Button.setText("ΕΝΗΜΕΡΩΣΗ");
-        Manager_Update_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        Manager_Update_Button.setFocusable(false);
-        Manager_Update_Button.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-        Panel6.add(Manager_Update_Button);
-        Manager_Update_Button.setBounds(185, 360, 150, 40);
+        Account_Update_Button.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Account_Update_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Enter_Icon.png"))); // NOI18N
+        Account_Update_Button.setText("ΕΝΗΜΕΡΩΣΗ");
+        Account_Update_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Account_Update_Button.setFocusable(false);
+        Account_Update_Button.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        Account_Update_Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Account_Update_ButtonActionPerformed(evt);
+            }
+        });
+        Panel6.add(Account_Update_Button);
+        Account_Update_Button.setBounds(185, 360, 150, 40);
 
         Edit_Information_Label.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         Edit_Information_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -992,59 +1055,59 @@ public class Manager extends javax.swing.JFrame {
         Panel6.add(Edit_Information_Label);
         Edit_Information_Label.setBounds(60, 10, 390, 30);
 
-        Manager_Name_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Manager_Name_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Manager_Name_Label.setText("ΟΝΟΜΑ");
-        Panel6.add(Manager_Name_Label);
-        Manager_Name_Label.setBounds(20, 160, 150, 20);
+        Username_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Username_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Username_Label.setText("ΟΝΟΜΑ ΧΡΗΣΤΗ");
+        Panel6.add(Username_Label);
+        Username_Label.setBounds(20, 60, 150, 20);
 
-        Manager_LastName_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Manager_LastName_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Manager_LastName_Label.setText("ΕΠΩΝΥΜΟ");
-        Panel6.add(Manager_LastName_Label);
-        Manager_LastName_Label.setBounds(185, 160, 150, 20);
+        Password_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Password_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Password_Label.setText("ΚΩΔΙΚΟΣ ΧΡΗΣΤΗ");
+        Panel6.add(Password_Label);
+        Password_Label.setBounds(185, 60, 150, 20);
 
-        Manager_Birthday_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Manager_Birthday_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Manager_Birthday_Label.setText("ΗΜ/ΝΙΑ ΓΕΝΝΗΣΗΣ");
-        Panel6.add(Manager_Birthday_Label);
-        Manager_Birthday_Label.setBounds(350, 160, 150, 20);
+        Email_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Email_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Email_Label.setText("E-Mail");
+        Panel6.add(Email_Label);
+        Email_Label.setBounds(350, 60, 150, 20);
 
-        Manager_Telephone_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Manager_Telephone_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Manager_Telephone_Label.setText("ΤΗΛΕΦΩΝΑ");
-        Panel6.add(Manager_Telephone_Label);
-        Manager_Telephone_Label.setBounds(20, 260, 150, 20);
+        Name_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Name_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Name_Label.setText("ΟΝΟΜΑ");
+        Panel6.add(Name_Label);
+        Name_Label.setBounds(20, 160, 150, 20);
 
-        Manager_Adress_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Manager_Adress_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Manager_Adress_Label.setText("ΔΙΕΥΘΥΝΣΗ");
-        Panel6.add(Manager_Adress_Label);
-        Manager_Adress_Label.setBounds(185, 260, 150, 20);
+        LastName_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        LastName_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        LastName_Label.setText("ΕΠΩΝΥΜΟ");
+        Panel6.add(LastName_Label);
+        LastName_Label.setBounds(185, 160, 150, 20);
 
-        Manager_Start_Work_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Manager_Start_Work_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Manager_Start_Work_Label.setText("ΕΝΑΡΞΗ ΕΡΓΑΣΙΑΣ");
-        Panel6.add(Manager_Start_Work_Label);
-        Manager_Start_Work_Label.setBounds(350, 260, 150, 20);
+        Birth_Date_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Birth_Date_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Birth_Date_Label.setText("ΗΜ/ΝΙΑ ΓΕΝΝΗΣΗΣ");
+        Panel6.add(Birth_Date_Label);
+        Birth_Date_Label.setBounds(350, 160, 150, 20);
 
-        Manager_Email_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Manager_Email_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Manager_Email_Label.setText("E-Mail");
-        Panel6.add(Manager_Email_Label);
-        Manager_Email_Label.setBounds(350, 60, 150, 20);
+        Tel_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Tel_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Tel_Label.setText("ΤΗΛΕΦΩΝΑ");
+        Panel6.add(Tel_Label);
+        Tel_Label.setBounds(20, 260, 150, 20);
 
-        Manager_Username_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Manager_Username_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Manager_Username_Label.setText("ΟΝΟΜΑ ΧΡΗΣΤΗ");
-        Panel6.add(Manager_Username_Label);
-        Manager_Username_Label.setBounds(20, 60, 150, 20);
+        Adress_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Adress_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Adress_Label.setText("ΔΙΕΥΘΥΝΣΗ");
+        Panel6.add(Adress_Label);
+        Adress_Label.setBounds(185, 260, 150, 20);
 
-        Manager_Password_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Manager_Password_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Manager_Password_Label.setText("ΚΩΔΙΚΟΣ ΧΡΗΣΤΗ");
-        Panel6.add(Manager_Password_Label);
-        Manager_Password_Label.setBounds(185, 60, 150, 20);
+        Start_Date_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Start_Date_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Start_Date_Label.setText("ΕΝΑΡΞΗ ΕΡΓΑΣΙΑΣ");
+        Panel6.add(Start_Date_Label);
+        Start_Date_Label.setBounds(350, 260, 150, 20);
 
         MainPanel.add(Panel6, "Panel6");
 
@@ -1195,9 +1258,16 @@ public class Manager extends javax.swing.JFrame {
 
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">
     static Connection conn=null;
+    String user=null;
+    String chosen_worker=null;
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Account_Update_Button;
+    private javax.swing.JTextField Adress;
+    private javax.swing.JLabel Adress_Label;
     private javax.swing.JLabel BackgroundImage;
     private javax.swing.JLabel BackgroundMedX;
+    private javax.swing.JTextField Birth_Date;
+    private javax.swing.JLabel Birth_Date_Label;
     private javax.swing.JToggleButton Button0;
     private javax.swing.JToggleButton Button1;
     private javax.swing.JToggleButton Button2;
@@ -1215,6 +1285,8 @@ public class Manager extends javax.swing.JFrame {
     private javax.swing.JTextField Doctor_Salary;
     private javax.swing.JLabel Doctor_Salary_Label;
     private javax.swing.JLabel Edit_Information_Label;
+    private javax.swing.JTextField Email;
+    private javax.swing.JLabel Email_Label;
     private javax.swing.JTextField Hospital_Costs;
     private javax.swing.JLabel Hospital_Costs_Label;
     private javax.swing.JLabel Income_Label;
@@ -1225,32 +1297,13 @@ public class Manager extends javax.swing.JFrame {
     private javax.swing.JScrollPane Incoming_Scroll;
     private javax.swing.JButton Insert_New_Worker_Button;
     private javax.swing.JLabel Insert_Worker_Data_Label;
+    private javax.swing.JTextField LastName;
+    private javax.swing.JLabel LastName_Label;
     private javax.swing.JButton Logout_Button;
     private javax.swing.JPanel MainPanel;
     private javax.swing.JPanel Main_Messages;
     private javax.swing.JPanel Main_Salary_Panel;
     private javax.swing.JPanel Main_Schedule_Panel;
-    private javax.swing.JTextField Manager_Adress;
-    private javax.swing.JTextField Manager_Adress1;
-    private javax.swing.JLabel Manager_Adress_Label;
-    private javax.swing.JTextField Manager_Birthday;
-    private javax.swing.JLabel Manager_Birthday_Label;
-    private javax.swing.JTextField Manager_Email;
-    private javax.swing.JLabel Manager_Email_Label;
-    private javax.swing.JTextField Manager_LastName;
-    private javax.swing.JLabel Manager_LastName_Label;
-    private javax.swing.JTextField Manager_Name;
-    private javax.swing.JLabel Manager_Name_Label;
-    private javax.swing.JTextField Manager_Password;
-    private javax.swing.JLabel Manager_Password_Label;
-    private javax.swing.JTextField Manager_Start_Work;
-    private javax.swing.JLabel Manager_Start_Work_Label;
-    private javax.swing.JTextField Manager_Telephone0;
-    private javax.swing.JTextField Manager_Telephone1;
-    private javax.swing.JLabel Manager_Telephone_Label;
-    private javax.swing.JButton Manager_Update_Button;
-    private javax.swing.JTextField Manager_Username;
-    private javax.swing.JLabel Manager_Username_Label;
     private javax.swing.JTextField Medicines_Income;
     private javax.swing.JLabel Medicines_Income_Label;
     private javax.swing.JScrollPane Message_Area_Scroll;
@@ -1264,9 +1317,11 @@ public class Manager extends javax.swing.JFrame {
     private javax.swing.JScrollPane Message_Expanded_Scroll;
     private javax.swing.JTextArea Message_Expanded_Text;
     private javax.swing.JTextArea Message_Text;
+    private javax.swing.JTextField Name;
+    private javax.swing.JLabel Name_Label;
     private javax.swing.JPanel New_Message;
     private javax.swing.JButton New_Message_Button;
-    private javax.swing.JButton New_Patient_Button;
+    private javax.swing.JButton New_Worker_Button;
     private javax.swing.JPanel New_Worker_Panel;
     private javax.swing.JLabel Outcome_Label;
     private javax.swing.JTextField Outcome_Total;
@@ -1281,10 +1336,12 @@ public class Manager extends javax.swing.JFrame {
     private javax.swing.JPanel Panel4;
     private javax.swing.JPanel Panel5;
     private javax.swing.JPanel Panel6;
+    private javax.swing.JTextField Password;
+    private javax.swing.JLabel Password_Label;
     private javax.swing.JTextField Patients_Income;
     private javax.swing.JLabel Patients_Income_Label;
-    private javax.swing.JComboBox<String> Rec_Name_List;
-    private javax.swing.JComboBox<String> Rec_Type_List;
+    private javax.swing.JComboBox<String> Rec_Name_Box;
+    private javax.swing.JComboBox<String> Rec_Type_Box;
     private javax.swing.JLabel Recepient;
     private javax.swing.JButton Refresh_Button;
     private javax.swing.JButton Return_Button_Message_Expanded;
@@ -1310,6 +1367,14 @@ public class Manager extends javax.swing.JFrame {
     private javax.swing.JSeparator SeperatorVerRig;
     private javax.swing.JSeparator SeperatorVerRig1;
     private javax.swing.JSeparator SeperatorVerRig2;
+    private javax.swing.JTextField Start_Date;
+    private javax.swing.JLabel Start_Date_Label;
+    private javax.swing.JTextField Tel_0;
+    private javax.swing.JTextField Tel_1;
+    private javax.swing.JLabel Tel_Label;
+    private javax.swing.JTextField Username;
+    private javax.swing.JLabel Username_Label;
+    private javax.swing.JTextField Worker_Adress;
     private javax.swing.JLabel Worker_Adress_Label;
     private javax.swing.JComboBox<String> Worker_Birth_Day;
     private javax.swing.JComboBox<String> Worker_Birth_Month;
@@ -1398,6 +1463,7 @@ public class Manager extends javax.swing.JFrame {
 
     private void Button2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button2ActionPerformed
         Check_Button(Button2);
+        Load_Worker_Type_Box();
     }//GEN-LAST:event_Button2ActionPerformed
 
     private void Button3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button3ActionPerformed
@@ -1410,9 +1476,12 @@ public class Manager extends javax.swing.JFrame {
 
     private void Button5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button5ActionPerformed
         Check_Button(Button5);
+        Load_Incoming_Messages();
+        Load_Outgoing_Messages();
     }//GEN-LAST:event_Button5ActionPerformed
 
     private void Button6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button6ActionPerformed
+        Load_Account();
         Check_Button(Button6);
     }//GEN-LAST:event_Button6ActionPerformed
 
@@ -1454,14 +1523,75 @@ public class Manager extends javax.swing.JFrame {
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel2">
+    private void Load_Worker_Type_Box() {
+        ArrayList jobs = new ArrayList();
+        jobs.add(null);
+        jobs.add("Γιατρός");
+        jobs.add("Νοσηλευτής");
+        jobs.add("Γραμματέας");
+        jobs.add("Αποθηκάριος");
+        jobs.add("Διευθυντής");
+        Worker_Type_Box.setModel(new DefaultComboBoxModel(jobs.toArray()));
+    }
+    
+    private void Load_Workers_Name_List() {
+        ArrayList workers = new ArrayList();
+        workers.clear();
+        try{
+            String query = "select username,name,lastname from users where job='"+String.valueOf(Worker_Type_Box.getSelectedItem())+"'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                workers.add(rs.getString("username")+" - "+rs.getString("name")+" "+rs.getString("lastname"));
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        Workers_Name_List.setModel(new DefaultComboBoxModel(workers.toArray()));
+    }
+    
+    private void Worker_Type_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Worker_Type_BoxPopupMenuWillBecomeInvisible
+        Load_Workers_Name_List();
+    }//GEN-LAST:event_Worker_Type_BoxPopupMenuWillBecomeInvisible
+
+    private void Workers_Name_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Workers_Name_ListMouseReleased
+        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2) {
+            String temp=Workers_Name_List.getSelectedValue();
+            String[] name=temp.split(" - ");
+            chosen_worker=name[0];
+            try{
+                String query = "select name,lastname,salary from users inner join salaries on salaries.username=users.username where users.username='"+chosen_worker+"'";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query);
+                while(rs.next()){
+                    Chosen_Doctor_Name.setText(rs.getString("name"));
+                    Chosen_Doctor_LastName.setText(rs.getString("lastname"));
+                    Doctor_Salary.setText(rs.getString("salary"));
+                }
+                rs.close();
+                stmt.close();
+            }catch(Exception e){System.out.println(e.getMessage());};
+        }
+    }//GEN-LAST:event_Workers_Name_ListMouseReleased
+
+    private void Salary_Confirm_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Salary_Confirm_ButtonActionPerformed
+        try{
+            String query = "update salaries set salary=? where salaries.username='"+chosen_worker+"'";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1,Doctor_Salary.getText());
+            pstmt.executeUpdate();
+            pstmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+    }//GEN-LAST:event_Salary_Confirm_ButtonActionPerformed
+    
     private void Worker_Schedule_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Worker_Schedule_ListMouseReleased
         // TODO add your handling code here:
     }//GEN-LAST:event_Worker_Schedule_ListMouseReleased
 
-    private void New_Patient_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_New_Patient_ButtonActionPerformed
+    private void New_Worker_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_New_Worker_ButtonActionPerformed
         CardLayout card = (CardLayout)Panel2.getLayout();
         card.show(Panel2, "New_Worker_Panel");
-    }//GEN-LAST:event_New_Patient_ButtonActionPerformed
+    }//GEN-LAST:event_New_Worker_ButtonActionPerformed
 
     private void Cancel_New_Worker_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Cancel_New_Worker_ButtonActionPerformed
         CardLayout card = (CardLayout)Panel2.getLayout();
@@ -1469,7 +1599,35 @@ public class Manager extends javax.swing.JFrame {
     }//GEN-LAST:event_Cancel_New_Worker_ButtonActionPerformed
 
     private void Insert_New_Worker_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Insert_New_Worker_ButtonActionPerformed
-        // TODO add your handling code here:
+        try{  //insert stoixeia
+            String query = "insert into users (job,username,password,email,name,lastname,birth_date,tel_0,tel_1,address,start_date) values (?,?,?,?,?,?,?,?,?,?,?)";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1,String.valueOf(Worker_Type_Box.getSelectedItem()) );
+            pstmt.setString(2,Worker_Username.getText());
+            pstmt.setString(3,Worker_Password.getText());
+            pstmt.setString(4,Worker_Email.getText());
+            pstmt.setString(5,Worker_Name.getText());
+            pstmt.setString(6,Worker_Lastname.getText());
+            String birth_date=String.valueOf(Worker_Birth_Year.getSelectedItem())+"-"+String.valueOf(Worker_Birth_Month.getSelectedItem())+"-"+String.valueOf(Worker_Birth_Day.getSelectedItem());
+            pstmt.setDate(7,Date.valueOf(birth_date)); 
+            pstmt.setString(8,Worker_Telephone0.getText());
+            pstmt.setString(9,Worker_Telephone1.getText());
+            pstmt.setString(10,Worker_Adress.getText());
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate localDate = LocalDate.now();
+            pstmt.setDate(11,Date.valueOf(dtf.format(localDate)));
+            pstmt.executeUpdate();
+            pstmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        try{  //insert misthos
+            String query = "insert into salaries (username,salary) values (?,?)";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1,Worker_Username.getText());
+            pstmt.setString(2,Worker_Salary.getText());
+            pstmt.executeUpdate();
+            pstmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        Load_Workers_Name_List();
     }//GEN-LAST:event_Insert_New_Worker_ButtonActionPerformed
     // </editor-fold>
     
@@ -1482,26 +1640,90 @@ public class Manager extends javax.swing.JFrame {
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel5">
+    private void Load_Incoming_Messages(){
+        ArrayList messages = new ArrayList();
+        messages.clear();
+        try{
+            String query = "select* from messages where owner='"+user+"' and receiver='"+user+"' order by date_time DESC";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                messages.add(rs.getString("date_time")+" | Από: "+rs.getString("sender")+" | "+rs.getString("message"));
+            }
+            rs.close();
+            stmt.close();
+            }catch(Exception e){};
+        Incoming_List.setModel(new DefaultComboBoxModel(messages.toArray()));
+    }
+    
+    private void Load_Outgoing_Messages(){
+        ArrayList messages = new ArrayList();
+        messages.clear();
+        try{
+            String query = "select* from messages where owner='"+user+"' and sender='"+user+"' order by date_time DESC";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                messages.add(rs.getString("date_time")+" | Προς: "+rs.getString("receiver")+" | "+rs.getString("message"));
+            }
+            rs.close();
+            stmt.close();
+            }catch(Exception e){};
+        Outgoing_List.setModel(new DefaultComboBoxModel(messages.toArray()));
+    }
+    
+    private void Load_Rec_Type_List(){
+        ArrayList jobs = new ArrayList();
+        jobs.add(null);
+        jobs.add("Γιατρός");
+        jobs.add("Νοσηλευτής");
+        jobs.add("Γραμματέας");
+        jobs.add("Αποθηκάριος");
+        jobs.add("Διευθυντής");
+        Rec_Type_Box.setModel(new DefaultComboBoxModel(jobs.toArray()));
+    }
+    
+    private void Load_Rec_Name_Box(String name){
+        ArrayList names = new ArrayList();
+        names.add(null);
+        names.add("Γιατρός");
+        names.add("Νοσηλευτής");
+        names.add("Γραμματέας");
+        names.add("Αποθηκάριος");
+        names.add("Διευθυντής");
+        Rec_Name_Box.setModel(new DefaultComboBoxModel(names.toArray()));
+    }
+    
+    private void Load_Message_Expanded(String temp){
+        String[] message=temp.split(" \\| |: ");
+        Message_Expanded_DateTime.setText(message[0]);
+        Message_Expanded_SR.setText(message[2]);
+        Message_Expanded_Text.setText(message[3]);
+    }
+    
     private void Return_Button_Message_ExpandedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Return_Button_Message_ExpandedActionPerformed
         CardLayout card = (CardLayout)Panel5.getLayout();
         card.show(Panel5, "Main_Messages");
     }//GEN-LAST:event_Return_Button_Message_ExpandedActionPerformed
 
     private void Incoming_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Incoming_ListMouseReleased
-        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2) {
+        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2 && Incoming_List.getSelectedIndex() != -1) {
             CardLayout card = (CardLayout)Panel5.getLayout();
             card.show(Panel5, "Message_Expanded");
             Message_Expanded_SR_Label.setText("ΑΠΟΣΤΟΛΕΑΣ");
-            Message_Expanded_Text.setText(Incoming_List.getSelectedValue());
+            String temp=Incoming_List.getSelectedValue();
+            Load_Message_Expanded(temp);
+            
         }
     }//GEN-LAST:event_Incoming_ListMouseReleased
 
     private void Outgoing_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Outgoing_ListMouseReleased
-        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2) {
+        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2 && Outgoing_List.getSelectedIndex() != -1) {
             CardLayout card = (CardLayout)Panel5.getLayout();
             card.show(Panel5, "Message_Expanded");
             Message_Expanded_SR_Label.setText("ΠΑΡΑΛΗΠΤΗΣ");
-            Message_Expanded_Text.setText(Outgoing_List.getSelectedValue());
+            String temp=Outgoing_List.getSelectedValue();
+            Load_Message_Expanded(temp);
         }
     }//GEN-LAST:event_Outgoing_ListMouseReleased
 
@@ -1511,14 +1733,119 @@ public class Manager extends javax.swing.JFrame {
     }//GEN-LAST:event_Cancel_ButtonActionPerformed
 
     private void New_Message_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_New_Message_ButtonActionPerformed
+        Load_Rec_Type_List();
+        Rec_Name_Box.setEnabled(false);
+        Send_Button.setEnabled(false);
+        Rec_Name_Box.setSelectedItem(null);
+        Message_Text.setText(null);
         CardLayout card = (CardLayout)Panel5.getLayout();
         card.show(Panel5, "New_Message");
     }//GEN-LAST:event_New_Message_ButtonActionPerformed
 
+    private void Rec_Type_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Rec_Type_BoxPopupMenuWillBecomeInvisible
+        if(Rec_Type_Box.getSelectedItem() == null) {
+            Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
+            Rec_Name_Box.setEnabled(false);
+            Rec_Name_Box.setSelectedItem(null);
+        }
+        else {
+            Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("EditorPane.background"));
+            Rec_Name_Box.setEnabled(true);
+            Load_Rec_Name_Box(String.valueOf(Rec_Type_Box.getSelectedItem()));
+        }
+    }//GEN-LAST:event_Rec_Type_BoxPopupMenuWillBecomeInvisible
+
+    private void Send_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Send_ButtonActionPerformed
+        try{  //insert stoixeia
+            String query = "insert into messages (sender,receiver,owner,message) values (?,?,?,?)";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1,user);
+            pstmt.setString(2,String.valueOf(Rec_Name_Box.getSelectedItem()));
+            pstmt.setString(3,user);
+            pstmt.setString(4,Message_Text.getText());
+            pstmt.executeUpdate();
+            pstmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        try{  //insert stoixeia
+            String query = "insert into messages (sender,receiver,owner,message) values (?,?,?,?)";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1,user);
+            pstmt.setString(2,String.valueOf(Rec_Name_Box.getSelectedItem()));
+            pstmt.setString(3,String.valueOf(Rec_Name_Box.getSelectedItem()));
+            pstmt.setString(4,Message_Text.getText());
+            pstmt.executeUpdate();
+            pstmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        CardLayout card = (CardLayout)Panel5.getLayout();
+        card.show(Panel5, "Main_Messages");
+        Load_Incoming_Messages();
+        Load_Outgoing_Messages();
+    }//GEN-LAST:event_Send_ButtonActionPerformed
+
+    private void Rec_Name_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Rec_Name_BoxPopupMenuWillBecomeInvisible
+        if(Rec_Name_Box.getSelectedItem() == null) Send_Button.setEnabled(false);
+        else Send_Button.setEnabled(true);
+    }//GEN-LAST:event_Rec_Name_BoxPopupMenuWillBecomeInvisible
+
+    private void Refresh_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Refresh_ButtonActionPerformed
+        Load_Incoming_Messages();
+        Load_Outgoing_Messages();
+    }//GEN-LAST:event_Refresh_ButtonActionPerformed
+
+    private void Message_Delete_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Message_Delete_ButtonActionPerformed
+        try{  //insert stoixeia
+            String query = "delete from messages where owner='"+user+"' and date_time='"+Message_Expanded_DateTime.getText()+"'";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.executeUpdate();
+            pstmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        CardLayout card = (CardLayout)Panel5.getLayout();
+        card.show(Panel5, "Main_Messages");
+        Load_Incoming_Messages();
+        Load_Outgoing_Messages();
+    }//GEN-LAST:event_Message_Delete_ButtonActionPerformed
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel6">
-    
+    private void Load_Account(){
+        try{
+            String query = "select* from users where username='"+user+"'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                Username.setText(rs.getString("username"));
+                Password.setText(rs.getString("password"));
+                Email.setText(rs.getString("email"));
+                Name.setText(rs.getString("name"));
+                LastName.setText(rs.getString("lastname"));
+                Birth_Date.setText(rs.getString("birth_date"));
+                Tel_0.setText(rs.getString("tel_0"));
+                Tel_1.setText(rs.getString("tel_1"));
+                Adress.setText(rs.getString("address"));
+                Start_Date.setText(rs.getString("start_date"));
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+    }
+
+    private void Account_Update_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Account_Update_ButtonActionPerformed
+        try{
+            String query = "update users set username=?,password=?,email=?,tel_0=?,tel_1=?,address=? where username='"+user+"'";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1,Username.getText());
+            pstmt.setString(2,Password.getText());
+            pstmt.setString(3,Email.getText());
+            pstmt.setString(4,Tel_0.getText());
+            pstmt.setString(5,Tel_1.getText());
+            pstmt.setString(6,Adress.getText());
+            pstmt.executeUpdate();
+            pstmt.close();
+            user=Username.getText();
+            this.setTitle("MedX - Καλώς ήρθες διευθυντή - "+user);
+        }catch(Exception e){System.out.println(e.getMessage());};
+        Load_Account();
+    }//GEN-LAST:event_Account_Update_ButtonActionPerformed
     // </editor-fold>
     
 }

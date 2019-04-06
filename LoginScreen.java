@@ -1,6 +1,7 @@
 package MedX;
 
     //<editor-fold defaultstate="collapsed" desc="Imports">
+import static MedX.SystemID.getSystemMotherBoard_SerialNumber;
 import java.awt.Color;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
@@ -20,6 +21,44 @@ public class LoginScreen extends javax.swing.JFrame {
         this.getRootPane().setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK));
         CloseButton.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK));
         BackgroundImage.requestFocus();
+        Check_Remember_Me();
+    }
+    
+    private void Check_Remember_Me(){
+        String remember_me="0";
+        String auto_login="0";
+        String password=null;
+        try{
+            String query = "select username,remember_me,auto_login from temp_users where system_id='"+system_id+"'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                username=rs.getString("username");
+                remember_me=rs.getString("remember_me");
+                auto_login=rs.getString("auto_login");
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        if(auto_login.equals("1")) AutoLogin.setSelected(true);
+        if(remember_me.equals("1")){
+            AutoLogin.setEnabled(true);
+            RememberMe.setSelected(true);
+            UsernameLabel.setVisible(false);
+            PasswordLabel.setVisible(false);
+            try{
+                String query = "select password from users where username='"+username+"'";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query);
+                while(rs.next()){
+                    password=rs.getString("password");
+                }
+                rs.close();
+                stmt.close();
+            }catch(Exception e){System.out.println(e.getMessage());};
+        UsernameField.setText(username);
+        PasswordField.setText(password);
+        }
     }
     //</editor-fold>
 
@@ -111,7 +150,7 @@ public class LoginScreen extends javax.swing.JFrame {
             }
         });
         LoginScreen.add(Manager_Login);
-        Manager_Login.setBounds(340, 220, 100, 22);
+        Manager_Login.setBounds(340, 250, 100, 22);
 
         StoreKeeper_Login.setText("Αποθηκάριος");
         StoreKeeper_Login.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -123,20 +162,16 @@ public class LoginScreen extends javax.swing.JFrame {
             }
         });
         LoginScreen.add(StoreKeeper_Login);
-        StoreKeeper_Login.setBounds(340, 250, 100, 22);
+        StoreKeeper_Login.setBounds(340, 220, 100, 22);
 
         AutoLogin.setBackground(new java.awt.Color(255, 255, 255));
         AutoLogin.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         AutoLogin.setForeground(new java.awt.Color(81, 81, 81));
         AutoLogin.setText("Συνδέσου αυτόματα");
         AutoLogin.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        AutoLogin.setEnabled(false);
         AutoLogin.setFocusable(false);
         AutoLogin.setOpaque(false);
-        AutoLogin.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                AutoLoginActionPerformed(evt);
-            }
-        });
         LoginScreen.add(AutoLogin);
         AutoLogin.setBounds(300, 320, 150, 13);
 
@@ -227,6 +262,7 @@ public class LoginScreen extends javax.swing.JFrame {
         UsernameLabel.setForeground(new java.awt.Color(204, 204, 204));
         UsernameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         UsernameLabel.setText("ΟΝΟΜΑ");
+        UsernameLabel.setAlignmentY(1.0F);
         UsernameLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         LoginScreen.add(UsernameLabel);
         UsernameLabel.setBounds(150, 180, 170, 40);
@@ -253,6 +289,7 @@ public class LoginScreen extends javax.swing.JFrame {
         PasswordLabel.setForeground(new java.awt.Color(204, 204, 204));
         PasswordLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         PasswordLabel.setText("ΚΩΔΙΚΟΣ");
+        PasswordLabel.setAlignmentY(1.0F);
         PasswordLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         PasswordLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         LoginScreen.add(PasswordLabel);
@@ -345,19 +382,12 @@ public class LoginScreen extends javax.swing.JFrame {
     
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">
     static Connection conn=null;
+    String system_id=getSystemMotherBoard_SerialNumber();
     int xMouse;
     int yMouse;
     int triesremaining=5;
     String empty = "";
     String username=null;
-    String password=null;
-    String usertype="";
-    String manager="manager";
-    String doctor="doctor";
-    String nurse="nurse";
-    String secretary="secretary";
-    String storekeeper="storekeeper";
-    
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox AutoLogin;
@@ -389,92 +419,103 @@ public class LoginScreen extends javax.swing.JFrame {
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Class Methods">
-    
     private void checkdb() {
         String UsernameInput=UsernameField.getText();
         String PasswordInput=String.valueOf(PasswordField.getPassword());
-        String username;
-        String password;
+        String password=null;
+        String job=null;
         boolean UserFound=false;
         try{  //check an xrhsths uparxei se database
-            String query = "select username,password from users";
+            String query = "select username,password,job from users";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while(rs.next()){
                 username = rs.getString("username");
                 password = rs.getString("password");
+                job = rs.getString("job");
                 if(UsernameInput.equals(username) && PasswordInput.equals(password)) {
                     UserFound=true;
+                    break;
                 }
             }
             rs.close();
             stmt.close();
-            }catch(Exception e){};
+        }catch(Exception e){System.out.println(e.getMessage());};
         if(UserFound) {
-            try{
-            String query = "select username from doctor";
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-            while(rs.next()){
-                username = rs.getString("username");
-                if(UsernameInput.equals(username)) {
-                    accessgranted(username,"doctor");
-                    rs.close();
-                    stmt.close();
-                    return;
-                }
-            }    
-            rs.close();
-            stmt.close();
-            }catch(Exception e){};
-
-            try{
-            String query = "select username from nurse";
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-            while(rs.next()){
-                username = rs.getString("username");
-                if(UsernameInput.equals(username)) {
-                    accessgranted(username,"nurse");
-                    rs.close();
-                    stmt.close();
-                    return;
-                }
-            }    
-            rs.close();
-            stmt.close();
-            }catch(Exception e){};
+            accessgranted(job);
         }
         else accessdenied();
     }
     
     
     
-    private void accessgranted(String user,String user_type){
-        Loading.setVisible(false);        
+    private void accessgranted(String job){
+        Loading.setVisible(false);
+        Boolean system_id_found=false;
+        String remember_me=null;
+        String auto_login=null;
+        if(RememberMe.isSelected()) remember_me="1";
+        else remember_me="0";
+        if(AutoLogin.isSelected()) auto_login="1";
+        else auto_login="0";
         try{
-        if(user_type.equals(doctor)){
-            conn.close();
-            Doctor a = new Doctor(user,conn);
-            a.setVisible(true);
+            String query = "select system_id from temp_users where system_id='"+system_id+"'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                if(rs.getString("system_id").equals(system_id)) system_id_found=true;
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        if(system_id_found){
+            try{    //update temp_users
+                String query = "update temp_users set username=?,remember_me=?,auto_login=? where system_id='"+system_id+"'";
+                PreparedStatement pstmt = conn.prepareStatement(query);
+                pstmt.setString(1,username);
+                pstmt.setString(2,remember_me);
+                pstmt.setString(3,auto_login);
+                pstmt.executeUpdate();
+                pstmt.close();
+            }catch(Exception e){System.out.println(e.getMessage());};
+        }
+        else{
+            try{  //insert temp_users
+                String query = "insert into temp_users (system_id,username,remember_me,auto_login) values (?,?,?,?)";
+                PreparedStatement pstmt = conn.prepareStatement(query);
+                pstmt.setString(1,system_id);
+                pstmt.setString(2,username);
+                pstmt.setString(3,remember_me);
+                pstmt.setString(4,auto_login);
+                pstmt.executeUpdate();
+                pstmt.close();
+            }catch(Exception e){System.out.println(e.getMessage());};
+        }
+        if(job.equals("Γιατρός")){
+            Doctor d = new Doctor(username,conn);
+            d.setVisible(true);
             this.dispose();
         }
-        else if(user_type.equals(nurse)){
-            Nurse a = new Nurse(user,conn);
-            a.setVisible(true);
+        else if(job.equals("Νοσηλευτής")){
+            Nurse n = new Nurse(username,conn);
+            n.setVisible(true);
             this.dispose();
         }
-        else if(user_type.equals(secretary)){
-            Secretary a = new Secretary(user,conn);
-            a.setVisible(true);
+        else if(job.equals("Γραμματέας")){
+            Secretary s = new Secretary(username,conn);
+            s.setVisible(true);
             this.dispose();
         }
-        else if(user_type.equals(manager)){
-            Manager a = new Manager(user,conn);
-            a.setVisible(true);
+        else if(job.equals("Αποθηκάριος")){
+            StoreKeeper s = new StoreKeeper(username,conn);
+            s.setVisible(true);
             this.dispose();
         }
-        }catch(Exception e){};
+        else if(job.equals("Διευθυντής")){
+            Manager m = new Manager(username,conn);
+            m.setVisible(true);
+            this.dispose();
+        }
     }
     
     
@@ -511,8 +552,7 @@ public class LoginScreen extends javax.swing.JFrame {
     
     // </editor-fold>
     
-    // <editor-fold defaultstate="collapsed" desc="Login Screen">
-    
+    // <editor-fold defaultstate="collapsed" desc="Login Screen">    
     private void LoginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginButtonActionPerformed
         LoginButton.requestFocus();
         if(UsernameField.getText().equals(empty) || String.valueOf(PasswordField.getPassword()).equals(empty)){
@@ -611,47 +651,55 @@ public class LoginScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_BackgroundImageMousePressed
 
     private void CloseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CloseButtonActionPerformed
+        String remember_me;
+        String auto_login;
+        if(RememberMe.isSelected()) remember_me="1";
+        else remember_me="0";
+        if(AutoLogin.isSelected()) auto_login="1";
+        else auto_login="0";
+        try{   //update temp_users
+            String query = "update temp_users set remember_me=?,auto_login=? where system_id='"+system_id+"'";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1,remember_me);
+            pstmt.setString(2,auto_login);
+            pstmt.executeUpdate();
+            pstmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
         System.exit(0);
     }//GEN-LAST:event_CloseButtonActionPerformed
 
     private void RememberMeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RememberMeActionPerformed
-        // TODO add your handling code here:
+        if(RememberMe.isSelected()) AutoLogin.setEnabled(true);
+        else {
+            AutoLogin.setEnabled(false);
+            AutoLogin.setSelected(false);
+        }
     }//GEN-LAST:event_RememberMeActionPerformed
-
-    private void AutoLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AutoLoginActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_AutoLoginActionPerformed
-
+    // </editor-fold>
+    
     private void Doctor_LoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Doctor_LoginActionPerformed
-        Doctor d = new Doctor("\"Όνομα Χρήστη\"",conn);
-        d.setVisible(true);
-        this.dispose();
+        username="Γιατρός";
+        accessgranted("Γιατρός");
     }//GEN-LAST:event_Doctor_LoginActionPerformed
 
     private void Nurse_LoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Nurse_LoginActionPerformed
-        Nurse d = new Nurse("\"Όνομα Χρήστη\"",conn);
-        d.setVisible(true);
-        this.dispose();
+        username="Νοσηλευτής";
+        accessgranted("Νοσηλευτής");
     }//GEN-LAST:event_Nurse_LoginActionPerformed
 
     private void Secretary_LoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Secretary_LoginActionPerformed
-        Secretary d = new Secretary("\"Όνομα Χρήστη\"",conn);
-        d.setVisible(true);
-        this.dispose();
+        username="Γραμματέας";
+        accessgranted("Γραμματέας");
     }//GEN-LAST:event_Secretary_LoginActionPerformed
 
-    private void Manager_LoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Manager_LoginActionPerformed
-        Manager d = new Manager("\"Όνομα Χρήστη\"",conn);
-        d.setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_Manager_LoginActionPerformed
-
     private void StoreKeeper_LoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StoreKeeper_LoginActionPerformed
-        StoreKeeper d = new StoreKeeper("\"Όνομα Χρήστη\"",conn);
-        d.setVisible(true);
-        this.dispose();
+        username="Αποθηκάριος";
+        accessgranted("Αποθηκάριος");
     }//GEN-LAST:event_StoreKeeper_LoginActionPerformed
 
-    // </editor-fold>
-    
+    private void Manager_LoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Manager_LoginActionPerformed
+        username="Διευθυντής";
+        accessgranted("Διευθυντής");
+    }//GEN-LAST:event_Manager_LoginActionPerformed
+
 }

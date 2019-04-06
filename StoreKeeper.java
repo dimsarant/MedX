@@ -1,8 +1,12 @@
 package MedX;
 
     // <editor-fold defaultstate="collapsed" desc="Imports">
+import static MedX.Doctor.conn;
 import java.awt.CardLayout;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.swing.DefaultComboBoxModel;
@@ -14,16 +18,17 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 public class StoreKeeper extends javax.swing.JFrame {
     
     // <editor-fold defaultstate="collapsed" desc="StoreKeeper Constructor">
-    public StoreKeeper(String user,Connection condb) {
+    public StoreKeeper(String name,Connection condb) {
         initComponents();
         conn=condb;
+        user=name;
         this.setLocationRelativeTo(null);
         BackgroundImage.requestFocus();
         Button2.setVisible(false);
         Button3.setVisible(false);
         Button4.setVisible(false);  
         this.setTitle("MedX - Καλώς ήρθες αποθηκάριε - "+user);
-        AutoCompleteDecorator.decorate(Rec_Name_List);
+        AutoCompleteDecorator.decorate(Rec_Name_Box);
         AutoCompleteDecorator.decorate(Order_Name_Box);
         ArrayList items = new ArrayList();
         items.add(null);
@@ -83,8 +88,8 @@ public class StoreKeeper extends javax.swing.JFrame {
         Outgoing_List = new javax.swing.JList<>();
         New_Message = new javax.swing.JPanel();
         Recepient = new javax.swing.JLabel();
-        Rec_Type_List = new javax.swing.JComboBox<>();
-        Rec_Name_List = new javax.swing.JComboBox<>();
+        Rec_Type_Box = new javax.swing.JComboBox<>();
+        Rec_Name_Box = new javax.swing.JComboBox<>();
         Message_Area_Scroll = new javax.swing.JScrollPane();
         Message_Text = new javax.swing.JTextArea();
         Send_Button = new javax.swing.JButton();
@@ -99,27 +104,27 @@ public class StoreKeeper extends javax.swing.JFrame {
         Message_Expanded_DateTime_Label = new javax.swing.JLabel();
         Message_Delete_Button = new javax.swing.JButton();
         Panel6 = new javax.swing.JPanel();
-        StoreKeeper_Username = new javax.swing.JTextField();
-        StoreKeeper_Password = new javax.swing.JTextField();
-        StoreKeeper_Name = new javax.swing.JTextField();
-        StoreKeeper_LastName = new javax.swing.JTextField();
-        StoreKeeper_Telephone0 = new javax.swing.JTextField();
-        StoreKeeper_Telephone1 = new javax.swing.JTextField();
-        StoreKeeper_Adress = new javax.swing.JTextField();
-        StoreKeeper_Start_Work = new javax.swing.JTextField();
-        StoreKeeper_Email = new javax.swing.JTextField();
-        StoreKeeper_Birthday = new javax.swing.JTextField();
-        StoreKeeper_Update_Button = new javax.swing.JButton();
+        Username = new javax.swing.JTextField();
+        Password = new javax.swing.JTextField();
+        Email = new javax.swing.JTextField();
+        Name = new javax.swing.JTextField();
+        LastName = new javax.swing.JTextField();
+        Birth_Date = new javax.swing.JTextField();
+        Tel_0 = new javax.swing.JTextField();
+        Tel_1 = new javax.swing.JTextField();
+        Adress = new javax.swing.JTextField();
+        Start_Date = new javax.swing.JTextField();
+        Account_Update_Button = new javax.swing.JButton();
         Edit_Information_Label = new javax.swing.JLabel();
-        StoreKeeper_Name_Label = new javax.swing.JLabel();
-        StoreKeeper_LastName_Label = new javax.swing.JLabel();
-        StoreKeeper_Birthday_Label = new javax.swing.JLabel();
-        StoreKeeper_Telephone_Label = new javax.swing.JLabel();
-        StoreKeeper_Adress_Label = new javax.swing.JLabel();
-        StoreKeeper_Start_Work_Label = new javax.swing.JLabel();
-        StoreKeeper_Email_Label = new javax.swing.JLabel();
-        StoreKeeper_Username_Label = new javax.swing.JLabel();
-        StoreKeeper_Password_Label = new javax.swing.JLabel();
+        Username_Label = new javax.swing.JLabel();
+        Password_Label = new javax.swing.JLabel();
+        Email_Label = new javax.swing.JLabel();
+        Name_Label = new javax.swing.JLabel();
+        LastName_Label = new javax.swing.JLabel();
+        Birth_Date_Label = new javax.swing.JLabel();
+        Tel_Label = new javax.swing.JLabel();
+        Adress_Label = new javax.swing.JLabel();
+        Start_Date_Label = new javax.swing.JLabel();
         Button0 = new javax.swing.JToggleButton();
         Button1 = new javax.swing.JToggleButton();
         Button2 = new javax.swing.JToggleButton();
@@ -394,6 +399,11 @@ public class StoreKeeper extends javax.swing.JFrame {
         Refresh_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Refresh_Button.setFocusPainted(false);
         Refresh_Button.setFocusable(false);
+        Refresh_Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Refresh_ButtonActionPerformed(evt);
+            }
+        });
         Main_Messages.add(Refresh_Button);
         Refresh_Button.setBounds(465, 0, 50, 28);
 
@@ -456,26 +466,43 @@ public class StoreKeeper extends javax.swing.JFrame {
         Panel5.add(Main_Messages, "Main_Messages");
 
         New_Message.setMinimumSize(new java.awt.Dimension(400, 350));
-        New_Message.setPreferredSize(new java.awt.Dimension(400, 350));
         New_Message.setLayout(null);
 
-        Recepient.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Recepient.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Recepient.setText("ΠΑΡΑΛΗΠΤΗΣ:");
         Recepient.setFocusable(false);
         New_Message.add(Recepient);
-        Recepient.setBounds(20, 10, 100, 40);
+        Recepient.setBounds(20, 10, 82, 40);
 
-        Rec_Type_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Rec_Type_List.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Γιατρός", "Νοσοκόμος", "Γραμματέας", "Διευθυντής" }));
-        Rec_Type_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        Rec_Type_List.setFocusable(false);
-        New_Message.add(Rec_Type_List);
-        Rec_Type_List.setBounds(120, 10, 100, 40);
+        Rec_Type_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Rec_Type_Box.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Γιατρός", "Νοσοκόμος", "Γραμματέας", "Διευθυντής" }));
+        Rec_Type_Box.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Rec_Type_Box.setFocusable(false);
+        Rec_Type_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Rec_Type_BoxPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
+        New_Message.add(Rec_Type_Box);
+        Rec_Type_Box.setBounds(110, 10, 110, 40);
 
-        Rec_Name_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Rec_Name_List.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        New_Message.add(Rec_Name_List);
-        Rec_Name_List.setBounds(230, 10, 270, 40);
+        Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
+        Rec_Name_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Rec_Name_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Rec_Name_BoxPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
+        New_Message.add(Rec_Name_Box);
+        Rec_Name_Box.setBounds(230, 10, 270, 40);
 
         Message_Text.setColumns(20);
         Message_Text.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
@@ -491,8 +518,14 @@ public class StoreKeeper extends javax.swing.JFrame {
         Send_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Enter_Icon.png"))); // NOI18N
         Send_Button.setText("ΑΠΟΣΤΟΛΗ");
         Send_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Send_Button.setEnabled(false);
         Send_Button.setFocusable(false);
         Send_Button.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        Send_Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Send_ButtonActionPerformed(evt);
+            }
+        });
         New_Message.add(Send_Button);
         Send_Button.setBounds(110, 390, 130, 30);
 
@@ -570,6 +603,11 @@ public class StoreKeeper extends javax.swing.JFrame {
         Message_Delete_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Message_Delete_Button.setFocusable(false);
         Message_Delete_Button.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        Message_Delete_Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Message_Delete_ButtonActionPerformed(evt);
+            }
+        });
         Message_Expanded.add(Message_Delete_Button);
         Message_Delete_Button.setBounds(20, 390, 200, 30);
 
@@ -579,68 +617,73 @@ public class StoreKeeper extends javax.swing.JFrame {
 
         Panel6.setLayout(null);
 
-        StoreKeeper_Username.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        StoreKeeper_Username.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Panel6.add(StoreKeeper_Username);
-        StoreKeeper_Username.setBounds(20, 80, 150, 40);
+        Username.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Username.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel6.add(Username);
+        Username.setBounds(20, 80, 150, 40);
 
-        StoreKeeper_Password.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        StoreKeeper_Password.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Panel6.add(StoreKeeper_Password);
-        StoreKeeper_Password.setBounds(185, 80, 150, 40);
+        Password.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Password.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel6.add(Password);
+        Password.setBounds(185, 80, 150, 40);
 
-        StoreKeeper_Name.setEditable(false);
-        StoreKeeper_Name.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        StoreKeeper_Name.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Panel6.add(StoreKeeper_Name);
-        StoreKeeper_Name.setBounds(20, 180, 150, 40);
+        Email.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Email.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel6.add(Email);
+        Email.setBounds(350, 80, 150, 40);
 
-        StoreKeeper_LastName.setEditable(false);
-        StoreKeeper_LastName.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        StoreKeeper_LastName.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Panel6.add(StoreKeeper_LastName);
-        StoreKeeper_LastName.setBounds(185, 180, 150, 40);
+        Name.setEditable(false);
+        Name.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Name.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel6.add(Name);
+        Name.setBounds(20, 180, 150, 40);
 
-        StoreKeeper_Telephone0.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        StoreKeeper_Telephone0.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Panel6.add(StoreKeeper_Telephone0);
-        StoreKeeper_Telephone0.setBounds(20, 280, 150, 20);
+        LastName.setEditable(false);
+        LastName.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        LastName.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel6.add(LastName);
+        LastName.setBounds(185, 180, 150, 40);
 
-        StoreKeeper_Telephone1.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        StoreKeeper_Telephone1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Panel6.add(StoreKeeper_Telephone1);
-        StoreKeeper_Telephone1.setBounds(20, 300, 150, 20);
+        Birth_Date.setEditable(false);
+        Birth_Date.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Birth_Date.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel6.add(Birth_Date);
+        Birth_Date.setBounds(350, 180, 150, 40);
 
-        StoreKeeper_Adress.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        StoreKeeper_Adress.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Panel6.add(StoreKeeper_Adress);
-        StoreKeeper_Adress.setBounds(185, 280, 150, 40);
+        Tel_0.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Tel_0.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel6.add(Tel_0);
+        Tel_0.setBounds(20, 280, 150, 20);
 
-        StoreKeeper_Start_Work.setEditable(false);
-        StoreKeeper_Start_Work.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        StoreKeeper_Start_Work.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Panel6.add(StoreKeeper_Start_Work);
-        StoreKeeper_Start_Work.setBounds(350, 280, 150, 40);
+        Tel_1.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Tel_1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel6.add(Tel_1);
+        Tel_1.setBounds(20, 300, 150, 20);
 
-        StoreKeeper_Email.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        StoreKeeper_Email.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Panel6.add(StoreKeeper_Email);
-        StoreKeeper_Email.setBounds(350, 80, 150, 40);
+        Adress.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Adress.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel6.add(Adress);
+        Adress.setBounds(185, 280, 150, 40);
 
-        StoreKeeper_Birthday.setEditable(false);
-        StoreKeeper_Birthday.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        StoreKeeper_Birthday.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Panel6.add(StoreKeeper_Birthday);
-        StoreKeeper_Birthday.setBounds(350, 180, 150, 40);
+        Start_Date.setEditable(false);
+        Start_Date.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Start_Date.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Panel6.add(Start_Date);
+        Start_Date.setBounds(350, 280, 150, 40);
 
-        StoreKeeper_Update_Button.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        StoreKeeper_Update_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Enter_Icon.png"))); // NOI18N
-        StoreKeeper_Update_Button.setText("ΕΝΗΜΕΡΩΣΗ");
-        StoreKeeper_Update_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        StoreKeeper_Update_Button.setFocusable(false);
-        StoreKeeper_Update_Button.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-        Panel6.add(StoreKeeper_Update_Button);
-        StoreKeeper_Update_Button.setBounds(185, 360, 150, 40);
+        Account_Update_Button.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Account_Update_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Enter_Icon.png"))); // NOI18N
+        Account_Update_Button.setText("ΕΝΗΜΕΡΩΣΗ");
+        Account_Update_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Account_Update_Button.setFocusable(false);
+        Account_Update_Button.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        Account_Update_Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Account_Update_ButtonActionPerformed(evt);
+            }
+        });
+        Panel6.add(Account_Update_Button);
+        Account_Update_Button.setBounds(185, 360, 150, 40);
 
         Edit_Information_Label.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         Edit_Information_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -648,59 +691,59 @@ public class StoreKeeper extends javax.swing.JFrame {
         Panel6.add(Edit_Information_Label);
         Edit_Information_Label.setBounds(60, 10, 390, 30);
 
-        StoreKeeper_Name_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        StoreKeeper_Name_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        StoreKeeper_Name_Label.setText("ΟΝΟΜΑ");
-        Panel6.add(StoreKeeper_Name_Label);
-        StoreKeeper_Name_Label.setBounds(20, 160, 150, 20);
+        Username_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Username_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Username_Label.setText("ΟΝΟΜΑ ΧΡΗΣΤΗ");
+        Panel6.add(Username_Label);
+        Username_Label.setBounds(20, 60, 150, 20);
 
-        StoreKeeper_LastName_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        StoreKeeper_LastName_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        StoreKeeper_LastName_Label.setText("ΕΠΩΝΥΜΟ");
-        Panel6.add(StoreKeeper_LastName_Label);
-        StoreKeeper_LastName_Label.setBounds(185, 160, 150, 20);
+        Password_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Password_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Password_Label.setText("ΚΩΔΙΚΟΣ ΧΡΗΣΤΗ");
+        Panel6.add(Password_Label);
+        Password_Label.setBounds(185, 60, 150, 20);
 
-        StoreKeeper_Birthday_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        StoreKeeper_Birthday_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        StoreKeeper_Birthday_Label.setText("ΗΜ/ΝΙΑ ΓΕΝΝΗΣΗΣ");
-        Panel6.add(StoreKeeper_Birthday_Label);
-        StoreKeeper_Birthday_Label.setBounds(350, 160, 150, 20);
+        Email_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Email_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Email_Label.setText("E-Mail");
+        Panel6.add(Email_Label);
+        Email_Label.setBounds(350, 60, 150, 20);
 
-        StoreKeeper_Telephone_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        StoreKeeper_Telephone_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        StoreKeeper_Telephone_Label.setText("ΤΗΛΕΦΩΝΑ");
-        Panel6.add(StoreKeeper_Telephone_Label);
-        StoreKeeper_Telephone_Label.setBounds(20, 260, 150, 20);
+        Name_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Name_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Name_Label.setText("ΟΝΟΜΑ");
+        Panel6.add(Name_Label);
+        Name_Label.setBounds(20, 160, 150, 20);
 
-        StoreKeeper_Adress_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        StoreKeeper_Adress_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        StoreKeeper_Adress_Label.setText("ΔΙΕΥΘΥΝΣΗ");
-        Panel6.add(StoreKeeper_Adress_Label);
-        StoreKeeper_Adress_Label.setBounds(185, 260, 150, 20);
+        LastName_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        LastName_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        LastName_Label.setText("ΕΠΩΝΥΜΟ");
+        Panel6.add(LastName_Label);
+        LastName_Label.setBounds(185, 160, 150, 20);
 
-        StoreKeeper_Start_Work_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        StoreKeeper_Start_Work_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        StoreKeeper_Start_Work_Label.setText("ΕΝΑΡΞΗ ΕΡΓΑΣΙΑΣ");
-        Panel6.add(StoreKeeper_Start_Work_Label);
-        StoreKeeper_Start_Work_Label.setBounds(350, 260, 150, 20);
+        Birth_Date_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Birth_Date_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Birth_Date_Label.setText("ΗΜ/ΝΙΑ ΓΕΝΝΗΣΗΣ");
+        Panel6.add(Birth_Date_Label);
+        Birth_Date_Label.setBounds(350, 160, 150, 20);
 
-        StoreKeeper_Email_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        StoreKeeper_Email_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        StoreKeeper_Email_Label.setText("E-Mail");
-        Panel6.add(StoreKeeper_Email_Label);
-        StoreKeeper_Email_Label.setBounds(350, 60, 150, 20);
+        Tel_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Tel_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Tel_Label.setText("ΤΗΛΕΦΩΝΑ");
+        Panel6.add(Tel_Label);
+        Tel_Label.setBounds(20, 260, 150, 20);
 
-        StoreKeeper_Username_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        StoreKeeper_Username_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        StoreKeeper_Username_Label.setText("ΟΝΟΜΑ ΧΡΗΣΤΗ");
-        Panel6.add(StoreKeeper_Username_Label);
-        StoreKeeper_Username_Label.setBounds(20, 60, 150, 20);
+        Adress_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Adress_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Adress_Label.setText("ΔΙΕΥΘΥΝΣΗ");
+        Panel6.add(Adress_Label);
+        Adress_Label.setBounds(185, 260, 150, 20);
 
-        StoreKeeper_Password_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        StoreKeeper_Password_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        StoreKeeper_Password_Label.setText("ΚΩΔΙΚΟΣ ΧΡΗΣΤΗ");
-        Panel6.add(StoreKeeper_Password_Label);
-        StoreKeeper_Password_Label.setBounds(185, 60, 150, 20);
+        Start_Date_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Start_Date_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Start_Date_Label.setText("ΕΝΑΡΞΗ ΕΡΓΑΣΙΑΣ");
+        Panel6.add(Start_Date_Label);
+        Start_Date_Label.setBounds(350, 260, 150, 20);
 
         MainPanel.add(Panel6, "Panel6");
 
@@ -847,12 +890,18 @@ public class StoreKeeper extends javax.swing.JFrame {
 
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">
     static Connection conn=null;
+    String user=null;
     ArrayList order = new ArrayList();
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Account_Update_Button;
     private javax.swing.JButton Add_Order_Button;
+    private javax.swing.JTextField Adress;
+    private javax.swing.JLabel Adress_Label;
     private javax.swing.JLabel BackgroundImage;
     private javax.swing.JLabel BackgroundMedX;
+    private javax.swing.JTextField Birth_Date;
+    private javax.swing.JLabel Birth_Date_Label;
     private javax.swing.JToggleButton Button0;
     private javax.swing.JToggleButton Button1;
     private javax.swing.JToggleButton Button2;
@@ -863,10 +912,14 @@ public class StoreKeeper extends javax.swing.JFrame {
     private javax.swing.JButton Cancel_Button;
     private javax.swing.JButton Confirm_Order_Button;
     private javax.swing.JLabel Edit_Information_Label;
+    private javax.swing.JTextField Email;
+    private javax.swing.JLabel Email_Label;
     private javax.swing.JLabel Hospital_Storage_Label;
     private javax.swing.JList<String> Incoming_List;
     private javax.swing.JPanel Incoming_Panel;
     private javax.swing.JScrollPane Incoming_Scroll;
+    private javax.swing.JTextField LastName;
+    private javax.swing.JLabel LastName_Label;
     private javax.swing.JButton Logout_Button;
     private javax.swing.JPanel MainPanel;
     private javax.swing.JPanel Main_Messages;
@@ -889,6 +942,8 @@ public class StoreKeeper extends javax.swing.JFrame {
     private javax.swing.JList<String> Misc_List;
     private javax.swing.JScrollPane Misc_List_Scroll;
     private javax.swing.JLabel Misc_Warning;
+    private javax.swing.JTextField Name;
+    private javax.swing.JLabel Name_Label;
     private javax.swing.JPanel New_Message;
     private javax.swing.JButton New_Message_Button;
     private javax.swing.JLabel New_Order_Label;
@@ -912,8 +967,10 @@ public class StoreKeeper extends javax.swing.JFrame {
     private javax.swing.JPanel Panel4;
     private javax.swing.JPanel Panel5;
     private javax.swing.JPanel Panel6;
-    private javax.swing.JComboBox<String> Rec_Name_List;
-    private javax.swing.JComboBox<String> Rec_Type_List;
+    private javax.swing.JTextField Password;
+    private javax.swing.JLabel Password_Label;
+    private javax.swing.JComboBox<String> Rec_Name_Box;
+    private javax.swing.JComboBox<String> Rec_Type_Box;
     private javax.swing.JLabel Recepient;
     private javax.swing.JButton Refresh_Button;
     private javax.swing.JButton Remove_Misc_Button;
@@ -924,26 +981,13 @@ public class StoreKeeper extends javax.swing.JFrame {
     private javax.swing.JSeparator SeperatorHorBot;
     private javax.swing.JSeparator SeperatorVerLef;
     private javax.swing.JSeparator SeperatorVerRig;
-    private javax.swing.JTextField StoreKeeper_Adress;
-    private javax.swing.JLabel StoreKeeper_Adress_Label;
-    private javax.swing.JTextField StoreKeeper_Birthday;
-    private javax.swing.JLabel StoreKeeper_Birthday_Label;
-    private javax.swing.JTextField StoreKeeper_Email;
-    private javax.swing.JLabel StoreKeeper_Email_Label;
-    private javax.swing.JTextField StoreKeeper_LastName;
-    private javax.swing.JLabel StoreKeeper_LastName_Label;
-    private javax.swing.JTextField StoreKeeper_Name;
-    private javax.swing.JLabel StoreKeeper_Name_Label;
-    private javax.swing.JTextField StoreKeeper_Password;
-    private javax.swing.JLabel StoreKeeper_Password_Label;
-    private javax.swing.JTextField StoreKeeper_Start_Work;
-    private javax.swing.JLabel StoreKeeper_Start_Work_Label;
-    private javax.swing.JTextField StoreKeeper_Telephone0;
-    private javax.swing.JTextField StoreKeeper_Telephone1;
-    private javax.swing.JLabel StoreKeeper_Telephone_Label;
-    private javax.swing.JButton StoreKeeper_Update_Button;
-    private javax.swing.JTextField StoreKeeper_Username;
-    private javax.swing.JLabel StoreKeeper_Username_Label;
+    private javax.swing.JTextField Start_Date;
+    private javax.swing.JLabel Start_Date_Label;
+    private javax.swing.JTextField Tel_0;
+    private javax.swing.JTextField Tel_1;
+    private javax.swing.JLabel Tel_Label;
+    private javax.swing.JTextField Username;
+    private javax.swing.JLabel Username_Label;
     // End of variables declaration//GEN-END:variables
     // </editor-fold>
     
@@ -1009,10 +1053,13 @@ public class StoreKeeper extends javax.swing.JFrame {
     }//GEN-LAST:event_Button4ActionPerformed
 
     private void Button5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button5ActionPerformed
+        Load_Incoming_Messages();
+        Load_Outgoing_Messages();
         Check_Button(Button5);
     }//GEN-LAST:event_Button5ActionPerformed
 
     private void Button6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button6ActionPerformed
+        Load_Account();
         Check_Button(Button6);
     }//GEN-LAST:event_Button6ActionPerformed
 
@@ -1227,53 +1274,213 @@ public class StoreKeeper extends javax.swing.JFrame {
     }//GEN-LAST:event_Confirm_Order_ButtonActionPerformed
     // </editor-fold>
     
-    // <editor-fold defaultstate="collapsed" desc="Panel2">
-    // </editor-fold>
+    //                                                                                                      <editor-fold defaultstate="collapsed" desc="Panel5">
+    private void Load_Incoming_Messages(){
+        ArrayList messages = new ArrayList();
+        messages.clear();
+        try{
+            String query = "select* from messages where owner='"+user+"' and receiver='"+user+"' order by date_time DESC";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                messages.add(rs.getString("date_time")+" | Από: "+rs.getString("sender")+" | "+rs.getString("message"));
+            }
+            rs.close();
+            stmt.close();
+            }catch(Exception e){};
+        Incoming_List.setModel(new DefaultComboBoxModel(messages.toArray()));
+    }
     
-    // <editor-fold defaultstate="collapsed" desc="Panel3">
-    // </editor-fold>
-
-    // <editor-fold defaultstate="collapsed" desc="Panel4">
-    // </editor-fold>
+    private void Load_Outgoing_Messages(){
+        ArrayList messages = new ArrayList();
+        messages.clear();
+        try{
+            String query = "select* from messages where owner='"+user+"' and sender='"+user+"' order by date_time DESC";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                messages.add(rs.getString("date_time")+" | Προς: "+rs.getString("receiver")+" | "+rs.getString("message"));
+            }
+            rs.close();
+            stmt.close();
+            }catch(Exception e){};
+        Outgoing_List.setModel(new DefaultComboBoxModel(messages.toArray()));
+    }
     
-    // <editor-fold defaultstate="collapsed" desc="Panel5">
-    private void Return_Button_Message_ExpandedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Return_Button_Message_ExpandedActionPerformed
+    private void Load_Rec_Type_List(){
+        ArrayList jobs = new ArrayList();
+        jobs.add(null);
+        jobs.add("Γιατρός");
+        jobs.add("Νοσηλευτής");
+        jobs.add("Γραμματέας");
+        jobs.add("Αποθηκάριος");
+        jobs.add("Διευθυντής");
+        Rec_Type_Box.setModel(new DefaultComboBoxModel(jobs.toArray()));
+    }
+    
+    private void Load_Rec_Name_Box(String name){
+        ArrayList names = new ArrayList();
+        names.add(null);
+        names.add("Γιατρός");
+        names.add("Νοσηλευτής");
+        names.add("Γραμματέας");
+        names.add("Αποθηκάριος");
+        names.add("Διευθυντής");
+        Rec_Name_Box.setModel(new DefaultComboBoxModel(names.toArray()));
+    }
+    
+    private void Load_Message_Expanded(String temp){
+        String[] message=temp.split(" \\| |: ");
+        Message_Expanded_DateTime.setText(message[0]);
+        Message_Expanded_SR.setText(message[2]);
+        Message_Expanded_Text.setText(message[3]);
+    }
+    
+    private void New_Message_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_New_Message_ButtonActionPerformed
+        Load_Rec_Type_List();
+        Rec_Name_Box.setEnabled(false);
+        Send_Button.setEnabled(false);
+        Rec_Name_Box.setSelectedItem(null);
+        Message_Text.setText(null);
         CardLayout card = (CardLayout)Panel5.getLayout();
-        card.show(Panel5, "Main_Messages");
-    }//GEN-LAST:event_Return_Button_Message_ExpandedActionPerformed
+        card.show(Panel5, "New_Message");
+    }//GEN-LAST:event_New_Message_ButtonActionPerformed
+
+    private void Refresh_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Refresh_ButtonActionPerformed
+        Load_Incoming_Messages();
+        Load_Outgoing_Messages();
+    }//GEN-LAST:event_Refresh_ButtonActionPerformed
 
     private void Incoming_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Incoming_ListMouseReleased
-        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2) {
+        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2 && Incoming_List.getSelectedIndex() != -1) {
             CardLayout card = (CardLayout)Panel5.getLayout();
             card.show(Panel5, "Message_Expanded");
             Message_Expanded_SR_Label.setText("ΑΠΟΣΤΟΛΕΑΣ");
-            Message_Expanded_Text.setText(Incoming_List.getSelectedValue());
+            String temp=Incoming_List.getSelectedValue();
+            Load_Message_Expanded(temp);
+
         }
     }//GEN-LAST:event_Incoming_ListMouseReleased
 
     private void Outgoing_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Outgoing_ListMouseReleased
-        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2) {
+        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2 && Outgoing_List.getSelectedIndex() != -1) {
             CardLayout card = (CardLayout)Panel5.getLayout();
             card.show(Panel5, "Message_Expanded");
             Message_Expanded_SR_Label.setText("ΠΑΡΑΛΗΠΤΗΣ");
-            Message_Expanded_Text.setText(Outgoing_List.getSelectedValue());
+            String temp=Outgoing_List.getSelectedValue();
+            Load_Message_Expanded(temp);
         }
     }//GEN-LAST:event_Outgoing_ListMouseReleased
+
+    private void Rec_Type_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Rec_Type_BoxPopupMenuWillBecomeInvisible
+        if(Rec_Type_Box.getSelectedItem() == null) {
+            Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
+            Rec_Name_Box.setEnabled(false);
+            Rec_Name_Box.setSelectedItem(null);
+        }
+        else {
+            Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("EditorPane.background"));
+            Rec_Name_Box.setEnabled(true);
+            Load_Rec_Name_Box(String.valueOf(Rec_Type_Box.getSelectedItem()));
+        }
+    }//GEN-LAST:event_Rec_Type_BoxPopupMenuWillBecomeInvisible
+
+    private void Rec_Name_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Rec_Name_BoxPopupMenuWillBecomeInvisible
+        if(Rec_Name_Box.getSelectedItem() == null) Send_Button.setEnabled(false);
+        else Send_Button.setEnabled(true);
+    }//GEN-LAST:event_Rec_Name_BoxPopupMenuWillBecomeInvisible
+
+    private void Send_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Send_ButtonActionPerformed
+        try{  //insert stoixeia
+            String query = "insert into messages (sender,receiver,owner,message) values (?,?,?,?)";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1,user);
+            pstmt.setString(2,String.valueOf(Rec_Name_Box.getSelectedItem()));
+            pstmt.setString(3,user);
+            pstmt.setString(4,Message_Text.getText());
+            pstmt.executeUpdate();
+            pstmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        try{  //insert stoixeia
+            String query = "insert into messages (sender,receiver,owner,message) values (?,?,?,?)";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1,user);
+            pstmt.setString(2,String.valueOf(Rec_Name_Box.getSelectedItem()));
+            pstmt.setString(3,String.valueOf(Rec_Name_Box.getSelectedItem()));
+            pstmt.setString(4,Message_Text.getText());
+            pstmt.executeUpdate();
+            pstmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        CardLayout card = (CardLayout)Panel5.getLayout();
+        card.show(Panel5, "Main_Messages");
+        Load_Incoming_Messages();
+        Load_Outgoing_Messages();
+    }//GEN-LAST:event_Send_ButtonActionPerformed
 
     private void Cancel_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Cancel_ButtonActionPerformed
         CardLayout card = (CardLayout)Panel5.getLayout();
         card.show(Panel5, "Main_Messages");
     }//GEN-LAST:event_Cancel_ButtonActionPerformed
 
-    private void New_Message_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_New_Message_ButtonActionPerformed
+    private void Return_Button_Message_ExpandedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Return_Button_Message_ExpandedActionPerformed
         CardLayout card = (CardLayout)Panel5.getLayout();
-        card.show(Panel5, "New_Message");
-    }//GEN-LAST:event_New_Message_ButtonActionPerformed
+        card.show(Panel5, "Main_Messages");
+    }//GEN-LAST:event_Return_Button_Message_ExpandedActionPerformed
 
-    // </editor-fold>
+    private void Message_Delete_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Message_Delete_ButtonActionPerformed
+        try{  //insert stoixeia
+            String query = "delete from messages where owner='"+user+"' and date_time='"+Message_Expanded_DateTime.getText()+"'";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.executeUpdate();
+            pstmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        CardLayout card = (CardLayout)Panel5.getLayout();
+        card.show(Panel5, "Main_Messages");
+        Load_Incoming_Messages();
+        Load_Outgoing_Messages();
+    }//GEN-LAST:event_Message_Delete_ButtonActionPerformed
+   // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel6">
-    
+    private void Load_Account(){
+        try{
+            String query = "select* from users where username='"+user+"'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                Username.setText(rs.getString("username"));
+                Password.setText(rs.getString("password"));
+                Email.setText(rs.getString("email"));
+                Name.setText(rs.getString("name"));
+                LastName.setText(rs.getString("lastname"));
+                Birth_Date.setText(rs.getString("birth_date"));
+                Tel_0.setText(rs.getString("tel_0"));
+                Tel_1.setText(rs.getString("tel_1"));
+                Adress.setText(rs.getString("address"));
+                Start_Date.setText(rs.getString("start_date"));
+            }
+            rs.close();
+            stmt.close();
+            }catch(Exception e){System.out.println(e.getMessage());};
+    }
+
+    private void Account_Update_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Account_Update_ButtonActionPerformed
+        try{
+            String query = "update users set username=?,password=?,email=?,tel_0=?,tel_1=?,address=? where username='"+user+"'";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1,Username.getText());
+            pstmt.setString(2,Password.getText());
+            pstmt.setString(3,Email.getText());
+            pstmt.setString(4,Tel_0.getText());
+            pstmt.setString(5,Tel_1.getText());
+            pstmt.setString(6,Adress.getText());
+            pstmt.executeUpdate();
+            pstmt.close();
+            user=Username.getText();
+            this.setTitle("MedX - Καλώς ήρθες διευθυντή - "+user);
+        }catch(Exception e){System.out.println(e.getMessage());};
+        Load_Account();
+    }//GEN-LAST:event_Account_Update_ButtonActionPerformed
     // </editor-fold>
     
 }
