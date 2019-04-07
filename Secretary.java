@@ -1,12 +1,13 @@
 package MedX;
 
     // <editor-fold defaultstate="collapsed" desc="Imports">
-import static MedX.Doctor.conn;
 import java.awt.CardLayout;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JToggleButton;
@@ -24,10 +25,7 @@ public class Secretary extends javax.swing.JFrame {
         BackgroundImage.requestFocus();
         Button4.setVisible(false);
         this.setTitle("MedX - Καλώς ήρθες γραμματέα - "+user);
-        AutoCompleteDecorator.decorate(Treat_Patient_List);
-        AutoCompleteDecorator.decorate(Rec_Name_Box);
-        AutoCompleteDecorator.decorate(Worker_Name_Box);
-        AutoCompleteDecorator.decorate(Apointment_Doctor_Box);
+        Load_Worker_Type_Box();
     }
     // </editor-fold>
 
@@ -48,7 +46,7 @@ public class Secretary extends javax.swing.JFrame {
         Panel1 = new javax.swing.JPanel();
         Main_Patient_Panel = new javax.swing.JPanel();
         Select_Patient = new javax.swing.JLabel();
-        Treat_Patient_List = new javax.swing.JComboBox<>();
+        Treat_Patient_Box = new javax.swing.JComboBox<>();
         New_Patient_Button = new javax.swing.JButton();
         Patient_Name_Label = new javax.swing.JLabel();
         Patient_LastName_Label = new javax.swing.JLabel();
@@ -71,7 +69,9 @@ public class Secretary extends javax.swing.JFrame {
         Patient_Room = new javax.swing.JTextField();
         Patient_Update_Button = new javax.swing.JButton();
         Patient_Description_Scroll = new javax.swing.JScrollPane();
-        Patient_Description = new javax.swing.JTextArea();
+        Patient_Reason = new javax.swing.JTextArea();
+        Insert_Success = new javax.swing.JLabel();
+        Insert_fail = new javax.swing.JLabel();
         New_Patient_Panel = new javax.swing.JPanel();
         Insert_Patient_Data_Label = new javax.swing.JLabel();
         Appointment_Check = new javax.swing.JCheckBox();
@@ -97,7 +97,7 @@ public class Secretary extends javax.swing.JFrame {
         New_Patient_Age = new javax.swing.JTextField();
         New_Patient_Room = new javax.swing.JTextField();
         New_Patient_Description_Scroll = new javax.swing.JScrollPane();
-        New_Patient_Description = new javax.swing.JTextArea();
+        New_Patient_Reason = new javax.swing.JTextArea();
         Apointment_Doctor_Box = new javax.swing.JComboBox<>();
         Appointment_Year_Label = new javax.swing.JLabel();
         Appointment_Hour_Label = new javax.swing.JLabel();
@@ -106,6 +106,7 @@ public class Secretary extends javax.swing.JFrame {
         Appointment_Day_List = new javax.swing.JComboBox<>();
         Appointment_Hour_List = new javax.swing.JComboBox<>();
         Appointment_Minute_List = new javax.swing.JComboBox<>();
+        New_Insert_fail = new javax.swing.JLabel();
         Panel2 = new javax.swing.JPanel();
         Select_CheckOut_Patient_Label = new javax.swing.JLabel();
         CheckOut_Patient_List = new javax.swing.JComboBox<>();
@@ -116,7 +117,7 @@ public class Secretary extends javax.swing.JFrame {
         Patient_Payment_Method_Label = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
         Panel3 = new javax.swing.JPanel();
-        Recepient1 = new javax.swing.JLabel();
+        Worker_Label = new javax.swing.JLabel();
         Reset_Worker_Password = new javax.swing.JCheckBox();
         Worker_Type_Box = new javax.swing.JComboBox<>();
         Worker_Name_Box = new javax.swing.JComboBox<>();
@@ -135,7 +136,10 @@ public class Secretary extends javax.swing.JFrame {
         Worker_LastName_Label = new javax.swing.JLabel();
         Worker_Birthday_Label = new javax.swing.JLabel();
         Worker_Update_Button = new javax.swing.JButton();
-        Message_Delete_Button1 = new javax.swing.JButton();
+        Worker_Delete_Button = new javax.swing.JButton();
+        Worker_Success = new javax.swing.JLabel();
+        Worker_Fail = new javax.swing.JLabel();
+        Delete_Success = new javax.swing.JLabel();
         Panel4 = new javax.swing.JPanel();
         Panel5 = new javax.swing.JPanel();
         Main_Messages = new javax.swing.JPanel();
@@ -286,10 +290,19 @@ public class Secretary extends javax.swing.JFrame {
         Main_Patient_Panel.add(Select_Patient);
         Select_Patient.setBounds(20, 20, 90, 30);
 
-        Treat_Patient_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Treat_Patient_List.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        Main_Patient_Panel.add(Treat_Patient_List);
-        Treat_Patient_List.setBounds(112, 15, 220, 40);
+        AutoCompleteDecorator.decorate(Treat_Patient_Box);
+        Treat_Patient_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Treat_Patient_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Treat_Patient_BoxPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
+        Main_Patient_Panel.add(Treat_Patient_Box);
+        Treat_Patient_Box.setBounds(112, 15, 220, 40);
 
         New_Patient_Button.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         New_Patient_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/New_Message_Icon.png"))); // NOI18N
@@ -376,74 +389,107 @@ public class Secretary extends javax.swing.JFrame {
         Patient_Name.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Patient_Name.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Patient_Name.setDisabledTextColor(new java.awt.Color(204, 204, 204));
+        Patient_Name.setEnabled(false);
         Main_Patient_Panel.add(Patient_Name);
         Patient_Name.setBounds(15, 80, 150, 40);
 
         Patient_LastName.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Patient_LastName.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Patient_LastName.setDisabledTextColor(new java.awt.Color(204, 204, 204));
+        Patient_LastName.setEnabled(false);
         Main_Patient_Panel.add(Patient_LastName);
         Patient_LastName.setBounds(182, 80, 150, 40);
 
         Patient_Telephone.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Patient_Telephone.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Patient_Telephone.setDisabledTextColor(new java.awt.Color(204, 204, 204));
+        Patient_Telephone.setEnabled(false);
         Main_Patient_Panel.add(Patient_Telephone);
         Patient_Telephone.setBounds(350, 80, 150, 40);
 
         Patient_AFM.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Patient_AFM.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Patient_AFM.setDisabledTextColor(new java.awt.Color(204, 204, 204));
+        Patient_AFM.setEnabled(false);
         Main_Patient_Panel.add(Patient_AFM);
         Patient_AFM.setBounds(15, 150, 150, 40);
 
         Patient_ID.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Patient_ID.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Patient_ID.setDisabledTextColor(new java.awt.Color(204, 204, 204));
+        Patient_ID.setEnabled(false);
         Main_Patient_Panel.add(Patient_ID);
         Patient_ID.setBounds(182, 150, 150, 40);
 
         Patient_AMKA.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Patient_AMKA.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Patient_AMKA.setDisabledTextColor(new java.awt.Color(204, 204, 204));
+        Patient_AMKA.setEnabled(false);
         Main_Patient_Panel.add(Patient_AMKA);
         Patient_AMKA.setBounds(350, 150, 150, 40);
 
         Patient_Gender.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Patient_Gender.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Patient_Gender.setDisabledTextColor(new java.awt.Color(204, 204, 204));
+        Patient_Gender.setEnabled(false);
         Main_Patient_Panel.add(Patient_Gender);
         Patient_Gender.setBounds(15, 220, 150, 40);
 
         Patient_Age.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Patient_Age.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Patient_Age.setDisabledTextColor(new java.awt.Color(204, 204, 204));
+        Patient_Age.setEnabled(false);
         Main_Patient_Panel.add(Patient_Age);
         Patient_Age.setBounds(182, 220, 150, 40);
 
         Patient_Room.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Patient_Room.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Patient_Room.setDisabledTextColor(new java.awt.Color(204, 204, 204));
+        Patient_Room.setEnabled(false);
         Main_Patient_Panel.add(Patient_Room);
         Patient_Room.setBounds(350, 220, 150, 40);
 
         Patient_Update_Button.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Patient_Update_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Enter_Icon.png"))); // NOI18N
         Patient_Update_Button.setText("ΕΝΗΜΕΡΩΣΗ");
+        Patient_Update_Button.setEnabled(false);
         Patient_Update_Button.setFocusable(false);
         Patient_Update_Button.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        Patient_Update_Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Patient_Update_ButtonActionPerformed(evt);
+            }
+        });
         Main_Patient_Panel.add(Patient_Update_Button);
         Patient_Update_Button.setBounds(180, 380, 150, 40);
 
-        Patient_Description.setColumns(20);
-        Patient_Description.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Patient_Description.setLineWrap(true);
-        Patient_Description.setRows(5);
-        Patient_Description.setWrapStyleWord(true);
-        Patient_Description_Scroll.setViewportView(Patient_Description);
+        Patient_Reason.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
+        Patient_Reason.setColumns(20);
+        Patient_Reason.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Patient_Reason.setLineWrap(true);
+        Patient_Reason.setRows(5);
+        Patient_Reason.setWrapStyleWord(true);
+        Patient_Reason.setEnabled(false);
+        Patient_Description_Scroll.setViewportView(Patient_Reason);
 
         Main_Patient_Panel.add(Patient_Description_Scroll);
         Patient_Description_Scroll.setBounds(20, 290, 470, 80);
+
+        Insert_Success.setVisible(false);
+        Insert_Success.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
+        Insert_Success.setForeground(new java.awt.Color(51, 204, 0));
+        Insert_Success.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Insert_Success.setText("ΕΠΙΤΥΧΗΣ ΕΙΣΑΓΩΓΗ");
+        Main_Patient_Panel.add(Insert_Success);
+        Insert_Success.setBounds(20, 380, 150, 40);
+
+        Insert_fail.setVisible(false);
+        Insert_fail.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
+        Insert_fail.setForeground(new java.awt.Color(255, 0, 0));
+        Insert_fail.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Insert_fail.setText("ΑΝΕΠΙΤΥΧΗΣ ΕΙΣΑΓΩΓΗ");
+        Main_Patient_Panel.add(Insert_fail);
+        Insert_fail.setBounds(20, 380, 150, 40);
 
         Panel1.add(Main_Patient_Panel, "Main_Patient_Panel");
 
@@ -622,16 +668,17 @@ public class Secretary extends javax.swing.JFrame {
         New_Patient_Panel.add(New_Patient_Room);
         New_Patient_Room.setBounds(350, 220, 150, 40);
 
-        New_Patient_Description.setColumns(20);
-        New_Patient_Description.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        New_Patient_Description.setLineWrap(true);
-        New_Patient_Description.setRows(5);
-        New_Patient_Description.setWrapStyleWord(true);
-        New_Patient_Description_Scroll.setViewportView(New_Patient_Description);
+        New_Patient_Reason.setColumns(20);
+        New_Patient_Reason.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        New_Patient_Reason.setLineWrap(true);
+        New_Patient_Reason.setRows(5);
+        New_Patient_Reason.setWrapStyleWord(true);
+        New_Patient_Description_Scroll.setViewportView(New_Patient_Reason);
 
         New_Patient_Panel.add(New_Patient_Description_Scroll);
         New_Patient_Description_Scroll.setBounds(14, 290, 280, 80);
 
+        AutoCompleteDecorator.decorate(Apointment_Doctor_Box);
         Apointment_Doctor_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Apointment_Doctor_Box.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         New_Patient_Panel.add(Apointment_Doctor_Box);
@@ -652,39 +699,69 @@ public class Secretary extends javax.swing.JFrame {
         Appointment_Hour_Label.setBounds(365, 350, 100, 20);
 
         Appointment_Year_List.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        Appointment_Year_List.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030", "2031", "2032", "2033", "2034", "2035", "2036", "2037", "2038", "2039", "2040", "2041", "2042", "2043", "2044", "2045", "2046", "2047", "2048", "2049", "2050" }));
         Appointment_Year_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Appointment_Year_List.setFocusable(false);
+        Appointment_Year_List.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Appointment_Year_ListPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
         New_Patient_Panel.add(Appointment_Year_List);
         Appointment_Year_List.setBounds(322, 310, 70, 30);
 
         Appointment_Month_List.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        Appointment_Month_List.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" }));
         Appointment_Month_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Appointment_Month_List.setFocusable(false);
+        Appointment_Month_List.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Appointment_Month_ListPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
         New_Patient_Panel.add(Appointment_Month_List);
         Appointment_Month_List.setBounds(390, 310, 50, 30);
 
         Appointment_Day_List.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        Appointment_Day_List.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30" }));
         Appointment_Day_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Appointment_Day_List.setFocusable(false);
+        Appointment_Day_List.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Appointment_Day_ListPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
         New_Patient_Panel.add(Appointment_Day_List);
         Appointment_Day_List.setBounds(439, 310, 50, 30);
 
         Appointment_Hour_List.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        Appointment_Hour_List.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23" }));
         Appointment_Hour_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Appointment_Hour_List.setFocusable(false);
         New_Patient_Panel.add(Appointment_Hour_List);
-        Appointment_Hour_List.setBounds(363, 370, 53, 30);
+        Appointment_Hour_List.setBounds(366, 370, 50, 30);
 
         Appointment_Minute_List.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        Appointment_Minute_List.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "46", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59" }));
         Appointment_Minute_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Appointment_Minute_List.setFocusable(false);
         New_Patient_Panel.add(Appointment_Minute_List);
         Appointment_Minute_List.setBounds(415, 370, 50, 30);
+
+        New_Insert_fail.setVisible(false);
+        New_Insert_fail.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
+        New_Insert_fail.setForeground(new java.awt.Color(255, 0, 0));
+        New_Insert_fail.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        New_Insert_fail.setText("ΑΝΕΠΙΤΥΧΗΣ ΕΙΣΑΓΩΓΗ");
+        New_Patient_Panel.add(New_Insert_fail);
+        New_Insert_fail.setBounds(330, 408, 160, 20);
 
         Panel1.add(New_Patient_Panel, "New_Patient_Panel");
 
@@ -750,75 +827,120 @@ public class Secretary extends javax.swing.JFrame {
 
         Panel3.setLayout(null);
 
-        Recepient1.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Recepient1.setText("Εργαζόμενος :");
-        Recepient1.setFocusable(false);
-        Panel3.add(Recepient1);
-        Recepient1.setBounds(20, 30, 100, 40);
+        Worker_Label.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Worker_Label.setText("Εργαζόμενος :");
+        Worker_Label.setFocusable(false);
+        Panel3.add(Worker_Label);
+        Worker_Label.setBounds(15, 30, 100, 40);
 
         Reset_Worker_Password.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Reset_Worker_Password.setText("ΕΠΑΝΑΦΟΡΑ");
         Reset_Worker_Password.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Reset_Worker_Password.setEnabled(false);
+        Reset_Worker_Password.setFocusPainted(false);
         Reset_Worker_Password.setFocusable(false);
         Panel3.add(Reset_Worker_Password);
         Reset_Worker_Password.setBounds(210, 180, 100, 23);
 
         Worker_Type_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Worker_Type_Box.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Γιατρός", "Νοσοκόμος", "Γραμματέας", "Διευθυντής" }));
         Worker_Type_Box.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Worker_Type_Box.setFocusable(false);
+        Worker_Type_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Worker_Type_BoxPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
         Panel3.add(Worker_Type_Box);
-        Worker_Type_Box.setBounds(120, 30, 100, 40);
+        Worker_Type_Box.setBounds(110, 30, 110, 40);
 
+        AutoCompleteDecorator.decorate(Worker_Name_Box);
         Worker_Name_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Worker_Name_Box.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        Worker_Name_Box.setEnabled(false);
+        Worker_Name_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Worker_Name_BoxPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
         Panel3.add(Worker_Name_Box);
         Worker_Name_Box.setBounds(230, 30, 270, 40);
 
         Worker_Username.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Worker_Username.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Worker_Username.setEnabled(false);
         Panel3.add(Worker_Username);
         Worker_Username.setBounds(20, 140, 150, 40);
 
         Worker_Password.setEditable(false);
         Worker_Password.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Worker_Password.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Worker_Password.setText("asdasdasd");
         Panel3.add(Worker_Password);
         Worker_Password.setBounds(185, 140, 150, 40);
 
         Worker_Email.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Worker_Email.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Worker_Email.setEnabled(false);
         Panel3.add(Worker_Email);
         Worker_Email.setBounds(350, 140, 150, 40);
 
         Worker_Name.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Worker_Name.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Worker_Name.setEnabled(false);
         Panel3.add(Worker_Name);
         Worker_Name.setBounds(20, 240, 150, 40);
 
         Worker_Lastname.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Worker_Lastname.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Worker_Lastname.setEnabled(false);
         Panel3.add(Worker_Lastname);
         Worker_Lastname.setBounds(185, 240, 150, 40);
 
         Worker_Birth_Year.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Worker_Birth_Year.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1950", "1951", "1952", "1953", "1954", "1955", "1956", "1957", "1958", "1959", "1960", "1961", "1962", "1963", "1964", "1965", "1966", "1967", "1968", "1969", "1970", "1971", "1972", "1973", "1974", "1975", "1976", "1977", "1978", "1979", "1980", "1981", "1982", "1983", "1984", "1985", "1986", "1987", "1988", "1989", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000" }));
         Worker_Birth_Year.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Worker_Birth_Year.setEnabled(false);
         Worker_Birth_Year.setFocusable(false);
+        Worker_Birth_Year.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Worker_Birth_YearPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
         Panel3.add(Worker_Birth_Year);
         Worker_Birth_Year.setBounds(350, 240, 60, 40);
 
         Worker_Birth_Month.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Worker_Birth_Month.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
+        Worker_Birth_Month.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" }));
+        Worker_Birth_Month.setSelectedItem(null);
         Worker_Birth_Month.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Worker_Birth_Month.setEnabled(false);
         Worker_Birth_Month.setFocusable(false);
+        Worker_Birth_Month.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Worker_Birth_MonthPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
         Panel3.add(Worker_Birth_Month);
         Worker_Birth_Month.setBounds(409, 240, 45, 40);
 
         Worker_Birth_Day.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Worker_Birth_Day.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31" }));
+        Worker_Birth_Day.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31" }));
+        Worker_Birth_Day.setSelectedItem(null);
         Worker_Birth_Day.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Worker_Birth_Day.setEnabled(false);
         Worker_Birth_Day.setFocusable(false);
         Panel3.add(Worker_Birth_Day);
         Worker_Birth_Day.setBounds(453, 240, 45, 40);
@@ -826,36 +948,42 @@ public class Secretary extends javax.swing.JFrame {
         Worker_Username_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Worker_Username_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Worker_Username_Label.setText("ΟΝΟΜΑ ΧΡΗΣΤΗ");
+        Worker_Username_Label.setFocusable(false);
         Panel3.add(Worker_Username_Label);
         Worker_Username_Label.setBounds(20, 120, 150, 20);
 
         Worker_Password_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Worker_Password_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Worker_Password_Label.setText("ΚΩΔΙΚΟΣ ΧΡΗΣΤΗ");
+        Worker_Password_Label.setFocusable(false);
         Panel3.add(Worker_Password_Label);
         Worker_Password_Label.setBounds(185, 120, 150, 20);
 
         Worker_Email_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Worker_Email_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Worker_Email_Label.setText("E-Mail");
+        Worker_Email_Label.setFocusable(false);
         Panel3.add(Worker_Email_Label);
         Worker_Email_Label.setBounds(350, 120, 150, 20);
 
         Worker_Name_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Worker_Name_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Worker_Name_Label.setText("ΟΝΟΜΑ");
+        Worker_Name_Label.setFocusable(false);
         Panel3.add(Worker_Name_Label);
         Worker_Name_Label.setBounds(20, 220, 150, 20);
 
         Worker_LastName_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Worker_LastName_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Worker_LastName_Label.setText("ΕΠΩΝΥΜΟ");
+        Worker_LastName_Label.setFocusable(false);
         Panel3.add(Worker_LastName_Label);
         Worker_LastName_Label.setBounds(185, 220, 150, 20);
 
         Worker_Birthday_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Worker_Birthday_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Worker_Birthday_Label.setText("ΗΜ/ΝΙΑ ΓΕΝΝΗΣΗΣ");
+        Worker_Birthday_Label.setFocusable(false);
         Panel3.add(Worker_Birthday_Label);
         Worker_Birthday_Label.setBounds(350, 220, 150, 20);
 
@@ -863,20 +991,61 @@ public class Secretary extends javax.swing.JFrame {
         Worker_Update_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Enter_Icon.png"))); // NOI18N
         Worker_Update_Button.setText("ΕΝΗΜΕΡΩΣΗ");
         Worker_Update_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Worker_Update_Button.setEnabled(false);
+        Worker_Update_Button.setFocusPainted(false);
         Worker_Update_Button.setFocusable(false);
         Worker_Update_Button.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        Worker_Update_Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Worker_Update_ButtonActionPerformed(evt);
+            }
+        });
         Panel3.add(Worker_Update_Button);
         Worker_Update_Button.setBounds(100, 360, 150, 40);
 
-        Message_Delete_Button1.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        Message_Delete_Button1.setForeground(new java.awt.Color(255, 51, 51));
-        Message_Delete_Button1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Delete_Icon.png"))); // NOI18N
-        Message_Delete_Button1.setText("ΔΙΑΓΡΑΦΗ ");
-        Message_Delete_Button1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        Message_Delete_Button1.setFocusable(false);
-        Message_Delete_Button1.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-        Panel3.add(Message_Delete_Button1);
-        Message_Delete_Button1.setBounds(370, 370, 120, 30);
+        Worker_Delete_Button.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+        Worker_Delete_Button.setForeground(new java.awt.Color(255, 51, 51));
+        Worker_Delete_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Delete_Icon.png"))); // NOI18N
+        Worker_Delete_Button.setText("ΔΙΑΓΡΑΦΗ ");
+        Worker_Delete_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Worker_Delete_Button.setEnabled(false);
+        Worker_Delete_Button.setFocusPainted(false);
+        Worker_Delete_Button.setFocusable(false);
+        Worker_Delete_Button.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        Worker_Delete_Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Worker_Delete_ButtonActionPerformed(evt);
+            }
+        });
+        Panel3.add(Worker_Delete_Button);
+        Worker_Delete_Button.setBounds(370, 370, 120, 30);
+
+        Worker_Success.setVisible(false);
+        Worker_Success.setFont(new java.awt.Font("Arial", 1, 15)); // NOI18N
+        Worker_Success.setForeground(new java.awt.Color(0, 204, 0));
+        Worker_Success.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Worker_Success.setText("ΕΠΙΤΥΧΗΣ ΕΝΗΜΕΡΩΣΗ");
+        Worker_Success.setFocusable(false);
+        Panel3.add(Worker_Success);
+        Worker_Success.setBounds(80, 320, 190, 30);
+
+        Worker_Fail.setVisible(false);
+        Worker_Fail.setFont(new java.awt.Font("Arial", 1, 15)); // NOI18N
+        Worker_Fail.setForeground(new java.awt.Color(255, 0, 51));
+        Worker_Fail.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Worker_Fail.setText("ΕΛΕΓΞΤΕ ΤΑ ΣΤΟΙΧΕΙΑ");
+        Worker_Fail.setFocusable(false);
+        Panel3.add(Worker_Fail);
+        Worker_Fail.setBounds(80, 320, 190, 30);
+
+        Delete_Success.setVisible(false);
+        Delete_Success.setFont(new java.awt.Font("Arial", 1, 15)); // NOI18N
+        Delete_Success.setForeground(new java.awt.Color(0, 204, 0));
+        Delete_Success.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Delete_Success.setText("ΕΠΙΤΥΧΗΣ ΔΙΑΓΡΑΦΗ");
+        Delete_Success.setFocusable(false);
+        Panel3.add(Delete_Success);
+        Delete_Success.setBounds(350, 340, 160, 30);
 
         MainPanel.add(Panel3, "Panel3");
 
@@ -996,6 +1165,7 @@ public class Secretary extends javax.swing.JFrame {
         New_Message.add(Rec_Type_Box);
         Rec_Type_Box.setBounds(110, 10, 110, 40);
 
+        AutoCompleteDecorator.decorate(Rec_Name_Box);
         Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
         Rec_Name_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Rec_Name_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
@@ -1010,6 +1180,7 @@ public class Secretary extends javax.swing.JFrame {
         New_Message.add(Rec_Name_Box);
         Rec_Name_Box.setBounds(230, 10, 270, 40);
 
+        Message_Text.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
         Message_Text.setColumns(20);
         Message_Text.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Message_Text.setLineWrap(true);
@@ -1408,6 +1579,8 @@ public class Secretary extends javax.swing.JFrame {
     static Connection conn=null;
     String user=null;
     String chosen_receiver=null;
+    String chosen_patient_amka=null;
+    String chosen_worker=null;
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Account_Update_Button;
@@ -1438,6 +1611,7 @@ public class Secretary extends javax.swing.JFrame {
     private javax.swing.JLabel CheckOut_Euro_Label;
     private javax.swing.JComboBox<String> CheckOut_Patient_List;
     private javax.swing.JButton Confirm_CheckOut_Button;
+    private javax.swing.JLabel Delete_Success;
     private javax.swing.JLabel Edit_Information_Label;
     private javax.swing.JTextField Email;
     private javax.swing.JLabel Email_Label;
@@ -1446,6 +1620,8 @@ public class Secretary extends javax.swing.JFrame {
     private javax.swing.JScrollPane Incoming_Scroll;
     private javax.swing.JButton Insert_New_Patient_Button;
     private javax.swing.JLabel Insert_Patient_Data_Label;
+    private javax.swing.JLabel Insert_Success;
+    private javax.swing.JLabel Insert_fail;
     private javax.swing.JTextField LastName;
     private javax.swing.JLabel LastName_Label;
     private javax.swing.JButton Logout_Button;
@@ -1456,7 +1632,6 @@ public class Secretary extends javax.swing.JFrame {
     private javax.swing.JScrollPane Message_Area_Scroll;
     private javax.swing.JTabbedPane Message_Box;
     private javax.swing.JButton Message_Delete_Button;
-    private javax.swing.JButton Message_Delete_Button1;
     private javax.swing.JPanel Message_Expanded;
     private javax.swing.JTextField Message_Expanded_DateTime;
     private javax.swing.JLabel Message_Expanded_DateTime_Label;
@@ -1467,6 +1642,7 @@ public class Secretary extends javax.swing.JFrame {
     private javax.swing.JTextArea Message_Text;
     private javax.swing.JTextField Name;
     private javax.swing.JLabel Name_Label;
+    private javax.swing.JLabel New_Insert_fail;
     private javax.swing.JPanel New_Message;
     private javax.swing.JButton New_Message_Button;
     private javax.swing.JTextField New_Patient_AFM;
@@ -1476,7 +1652,6 @@ public class Secretary extends javax.swing.JFrame {
     private javax.swing.JTextField New_Patient_Age;
     private javax.swing.JLabel New_Patient_Age_Label;
     private javax.swing.JButton New_Patient_Button;
-    private javax.swing.JTextArea New_Patient_Description;
     private javax.swing.JLabel New_Patient_Description_Label;
     private javax.swing.JScrollPane New_Patient_Description_Scroll;
     private javax.swing.JTextField New_Patient_Gender;
@@ -1488,6 +1663,7 @@ public class Secretary extends javax.swing.JFrame {
     private javax.swing.JTextField New_Patient_Name;
     private javax.swing.JLabel New_Patient_Name_Label;
     private javax.swing.JPanel New_Patient_Panel;
+    private javax.swing.JTextArea New_Patient_Reason;
     private javax.swing.JTextField New_Patient_Room;
     private javax.swing.JLabel New_Patient_RoomDoctor_Label;
     private javax.swing.JTextField New_Patient_Telephone;
@@ -1512,7 +1688,6 @@ public class Secretary extends javax.swing.JFrame {
     private javax.swing.JLabel Patient_Age_Label;
     private javax.swing.JTextField Patient_CheckOut_Cost;
     private javax.swing.JLabel Patient_CheckOut_Cost_Label;
-    private javax.swing.JTextArea Patient_Description;
     private javax.swing.JLabel Patient_Description_Label;
     private javax.swing.JScrollPane Patient_Description_Scroll;
     private javax.swing.JTextField Patient_Gender;
@@ -1524,6 +1699,7 @@ public class Secretary extends javax.swing.JFrame {
     private javax.swing.JTextField Patient_Name;
     private javax.swing.JLabel Patient_Name_Label;
     private javax.swing.JLabel Patient_Payment_Method_Label;
+    private javax.swing.JTextArea Patient_Reason;
     private javax.swing.JTextField Patient_Room;
     private javax.swing.JLabel Patient_Room_Label;
     private javax.swing.JTextField Patient_Telephone;
@@ -1532,7 +1708,6 @@ public class Secretary extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> Rec_Name_Box;
     private javax.swing.JComboBox<String> Rec_Type_Box;
     private javax.swing.JLabel Recepient;
-    private javax.swing.JLabel Recepient1;
     private javax.swing.JButton Refresh_Button;
     private javax.swing.JCheckBox Reset_Worker_Password;
     private javax.swing.JButton Return_Button_Message_Expanded;
@@ -1555,15 +1730,18 @@ public class Secretary extends javax.swing.JFrame {
     private javax.swing.JTextField Tel_0;
     private javax.swing.JTextField Tel_1;
     private javax.swing.JLabel Tel_Label;
-    private javax.swing.JComboBox<String> Treat_Patient_List;
+    private javax.swing.JComboBox<String> Treat_Patient_Box;
     private javax.swing.JTextField Username;
     private javax.swing.JLabel Username_Label;
     private javax.swing.JComboBox<String> Worker_Birth_Day;
     private javax.swing.JComboBox<String> Worker_Birth_Month;
     private javax.swing.JComboBox<String> Worker_Birth_Year;
     private javax.swing.JLabel Worker_Birthday_Label;
+    private javax.swing.JButton Worker_Delete_Button;
     private javax.swing.JTextField Worker_Email;
     private javax.swing.JLabel Worker_Email_Label;
+    private javax.swing.JLabel Worker_Fail;
+    private javax.swing.JLabel Worker_Label;
     private javax.swing.JLabel Worker_LastName_Label;
     private javax.swing.JTextField Worker_Lastname;
     private javax.swing.JTextField Worker_Name;
@@ -1571,6 +1749,7 @@ public class Secretary extends javax.swing.JFrame {
     private javax.swing.JLabel Worker_Name_Label;
     private javax.swing.JPasswordField Worker_Password;
     private javax.swing.JLabel Worker_Password_Label;
+    private javax.swing.JLabel Worker_Success;
     private javax.swing.JComboBox<String> Worker_Type_Box;
     private javax.swing.JButton Worker_Update_Button;
     private javax.swing.JTextField Worker_Username;
@@ -1624,6 +1803,7 @@ public class Secretary extends javax.swing.JFrame {
     }//GEN-LAST:event_Button0ActionPerformed
 
     private void Button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button1ActionPerformed
+        if(Button1.isSelected()) Load_Treat_Patient_Box();
         Check_Button(Button1);
     }//GEN-LAST:event_Button1ActionPerformed
 
@@ -1640,13 +1820,15 @@ public class Secretary extends javax.swing.JFrame {
     }//GEN-LAST:event_Button4ActionPerformed
 
     private void Button5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button5ActionPerformed
-        Load_Incoming_Messages();
-        Load_Outgoing_Messages();
+        if(Button5.isSelected()) {
+            Load_Incoming_Messages();
+            Load_Outgoing_Messages();
+        }
         Check_Button(Button5);
     }//GEN-LAST:event_Button5ActionPerformed
 
     private void Button6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button6ActionPerformed
-        Load_Account();
+        if(Button6.isSelected()) Load_Account();
         Check_Button(Button6);
     }//GEN-LAST:event_Button6ActionPerformed
 
@@ -1673,12 +1855,159 @@ public class Secretary extends javax.swing.JFrame {
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel1">
+    private void Load_Treat_Patient_Box(){
+        ArrayList patients = new ArrayList();
+        patients.add(null);
+        try{
+            String query = "select patient_name,patient_lastname,AMKA from patient order by patient_name ASC";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                patients.add(rs.getString("patient_name")+" "+rs.getString("patient_lastname")+" | "+rs.getString("AMKA"));
+            }
+            rs.close();
+            stmt.close();
+            }catch(Exception e){System.out.println(e.getMessage());};
+        Treat_Patient_Box.setModel(new DefaultComboBoxModel(patients.toArray()));
+        if(chosen_patient_amka!=null) Treat_Patient_Box.setSelectedItem(Patient_Name.getText()+" "+Patient_LastName.getText()+" | "+chosen_patient_amka);
+    }
+    
+    private void Load_Patient() {
+        try{
+            String query = "select* from patient where AMKA='"+chosen_patient_amka+"'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                Patient_Name.setText(rs.getString("patient_name"));
+                Patient_LastName.setText(rs.getString("patient_lastname"));
+                Patient_Telephone.setText(rs.getString("tel"));
+                Patient_AFM.setText(rs.getString("AFM"));
+                Patient_ID.setText(rs.getString("ID_NUM"));
+                Patient_AMKA.setText(rs.getString("AMKA"));
+                Patient_Gender.setText(rs.getString("gender"));
+                Patient_Age.setText(rs.getString("age"));
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        try{
+            String query = "select room from patient_room where AMKA='"+chosen_patient_amka+"'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            if(rs.next()==false) Patient_Room.setText(null);
+            else Patient_Room.setText(rs.getString("room"));
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        try{
+            String query = "select reason from patient_treatment where AMKA='"+chosen_patient_amka+"'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            if(rs.next()==false) Patient_Reason.setText(null);
+            else Patient_Reason.setText(rs.getString("reason"));
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+    }
+    
+    private void Treat_Patient_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Treat_Patient_BoxPopupMenuWillBecomeInvisible
+        Insert_Success.setVisible(false);
+        Insert_fail.setVisible(false);
+        if(Treat_Patient_Box.getSelectedItem()==null){
+            Patient_Name.setEnabled(false);
+            Patient_LastName.setEnabled(false);
+            Patient_Telephone.setEnabled(false);
+            Patient_AFM.setEnabled(false);
+            Patient_ID.setEnabled(false);
+            Patient_AMKA.setEnabled(false);
+            Patient_Gender.setEnabled(false);
+            Patient_Age.setEnabled(false);
+            Patient_Room.setEnabled(false);
+            Patient_Reason.setEnabled(false);
+            Patient_Name.setText(null);
+            Patient_LastName.setText(null);
+            Patient_Telephone.setText(null);
+            Patient_AFM.setText(null);
+            Patient_ID.setText(null);
+            Patient_AMKA.setText(null);
+            Patient_Gender.setText(null);
+            Patient_Age.setText(null);
+            Patient_Room.setText(null);
+            Patient_Reason.setText(null);
+            Patient_Reason.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
+            Patient_Update_Button.setEnabled(false);
+        }
+        else{
+            Patient_Name.setEnabled(true);
+            Patient_LastName.setEnabled(true);
+            Patient_Telephone.setEnabled(true);
+            Patient_AFM.setEnabled(true);
+            Patient_ID.setEnabled(true);
+            Patient_AMKA.setEnabled(true);
+            Patient_Gender.setEnabled(true);
+            Patient_Age.setEnabled(true);
+            Patient_Room.setEnabled(true);
+            Patient_Reason.setEnabled(true);
+            Patient_Name.setText(null);
+            Patient_LastName.setText(null);
+            Patient_Telephone.setText(null);
+            Patient_AFM.setText(null);
+            Patient_ID.setText(null);
+            Patient_AMKA.setText(null);
+            Patient_Gender.setText(null);
+            Patient_Age.setText(null);
+            Patient_Room.setText(null);
+            Patient_Reason.setText(null);
+            Patient_Reason.setBackground(javax.swing.UIManager.getDefaults().getColor("EditorPane.background"));
+            Patient_Update_Button.setEnabled(true);
+            String[] patient_selected = (String.valueOf(Treat_Patient_Box.getSelectedItem())).split(" \\| ");
+            chosen_patient_amka=patient_selected[1];
+            Load_Patient();
+        }
+    }//GEN-LAST:event_Treat_Patient_BoxPopupMenuWillBecomeInvisible
+
+    private void Patient_Update_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Patient_Update_ButtonActionPerformed
+        Insert_Success.setVisible(false);
+        Insert_fail.setVisible(false);
+        try{
+            String query = "update patient set patient_name=?,patient_lastname=?,tel=?,AFM=?,ID_NUM=?,AMKA=?,gender=?,age=? where AMKA='"+chosen_patient_amka+"'";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1,Patient_Name.getText());
+            pstmt.setString(2,Patient_LastName.getText());
+            pstmt.setString(3,Patient_Telephone.getText());
+            pstmt.setString(4,Patient_AFM.getText());
+            pstmt.setString(5,Patient_ID.getText());
+            pstmt.setString(6,Patient_AMKA.getText());
+            pstmt.setString(7,Patient_Gender.getText());
+            pstmt.setString(8,Patient_Age.getText());
+            pstmt.executeUpdate();
+            pstmt.close();
+            Load_Treat_Patient_Box();
+            chosen_patient_amka=Patient_AMKA.getText();
+            Load_Patient();
+            Insert_Success.setVisible(true);
+        }catch(Exception e){Insert_fail.setVisible(true); System.out.println(e.getMessage());};
+    }//GEN-LAST:event_Patient_Update_ButtonActionPerformed
+    
     private void Cancel_New_Patient_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Cancel_New_Patient_ButtonActionPerformed
         CardLayout card = (CardLayout)Panel1.getLayout();
         card.show(Panel1, "Main_Patient_Panel");
     }//GEN-LAST:event_Cancel_New_Patient_ButtonActionPerformed
 
     private void New_Patient_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_New_Patient_ButtonActionPerformed
+        Insert_Success.setVisible(false);
+        Insert_fail.setVisible(false);
+        New_Insert_fail.setVisible(false);
+        New_Patient_Name.setText(null);
+        New_Patient_LastName.setText(null);
+        New_Patient_Telephone.setText(null);
+        New_Patient_AFM.setText(null);
+        New_Patient_ID.setText(null);
+        New_Patient_AMKA.setText(null);
+        New_Patient_Gender.setText(null);
+        New_Patient_Age.setText(null);
+        New_Patient_Room.setText(null);
+        New_Patient_Reason.setText(null);
         CardLayout card = (CardLayout)Panel1.getLayout();
         card.show(Panel1, "New_Patient_Panel");
         Appointment_Check.setSelected(false);
@@ -1693,19 +2022,119 @@ public class Secretary extends javax.swing.JFrame {
     }//GEN-LAST:event_New_Patient_ButtonActionPerformed
 
     private void Insert_New_Patient_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Insert_New_Patient_ButtonActionPerformed
-        // TODO add your handling code here:
+        New_Insert_fail.setVisible(false);
+        try{  //insert stoixeia
+            String query = "insert into patient (patient_name,patient_lastname,tel,AFM,ID_NUM,AMKA,gender,age) values (?,?,?,?,?,?,?,?)";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1,New_Patient_Name.getText());
+            pstmt.setString(2,New_Patient_LastName.getText());
+            pstmt.setString(3,New_Patient_Telephone.getText());
+            pstmt.setString(4,New_Patient_AFM.getText());
+            pstmt.setString(5,New_Patient_ID.getText());
+            pstmt.setString(6,New_Patient_AMKA.getText());
+            pstmt.setString(7,New_Patient_Gender.getText());
+            pstmt.setString(8,New_Patient_Age.getText());
+            pstmt.executeUpdate();
+            pstmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        if(!Appointment_Check.isSelected()){
+            try{  //insert stoixeia
+                String query = "insert into patient_room (AMKA,room) values (?,?)";
+                PreparedStatement pstmt = conn.prepareStatement(query);
+                pstmt.setString(1,New_Patient_AMKA.getText());
+                pstmt.setString(2,New_Patient_Room.getText());
+                pstmt.executeUpdate();
+                pstmt.close();
+                query = "insert into patient_treatment (AMKA,reason) values (?,?)";
+                pstmt = conn.prepareStatement(query);
+                pstmt.setString(1,New_Patient_AMKA.getText());
+                pstmt.setString(2,New_Patient_Reason.getText());
+                pstmt.executeUpdate();
+                pstmt.close();
+                Insert_Success.setVisible(true);
+                chosen_patient_amka=New_Patient_AMKA.getText();
+                Load_Patient();
+                Load_Treat_Patient_Box();
+                CardLayout card = (CardLayout)Panel1.getLayout();
+                card.show(Panel1, "Main_Patient_Panel");
+            }catch(Exception e){try{New_Insert_fail.setVisible(true); 
+                                    String query = "delete from patient where AMKA='"+New_Patient_AMKA.getText()+"'";
+                                    PreparedStatement pstmt = conn.prepareStatement(query);
+                                    pstmt.executeUpdate();
+                                    pstmt.close();
+                                }catch(Exception e2){System.out.println(e2.getMessage());};
+                                System.out.println(e.getMessage());};
+        }else{
+            try{  //insert stoixeia
+                String query = "insert into patient_treatment (AMKA,docs_user,reason,date_time) values (?,?)";
+                PreparedStatement pstmt = conn.prepareStatement(query);
+                pstmt.setString(1,New_Patient_AMKA.getText());
+                pstmt.setString(2,String.valueOf(Apointment_Doctor_Box.getSelectedItem()));
+                pstmt.setString(3,New_Patient_Reason.getText());
+                String date_time=String.valueOf(Appointment_Year_List.getSelectedItem())+"-"+String.valueOf(Appointment_Month_List.getSelectedItem())+"-"+String.valueOf(Appointment_Day_List.getSelectedItem())+" "+String.valueOf(Appointment_Hour_List.getSelectedItem())+":"+String.valueOf(Appointment_Minute_List.getSelectedItem())+":00";
+                pstmt.setString(4,date_time);
+                pstmt.executeUpdate();
+                pstmt.close();
+                Insert_Success.setVisible(true);
+                chosen_patient_amka=New_Patient_AMKA.getText();
+                Load_Patient();
+                Load_Treat_Patient_Box();
+                CardLayout card = (CardLayout)Panel1.getLayout();
+                card.show(Panel1, "Main_Patient_Panel");
+            }catch(Exception e){try{New_Insert_fail.setVisible(true);
+                                    String query = "delete from patient where AMKA='"+New_Patient_AMKA.getText()+"'";
+                                    PreparedStatement pstmt = conn.prepareStatement(query);
+                                    pstmt.executeUpdate();
+                                    pstmt.close();
+                                }catch(Exception e2){System.out.println(e2.getMessage());};
+                                System.out.println(e.getMessage());};
+        }
     }//GEN-LAST:event_Insert_New_Patient_ButtonActionPerformed
-
+    
+    private void Load_Apointment_Doctor_Box(){
+        ArrayList doctors = new ArrayList();
+        doctors.add(null);
+        try{
+            String query = "select username,name,lastname from users where job='Γιατρός' order by name ASC";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                doctors.add(rs.getString("name")+" "+rs.getString("lastname")+" | "+rs.getString("username"));
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        Apointment_Doctor_Box.setModel(new DefaultComboBoxModel(doctors.toArray()));
+    }
+    
+    private void Load_Appointment_Year_Month_Hours(){
+        LocalDate localDate = LocalDate.now();
+        ArrayList temp = new ArrayList();
+        temp.add(null);
+        for(int i=localDate.getYear();i<=localDate.getYear()+10;i++) temp.add(i);
+        Appointment_Year_List.setModel(new DefaultComboBoxModel(temp.toArray()));
+        temp.clear();
+        temp.add(null);
+        for(int i=1;i<=12;i++) temp.add(i);
+        Appointment_Month_List.setModel(new DefaultComboBoxModel(temp.toArray()));
+        temp.clear();
+        temp.add(null);
+        for(int i=1;i<=23;i++) temp.add(i);
+        Appointment_Hour_List.setModel(new DefaultComboBoxModel(temp.toArray()));
+        temp.clear();
+        temp.add(null);
+        for(int i=1;i<=59;i++) temp.add(i);
+        Appointment_Minute_List.setModel(new DefaultComboBoxModel(temp.toArray()));
+    }
+    
     private void Appointment_CheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Appointment_CheckActionPerformed
         if(Appointment_Check.isSelected()){
             New_Patient_Room.setVisible(false);
             New_Patient_RoomDoctor_Label.setText("ΓΙΑΤΡΟΣ");
             Apointment_Doctor_Box.setVisible(true);
             Appointment_Year_List.setEnabled(true);
-            Appointment_Month_List.setEnabled(true);
-            Appointment_Day_List.setEnabled(true);
-            Appointment_Hour_List.setEnabled(true);
-            Appointment_Minute_List.setEnabled(true);
+            Load_Apointment_Doctor_Box();
+            Load_Appointment_Year_Month_Hours();
         }
         else{
             New_Patient_Room.setVisible(true);
@@ -1717,7 +2146,61 @@ public class Secretary extends javax.swing.JFrame {
             Appointment_Hour_List.setEnabled(false);
             Appointment_Minute_List.setEnabled(false);
         }
+        Appointment_Year_List.setSelectedItem(null);
+        Appointment_Month_List.setSelectedItem(null);
+        Appointment_Day_List.setSelectedItem(null);
+        Appointment_Hour_List.setSelectedItem(null);
+        Appointment_Minute_List.setSelectedItem(null);
     }//GEN-LAST:event_Appointment_CheckActionPerformed
+
+    private void Appointment_Year_ListPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Appointment_Year_ListPopupMenuWillBecomeInvisible
+        if(Appointment_Year_List.getSelectedItem()==null){
+            Appointment_Month_List.setEnabled(false);
+            Appointment_Day_List.setEnabled(false);
+            Appointment_Hour_List.setEnabled(false);
+            Appointment_Minute_List.setEnabled(false);
+            Appointment_Month_List.setSelectedItem(null);
+            Appointment_Day_List.setSelectedItem(null);
+            Appointment_Hour_List.setSelectedItem(null);
+            Appointment_Minute_List.setSelectedItem(null);
+        }else Appointment_Month_List.setEnabled(true);
+    }//GEN-LAST:event_Appointment_Year_ListPopupMenuWillBecomeInvisible
+
+    private void Appointment_Month_ListPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Appointment_Month_ListPopupMenuWillBecomeInvisible
+        if(Appointment_Month_List.getSelectedItem()==null){
+            Appointment_Day_List.setEnabled(false);
+            Appointment_Hour_List.setEnabled(false);
+            Appointment_Minute_List.setEnabled(false);
+            Appointment_Day_List.setSelectedItem(null);
+            Appointment_Hour_List.setSelectedItem(null);
+            Appointment_Minute_List.setSelectedItem(null);
+        }else{
+            ArrayList day = new ArrayList();
+            day.add(null);
+            Appointment_Day_List.setEnabled(true);
+            int i=Integer.valueOf(String.valueOf(Appointment_Month_List.getSelectedItem()));
+            int last_day=0;
+            if(i==1 || i==3 || i==5 || i==7 || i==8 || i==10 || i==12) last_day=31;
+            if(i==4 || i==6 || i==9 || i==11) last_day=30;
+            if(i==2) last_day=28;
+            for(int j=1;j<=last_day;j++) day.add(j);
+            Appointment_Day_List.setModel(new DefaultComboBoxModel(day.toArray()));
+        }
+    }//GEN-LAST:event_Appointment_Month_ListPopupMenuWillBecomeInvisible
+
+    private void Appointment_Day_ListPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Appointment_Day_ListPopupMenuWillBecomeInvisible
+        if(Appointment_Day_List.getSelectedItem()==null){
+            Appointment_Hour_List.setEnabled(false);
+            Appointment_Minute_List.setEnabled(false);
+            Appointment_Hour_List.setSelectedItem(null);
+            Appointment_Minute_List.setSelectedItem(null);
+        }else{
+            Appointment_Hour_List.setEnabled(true);
+            Appointment_Minute_List.setEnabled(true);
+            Appointment_Hour_List.setSelectedItem(null);
+            Appointment_Minute_List.setSelectedItem(null);
+        }
+    }//GEN-LAST:event_Appointment_Day_ListPopupMenuWillBecomeInvisible
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel2">
@@ -1734,7 +2217,177 @@ public class Secretary extends javax.swing.JFrame {
     }//GEN-LAST:event_Schedule_ExpandedMouseReleased
     // </editor-fold>
     
-    // <editor-fold defaultstate="collapsed" desc="Panel5">
+    //                                                                                              <editor-fold defaultstate="collapsed" desc="Panel3">
+    private void Load_Worker_Type_Box(){
+        ArrayList jobs = new ArrayList();
+        jobs.add(null);
+        jobs.add("Γιατρός");
+        jobs.add("Νοσηλευτής");
+        jobs.add("Γραμματέας");
+        jobs.add("Αποθηκάριος");
+        jobs.add("Διευθυντής");
+        Worker_Type_Box.setModel(new DefaultComboBoxModel(jobs.toArray()));
+    }
+
+    private void Load_Worker_Name_Box() {
+        ArrayList workers = new ArrayList();
+        workers.add(null);
+        try{
+            String query = "select username,name,lastname from users where job='"+String.valueOf(Worker_Type_Box.getSelectedItem())+"'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                workers.add(rs.getString("name")+" "+rs.getString("lastname")+" | "+rs.getString("username"));
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        Worker_Name_Box.setModel(new DefaultComboBoxModel(workers.toArray()));
+        if(chosen_worker!=null) Worker_Name_Box.setSelectedItem(Worker_Name.getText()+" "+Worker_Lastname.getText()+" | "+Worker_Username.getText());
+    }
+    
+    private void Load_Worker_Info(){
+        LocalDate localDate = LocalDate.now();
+        ArrayList temp = new ArrayList();
+        for(int i=localDate.getYear()-80;i<=localDate.getYear();i++) temp.add(String.valueOf(i));
+        Worker_Birth_Year.setModel(new DefaultComboBoxModel(temp.toArray()));
+        try{
+            String query = "select username,password,email,name,lastname,birth_date from users where username='"+chosen_worker+"'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                Worker_Username.setText(rs.getString("username"));
+                Worker_Password.setText(rs.getString("password"));
+                Worker_Email.setText(rs.getString("email"));
+                Worker_Name.setText(rs.getString("name"));
+                Worker_Lastname.setText(rs.getString("lastname"));
+                String[] date= (rs.getString("birth_date")).split("-");
+                Worker_Birth_Year.setSelectedItem(date[0]);
+                Worker_Birth_Month.setSelectedItem(date[1]);
+                Worker_Birth_Day.setSelectedItem(date[2]);
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+    }
+    private void Reset_Boxes(){
+        Worker_Username.setEnabled(false);
+        Reset_Worker_Password.setEnabled(false);
+        Worker_Email.setEnabled(false);
+        Worker_Name.setEnabled(false);
+        Worker_Lastname.setEnabled(false);
+        Worker_Birth_Year.setEnabled(false);
+        Worker_Birth_Month.setEnabled(false);
+        Worker_Birth_Day.setEnabled(false);
+        Worker_Update_Button.setEnabled(false);
+        Worker_Delete_Button.setEnabled(false);
+        Worker_Name_Box.setSelectedItem(null);
+        Worker_Username.setText(null);
+        Worker_Password.setText(null);
+        Worker_Email.setText(null);
+        Worker_Name.setText(null);
+        Worker_Lastname.setText(null);
+        Worker_Birth_Year.setSelectedItem(null);
+        Worker_Birth_Month.setSelectedItem(null);
+        Worker_Birth_Day.setSelectedItem(null);
+        Worker_Success.setVisible(false);
+        Worker_Fail.setVisible(false);
+        Delete_Success.setVisible(false);
+    }
+    private void Worker_Type_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Worker_Type_BoxPopupMenuWillBecomeInvisible
+        Reset_Boxes();
+        chosen_worker=null;
+        if(Worker_Type_Box.getSelectedItem()==null) Worker_Name_Box.setEnabled(false);
+        else{
+            Worker_Name_Box.setEnabled(true);
+            Load_Worker_Name_Box();
+        }
+    }//GEN-LAST:event_Worker_Type_BoxPopupMenuWillBecomeInvisible
+
+    private void Worker_Name_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Worker_Name_BoxPopupMenuWillBecomeInvisible
+        if(Worker_Name_Box.getSelectedItem()==null){
+            Reset_Boxes();
+        }else{
+            Worker_Username.setEnabled(true);
+            Reset_Worker_Password.setEnabled(true);
+            Worker_Email.setEnabled(true);
+            Worker_Name.setEnabled(true);
+            Worker_Lastname.setEnabled(true);
+            Worker_Birth_Year.setEnabled(true);
+            Worker_Update_Button.setEnabled(true);
+            Worker_Delete_Button.setEnabled(true);
+            String[] worker = (String.valueOf(Worker_Name_Box.getSelectedItem())).split(" \\| ");
+            chosen_worker=worker[1];
+            Load_Worker_Info();
+        }
+    }//GEN-LAST:event_Worker_Name_BoxPopupMenuWillBecomeInvisible
+
+    private void Worker_Birth_YearPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Worker_Birth_YearPopupMenuWillBecomeInvisible
+        Worker_Birth_Month.setEnabled(true);
+    }//GEN-LAST:event_Worker_Birth_YearPopupMenuWillBecomeInvisible
+
+    private void Worker_Birth_MonthPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Worker_Birth_MonthPopupMenuWillBecomeInvisible
+        String birth_day=String.valueOf(Worker_Birth_Day.getSelectedItem());
+        Worker_Birth_Day.setEnabled(true);
+        ArrayList day = new ArrayList();
+        int i=Integer.valueOf(String.valueOf(Worker_Birth_Month.getSelectedItem()));
+        int last_day=0;
+        if(i==1 || i==3 || i==5 || i==7 || i==8 || i==10 || i==12) last_day=31;
+        if(i==4 || i==6 || i==9 || i==11) last_day=30;
+        if(i==2) last_day=28;
+        for(int j=1;j<=last_day;j++) {
+            if(j<10) day.add("0"+String.valueOf(j));
+            else day.add(j);
+        }
+        Worker_Birth_Day.setModel(new DefaultComboBoxModel(day.toArray()));
+        Worker_Birth_Day.setSelectedItem(birth_day);
+    }//GEN-LAST:event_Worker_Birth_MonthPopupMenuWillBecomeInvisible
+
+    private void Worker_Update_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Worker_Update_ButtonActionPerformed
+        Worker_Success.setVisible(false);
+        Worker_Fail.setVisible(false);
+        try{
+            String query = "update users set username=?,email=?,name=?,lastname=?,birth_date=? where username='"+chosen_worker+"'";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1,Worker_Username.getText());
+            pstmt.setString(2,Worker_Email.getText());
+            pstmt.setString(3,Worker_Name.getText());
+            pstmt.setString(4,Worker_Lastname.getText());
+            String birth_date=String.valueOf(Worker_Birth_Year.getSelectedItem())+"-"+String.valueOf(Worker_Birth_Month.getSelectedItem())+"-"+String.valueOf(Worker_Birth_Day.getSelectedItem());
+            pstmt.setDate(5,Date.valueOf(birth_date)); 
+            pstmt.executeUpdate();
+            pstmt.close();
+            if(Reset_Worker_Password.isSelected()){
+                query = "update users set password=? where username='"+chosen_worker+"'";
+                pstmt = conn.prepareStatement(query);
+                pstmt.setString(1,"0000");
+                pstmt.executeUpdate();
+                pstmt.close();
+            }
+            Load_Worker_Info();
+            Worker_Success.setVisible(true);
+        }catch(Exception e){Worker_Fail.setVisible(true);System.out.println(e.getMessage());};
+    }//GEN-LAST:event_Worker_Update_ButtonActionPerformed
+
+    private void Worker_Delete_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Worker_Delete_ButtonActionPerformed
+        try{
+            String query = "delete from users where username='"+chosen_worker+"'";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.executeUpdate();
+            pstmt.close();
+            Reset_Boxes();
+            chosen_worker=null;
+            Load_Worker_Name_Box();
+            Delete_Success.setVisible(true);
+        }catch(Exception e){System.out.println(e.getMessage());};
+    }//GEN-LAST:event_Worker_Delete_ButtonActionPerformed
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="Panel4">
+    
+    // </editor-fold>
+    
+    //                                                  						<editor-fold defaultstate="collapsed" desc="Panel5">
     private void Load_Incoming_Messages(){
         ArrayList messages = new ArrayList();
         messages.clear();
@@ -1840,14 +2493,13 @@ public class Secretary extends javax.swing.JFrame {
     private void Rec_Type_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Rec_Type_BoxPopupMenuWillBecomeInvisible
         Send_Button.setEnabled(false);
         Message_Text.setEnabled(false);
+        Message_Text.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
         Message_Text.setText("");
         if(Rec_Type_Box.getSelectedItem() == null) {
-            Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
             Rec_Name_Box.setEnabled(false);
             Rec_Name_Box.setSelectedItem(null);
         }
         else {
-            Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("EditorPane.background"));
             Rec_Name_Box.setEnabled(true);
             Load_Rec_Name_Box(String.valueOf(Rec_Type_Box.getSelectedItem()));
         }
@@ -1856,12 +2508,16 @@ public class Secretary extends javax.swing.JFrame {
     private void Rec_Name_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Rec_Name_BoxPopupMenuWillBecomeInvisible
         Send_Button.setEnabled(false);
         Message_Text.setText("");
-        if(Rec_Name_Box.getSelectedItem() == null) Message_Text.setEnabled(false);
+        if(Rec_Name_Box.getSelectedItem() == null) {
+            Message_Text.setEnabled(false);
+            Message_Text.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
+        }
         else {
             String temp=String.valueOf(Rec_Name_Box.getSelectedItem());
             String[] receiver=temp.split(" \\| ");
             chosen_receiver=receiver[1];
             Message_Text.setEnabled(true);
+            Message_Text.setBackground(javax.swing.UIManager.getDefaults().getColor("EditorPane.background"));
         }
     }//GEN-LAST:event_Rec_Name_BoxPopupMenuWillBecomeInvisible
 
@@ -1957,7 +2613,7 @@ public class Secretary extends javax.swing.JFrame {
             pstmt.executeUpdate();
             pstmt.close();
             user=Username.getText();
-            this.setTitle("MedX - Καλώς ήρθες διευθυντή - "+user);
+            this.setTitle("MedX - Καλώς ήρθες γραμματέα - "+user);
         }catch(Exception e){System.out.println(e.getMessage());};
         Load_Account();
     }//GEN-LAST:event_Account_Update_ButtonActionPerformed

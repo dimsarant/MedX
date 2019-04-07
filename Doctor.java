@@ -29,12 +29,6 @@ public class Doctor extends javax.swing.JFrame {
         BackgroundImage.requestFocus();
         Button4.setVisible(false);  
         this.setTitle("MedX - Καλώς ήρθες γιατρέ - "+user);
-        AutoCompleteDecorator.decorate(Examine_Patient_Box);
-        AutoCompleteDecorator.decorate(Rec_Name_Box);
-        AutoCompleteDecorator.decorate(Patient_Surgery_List);
-        AutoCompleteDecorator.decorate(Doctor_Surgery_List);
-        AutoCompleteDecorator.decorate(Medicine_Box_List);
-        AutoCompleteDecorator.decorate(Patient_Name_History_Box);
     }
     // </editor-fold>
 
@@ -65,7 +59,7 @@ public class Doctor extends javax.swing.JFrame {
         Patient_Cost = new javax.swing.JTextField();
         Patient_Cost_Label = new javax.swing.JLabel();
         Medicine_Label = new javax.swing.JLabel();
-        Medicine_Box_List = new javax.swing.JComboBox<>();
+        Medicine_Box = new javax.swing.JComboBox<>();
         Medicine_Scroll = new javax.swing.JScrollPane();
         Medicine_List = new javax.swing.JList<>();
         Doctor_Comments_Label = new javax.swing.JLabel();
@@ -90,9 +84,9 @@ public class Doctor extends javax.swing.JFrame {
         Patient_Description_Label = new javax.swing.JLabel();
         Patient_History_Button = new javax.swing.JButton();
         Panel2 = new javax.swing.JPanel();
-        Patient_Surgery_List = new javax.swing.JComboBox<>();
+        Patient_Surgery_Box = new javax.swing.JComboBox<>();
         Enter_Patient_Surgery = new javax.swing.JLabel();
-        Doctor_Surgery_List = new javax.swing.JComboBox<>();
+        Doctor_Surgery_Box = new javax.swing.JComboBox<>();
         Enter_Doctor_Surgery = new javax.swing.JLabel();
         Surgery_Year_List = new javax.swing.JComboBox<>();
         Surgery_Month_List = new javax.swing.JComboBox<>();
@@ -305,6 +299,7 @@ public class Doctor extends javax.swing.JFrame {
         Main_Patient.add(Select_Patient);
         Select_Patient.setBounds(10, 20, 90, 30);
 
+        AutoCompleteDecorator.decorate(Examine_Patient_Box);
         Examine_Patient_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Examine_Patient_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
             public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
@@ -379,18 +374,19 @@ public class Doctor extends javax.swing.JFrame {
         Main_Patient.add(Medicine_Label);
         Medicine_Label.setBounds(340, 70, 70, 30);
 
-        Medicine_Box_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Medicine_Box_List.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+        AutoCompleteDecorator.decorate(Medicine_Box);
+        Medicine_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Medicine_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
             public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
             }
             public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
-                Medicine_Box_ListPopupMenuWillBecomeInvisible(evt);
+                Medicine_BoxPopupMenuWillBecomeInvisible(evt);
             }
             public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
             }
         });
-        Main_Patient.add(Medicine_Box_List);
-        Medicine_Box_List.setBounds(350, 109, 150, 30);
+        Main_Patient.add(Medicine_Box);
+        Medicine_Box.setBounds(350, 109, 150, 30);
 
         Medicine_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Medicine_List.setToolTipText("");
@@ -580,10 +576,11 @@ public class Doctor extends javax.swing.JFrame {
 
         Panel2.setLayout(null);
 
-        Patient_Surgery_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Patient_Surgery_List.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        Panel2.add(Patient_Surgery_List);
-        Patient_Surgery_List.setBounds(90, 20, 160, 40);
+        AutoCompleteDecorator.decorate(Patient_Surgery_Box);
+        Patient_Surgery_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Patient_Surgery_Box.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        Panel2.add(Patient_Surgery_Box);
+        Patient_Surgery_Box.setBounds(90, 20, 160, 40);
 
         Enter_Patient_Surgery.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Enter_Patient_Surgery.setText("Ασθενής :");
@@ -591,10 +588,11 @@ public class Doctor extends javax.swing.JFrame {
         Panel2.add(Enter_Patient_Surgery);
         Enter_Patient_Surgery.setBounds(20, 20, 70, 40);
 
-        Doctor_Surgery_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Doctor_Surgery_List.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        Panel2.add(Doctor_Surgery_List);
-        Doctor_Surgery_List.setBounds(320, 20, 160, 40);
+        AutoCompleteDecorator.decorate(Doctor_Surgery_Box);
+        Doctor_Surgery_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Doctor_Surgery_Box.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        Panel2.add(Doctor_Surgery_Box);
+        Doctor_Surgery_Box.setBounds(320, 20, 160, 40);
 
         Enter_Doctor_Surgery.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Enter_Doctor_Surgery.setText("Γιατρός :");
@@ -711,6 +709,7 @@ public class Doctor extends javax.swing.JFrame {
         Panel3.add(Patient_Name_History_Label);
         Patient_Name_History_Label.setBounds(10, 20, 70, 30);
 
+        AutoCompleteDecorator.decorate(Patient_Name_History_Box);
         Patient_Name_History_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Patient_Name_History_Box.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         Panel3.add(Patient_Name_History_Box);
@@ -1007,6 +1006,7 @@ public class Doctor extends javax.swing.JFrame {
         New_Message.add(Rec_Type_Box);
         Rec_Type_Box.setBounds(110, 10, 110, 40);
 
+        AutoCompleteDecorator.decorate(Rec_Name_Box);
         Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
         Rec_Name_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Rec_Name_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
@@ -1021,6 +1021,7 @@ public class Doctor extends javax.swing.JFrame {
         New_Message.add(Rec_Name_Box);
         Rec_Name_Box.setBounds(230, 10, 270, 40);
 
+        Message_Text.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
         Message_Text.setColumns(20);
         Message_Text.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Message_Text.setLineWrap(true);
@@ -1444,8 +1445,8 @@ public class Doctor extends javax.swing.JFrame {
     private javax.swing.JTextArea Description;
     private javax.swing.JScrollPane Description_Scroll;
     private javax.swing.JLabel Doctor_Comments_Label;
+    private javax.swing.JComboBox<String> Doctor_Surgery_Box;
     private javax.swing.JLabel Doctor_Surgery_Comments_Label;
-    private javax.swing.JComboBox<String> Doctor_Surgery_List;
     private javax.swing.JLabel Edit_Information_Label;
     private javax.swing.JTextField Email;
     private javax.swing.JLabel Email_Label;
@@ -1464,7 +1465,7 @@ public class Doctor extends javax.swing.JFrame {
     private javax.swing.JPanel Main_Messages;
     private javax.swing.JPanel Main_Patient;
     private javax.swing.JPanel Main_Schedule_Panel;
-    private javax.swing.JComboBox<String> Medicine_Box_List;
+    private javax.swing.JComboBox<String> Medicine_Box;
     private javax.swing.JLabel Medicine_Label;
     private javax.swing.JList<String> Medicine_List;
     private javax.swing.JScrollPane Medicine_Scroll;
@@ -1541,7 +1542,7 @@ public class Doctor extends javax.swing.JFrame {
     private javax.swing.JLabel Patient_Name_Label;
     private javax.swing.JTextField Patient_Room;
     private javax.swing.JLabel Patient_Room_Label;
-    private javax.swing.JComboBox<String> Patient_Surgery_List;
+    private javax.swing.JComboBox<String> Patient_Surgery_Box;
     private javax.swing.JTextField Patient_Telephone;
     private javax.swing.JLabel Patient_Telephone_Label;
     private javax.swing.JComboBox<String> Rec_Name_Box;
@@ -1626,15 +1627,17 @@ public class Doctor extends javax.swing.JFrame {
     }
     
     private void Button0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button0ActionPerformed
+        if(Button0.isSelected()) Load_Schedule();
         Check_Button(Button0);
-        Load_Schedule();
     }//GEN-LAST:event_Button0ActionPerformed
 
     private void Button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button1ActionPerformed
+        if(Button1.isSelected()) {
+            Load_Patient_Box();
+            Load_Medicine();
+            Check_Patient_Selected();
+        }
         Check_Button(Button1);
-        Load_Patient_Box();
-        Load_Medicine();
-        Check_Patient_Selected();
     }//GEN-LAST:event_Button1ActionPerformed
 
     private void Button2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button2ActionPerformed
@@ -1650,13 +1653,15 @@ public class Doctor extends javax.swing.JFrame {
     }//GEN-LAST:event_Button4ActionPerformed
 
     private void Button5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button5ActionPerformed
-        Load_Incoming_Messages();
-        Load_Outgoing_Messages();
         Check_Button(Button5);
+        if(Button5.isSelected()) {
+            Load_Incoming_Messages();
+            Load_Outgoing_Messages();
+        }
     }//GEN-LAST:event_Button5ActionPerformed
 
     private void Button6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button6ActionPerformed
-        Load_Account();
+        if(Button6.isSelected()) Load_Account();
         Check_Button(Button6);
     }//GEN-LAST:event_Button6ActionPerformed
 
@@ -1747,13 +1752,13 @@ public class Doctor extends javax.swing.JFrame {
         Medicines.add("Ativan");
         Medicines.add("Effexor");
         Medicines.add("Elavil");
-        Medicine_Box_List.setModel(new DefaultComboBoxModel(Medicines.toArray()));
+        Medicine_Box.setModel(new DefaultComboBoxModel(Medicines.toArray()));
     }
     
     private void Check_Patient_Selected(){
         if(Examine_Patient_Box.getSelectedItem()==null) {
             Description.setEnabled(false);
-            Medicine_Box_List.setEnabled(false);
+            Medicine_Box.setEnabled(false);
             Patient_Cost.setEnabled(false);
             Patient_Card_Button.setEnabled(false);
             Check_Out.setEnabled(false);
@@ -1763,7 +1768,7 @@ public class Doctor extends javax.swing.JFrame {
             Medicine_List.setEnabled(false);
         }else{
             Description.setEnabled(true);
-            Medicine_Box_List.setEnabled(true);
+            Medicine_Box.setEnabled(true);
             Patient_Cost.setEnabled(true);
             Patient_Card_Button.setEnabled(true);
             Check_Out.setEnabled(true);
@@ -1800,10 +1805,10 @@ public class Doctor extends javax.swing.JFrame {
     }//GEN-LAST:event_Examine_Patient_BoxPopupMenuWillBecomeInvisible
     
     private void Add_Medicine_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Add_Medicine_ButtonActionPerformed
-        if(Medicine_Box_List.getSelectedItem() == null) {}
+        if(Medicine_Box.getSelectedItem() == null) {}
         else{
             DefaultListModel model = new DefaultListModel();
-            Medicine_Total.add( Medicine_Box_List.getSelectedItem() );
+            Medicine_Total.add(Medicine_Box.getSelectedItem() );
             for(int i=0;i<Medicine_Total.size();i++) {
                 model.addElement(Medicine_Total.get(i));
             }
@@ -1832,10 +1837,10 @@ public class Doctor extends javax.swing.JFrame {
         if(Medicine_List.getSelectedIndex() != -1) Remove_Medicine_Button.setEnabled(true);
     }//GEN-LAST:event_Medicine_ListMouseReleased
 
-    private void Medicine_Box_ListPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Medicine_Box_ListPopupMenuWillBecomeInvisible
-        if(Medicine_Box_List.getSelectedItem() == null) Add_Medicine_Button.setEnabled(false);
+    private void Medicine_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Medicine_BoxPopupMenuWillBecomeInvisible
+        if(Medicine_Box.getSelectedItem() == null) Add_Medicine_Button.setEnabled(false);
         else Add_Medicine_Button.setEnabled(true);
-    }//GEN-LAST:event_Medicine_Box_ListPopupMenuWillBecomeInvisible
+    }//GEN-LAST:event_Medicine_BoxPopupMenuWillBecomeInvisible
 
     private void Patient_CostKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Patient_CostKeyTyped
         Int_Typed(evt);
@@ -1874,6 +1879,14 @@ public class Doctor extends javax.swing.JFrame {
         if(Surgery_Cost.getText().equals("")) Insert_Surgery_Button.setEnabled(false);
         else Insert_Surgery_Button.setEnabled(true);
     }//GEN-LAST:event_Surgery_CostKeyReleased
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="Panel3">
+    
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="Panel4">
+    
     // </editor-fold>
     
     //                                                                                      <editor-fold defaultstate="collapsed" desc="Panel5">
@@ -1982,14 +1995,13 @@ public class Doctor extends javax.swing.JFrame {
     private void Rec_Type_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Rec_Type_BoxPopupMenuWillBecomeInvisible
         Send_Button.setEnabled(false);
         Message_Text.setEnabled(false);
+        Message_Text.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
         Message_Text.setText("");
         if(Rec_Type_Box.getSelectedItem() == null) {
-            Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
             Rec_Name_Box.setEnabled(false);
             Rec_Name_Box.setSelectedItem(null);
         }
         else {
-            Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("EditorPane.background"));
             Rec_Name_Box.setEnabled(true);
             Load_Rec_Name_Box(String.valueOf(Rec_Type_Box.getSelectedItem()));
         }
@@ -1998,12 +2010,16 @@ public class Doctor extends javax.swing.JFrame {
     private void Rec_Name_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Rec_Name_BoxPopupMenuWillBecomeInvisible
         Send_Button.setEnabled(false);
         Message_Text.setText("");
-        if(Rec_Name_Box.getSelectedItem() == null) Message_Text.setEnabled(false);
+        if(Rec_Name_Box.getSelectedItem() == null) {
+            Message_Text.setEnabled(false);
+            Message_Text.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
+        }
         else {
             String temp=String.valueOf(Rec_Name_Box.getSelectedItem());
             String[] receiver=temp.split(" \\| ");
             chosen_receiver=receiver[1];
             Message_Text.setEnabled(true);
+            Message_Text.setBackground(javax.swing.UIManager.getDefaults().getColor("EditorPane.background"));
         }
     }//GEN-LAST:event_Rec_Name_BoxPopupMenuWillBecomeInvisible
 
@@ -2099,7 +2115,7 @@ public class Doctor extends javax.swing.JFrame {
             pstmt.executeUpdate();
             pstmt.close();
             user=Username.getText();
-            this.setTitle("MedX - Καλώς ήρθες διευθυντή - "+user);
+            this.setTitle("MedX - Καλώς ήρθες γιατρέ - "+user);
         }catch(Exception e){System.out.println(e.getMessage());};
         Load_Account();
     }//GEN-LAST:event_Account_Update_ButtonActionPerformed

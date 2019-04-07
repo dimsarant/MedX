@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JToggleButton;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
@@ -28,8 +29,6 @@ public class Manager extends javax.swing.JFrame {
         BackgroundImage.requestFocus();
         Button4.setVisible(false);
         this.setTitle("MedX - Καλώς ήρθες διευθυντή - "+user);
-        AutoCompleteDecorator.decorate(Worker_Name_List);
-        AutoCompleteDecorator.decorate(Rec_Name_Box);
     }
     // </editor-fold>
     
@@ -51,7 +50,7 @@ public class Manager extends javax.swing.JFrame {
         Workers_Schedule_Panel = new javax.swing.JPanel();
         Worker_Label = new javax.swing.JLabel();
         Worker_Type_List = new javax.swing.JComboBox<>();
-        Worker_Name_List = new javax.swing.JComboBox<>();
+        Worker_Name_Box = new javax.swing.JComboBox<>();
         Worker_Year = new javax.swing.JComboBox<>();
         Worker_Month = new javax.swing.JComboBox<>();
         Worker_Day = new javax.swing.JComboBox<>();
@@ -74,6 +73,7 @@ public class Manager extends javax.swing.JFrame {
         Chosen_Doctor_LastName_Label = new javax.swing.JLabel();
         New_Worker_Button = new javax.swing.JButton();
         Insert_Success_Label = new javax.swing.JLabel();
+        Insert_Failure_Label = new javax.swing.JLabel();
         New_Worker_Panel = new javax.swing.JPanel();
         Cancel_New_Worker_Button = new javax.swing.JButton();
         Insert_New_Worker_Button = new javax.swing.JButton();
@@ -286,10 +286,11 @@ public class Manager extends javax.swing.JFrame {
         Workers_Schedule_Panel.add(Worker_Type_List);
         Worker_Type_List.setBounds(120, 10, 100, 40);
 
-        Worker_Name_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Worker_Name_List.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        Workers_Schedule_Panel.add(Worker_Name_List);
-        Worker_Name_List.setBounds(230, 10, 270, 40);
+        AutoCompleteDecorator.decorate(Worker_Name_Box);
+        Worker_Name_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Worker_Name_Box.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        Workers_Schedule_Panel.add(Worker_Name_Box);
+        Worker_Name_Box.setBounds(230, 10, 270, 40);
 
         Worker_Year.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         Worker_Year.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030", "2031", "2032", "2033", "2034", "2035", "2036", "2037", "2038", "2039", "2040", "2041", "2042", "2043", "2044", "2045", "2046", "2047", "2048", "2049", "2050" }));
@@ -470,6 +471,15 @@ public class Manager extends javax.swing.JFrame {
         Main_Salary_Panel.add(Insert_Success_Label);
         Insert_Success_Label.setBounds(20, 380, 310, 40);
 
+        Insert_Failure_Label.setVisible(false);
+        Insert_Failure_Label.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        Insert_Failure_Label.setForeground(new java.awt.Color(255, 51, 51));
+        Insert_Failure_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Insert_Failure_Label.setText("ΑΝΕΠΙΤΥΧΗΣ ΕΙΣΑΓΩΓΗ");
+        Insert_Failure_Label.setFocusable(false);
+        Main_Salary_Panel.add(Insert_Failure_Label);
+        Insert_Failure_Label.setBounds(20, 380, 310, 40);
+
         Panel2.add(Main_Salary_Panel, "Main_Salary_Panel");
 
         New_Worker_Panel.setLayout(null);
@@ -543,22 +553,39 @@ public class Manager extends javax.swing.JFrame {
         Worker_Lastname.setBounds(185, 180, 150, 40);
 
         Worker_Birth_Year.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Worker_Birth_Year.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1950", "1951", "1952", "1953", "1954", "1955", "1956", "1957", "1958", "1959", "1960", "1961", "1962", "1963", "1964", "1965", "1966", "1967", "1968", "1969", "1970", "1971", "1972", "1973", "1974", "1975", "1976", "1977", "1978", "1979", "1980", "1981", "1982", "1983", "1984", "1985", "1986", "1987", "1988", "1989", "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000" }));
         Worker_Birth_Year.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Worker_Birth_Year.setFocusable(false);
+        Worker_Birth_Year.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Worker_Birth_YearPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
         New_Worker_Panel.add(Worker_Birth_Year);
         Worker_Birth_Year.setBounds(350, 180, 60, 40);
 
         Worker_Birth_Month.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Worker_Birth_Month.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
         Worker_Birth_Month.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Worker_Birth_Month.setEnabled(false);
         Worker_Birth_Month.setFocusable(false);
+        Worker_Birth_Month.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Worker_Birth_MonthPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
         New_Worker_Panel.add(Worker_Birth_Month);
         Worker_Birth_Month.setBounds(409, 180, 45, 40);
 
         Worker_Birth_Day.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Worker_Birth_Day.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31" }));
         Worker_Birth_Day.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Worker_Birth_Day.setEnabled(false);
         Worker_Birth_Day.setFocusable(false);
         New_Worker_Panel.add(Worker_Birth_Day);
         Worker_Birth_Day.setBounds(453, 180, 45, 40);
@@ -914,6 +941,7 @@ public class Manager extends javax.swing.JFrame {
         New_Message.add(Rec_Type_Box);
         Rec_Type_Box.setBounds(110, 10, 110, 40);
 
+        AutoCompleteDecorator.decorate(Rec_Name_Box);
         Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
         Rec_Name_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Rec_Name_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
@@ -928,6 +956,7 @@ public class Manager extends javax.swing.JFrame {
         New_Message.add(Rec_Name_Box);
         Rec_Name_Box.setBounds(230, 10, 270, 40);
 
+        Message_Text.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
         Message_Text.setColumns(20);
         Message_Text.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Message_Text.setLineWrap(true);
@@ -1364,6 +1393,7 @@ public class Manager extends javax.swing.JFrame {
     private javax.swing.JPanel Incoming_Panel;
     private javax.swing.JScrollPane Incoming_Scroll;
     private javax.swing.JLabel Insert_Error_Label;
+    private javax.swing.JLabel Insert_Failure_Label;
     private javax.swing.JButton Insert_New_Worker_Button;
     private javax.swing.JLabel Insert_Success_Label;
     private javax.swing.JLabel Insert_Worker_Data_Label;
@@ -1461,8 +1491,8 @@ public class Manager extends javax.swing.JFrame {
     private javax.swing.JTextField Worker_Lastname;
     private javax.swing.JComboBox<String> Worker_Month;
     private javax.swing.JTextField Worker_Name;
+    private javax.swing.JComboBox<String> Worker_Name_Box;
     private javax.swing.JLabel Worker_Name_Label;
-    private javax.swing.JComboBox<String> Worker_Name_List;
     private javax.swing.JTextField Worker_Password;
     private javax.swing.JLabel Worker_Password_Label;
     private javax.swing.JTextField Worker_Salary;
@@ -1534,13 +1564,15 @@ public class Manager extends javax.swing.JFrame {
     }//GEN-LAST:event_Button1ActionPerformed
 
     private void Button2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button2ActionPerformed
-        Insert_Success_Label.setVisible(false);
+        if(Button2.isSelected()) {
+            Insert_Success_Label.setVisible(false);
+            Load_Worker_Type_Box();
+        }
         Check_Button(Button2);
-        Load_Worker_Type_Box();
     }//GEN-LAST:event_Button2ActionPerformed
 
     private void Button3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button3ActionPerformed
-        Load_Money();
+        if(Button3.isSelected()) Load_Money();
         Check_Button(Button3);
     }//GEN-LAST:event_Button3ActionPerformed
 
@@ -1549,13 +1581,15 @@ public class Manager extends javax.swing.JFrame {
     }//GEN-LAST:event_Button4ActionPerformed
 
     private void Button5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button5ActionPerformed
+        if(Button5.isSelected()) {
+            Load_Incoming_Messages();
+            Load_Outgoing_Messages();
+        }
         Check_Button(Button5);
-        Load_Incoming_Messages();
-        Load_Outgoing_Messages();
     }//GEN-LAST:event_Button5ActionPerformed
 
     private void Button6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button6ActionPerformed
-        Load_Account();
+        if(Button6.isSelected()) Load_Account();
         Check_Button(Button6);
     }//GEN-LAST:event_Button6ActionPerformed
 
@@ -1611,7 +1645,7 @@ public class Manager extends javax.swing.JFrame {
         Worker_Type_Box.setSelectedItem(chosen_job);
     }
     
-    private void Load_Workers_Name_List() {
+    private void Load_Worker_Name_List() {
         ArrayList workers = new ArrayList();
         workers.clear();
         try{
@@ -1637,6 +1671,7 @@ public class Manager extends javax.swing.JFrame {
     
     private void Worker_Type_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Worker_Type_BoxPopupMenuWillBecomeInvisible
         Insert_Success_Label.setVisible(false);
+        Insert_Failure_Label.setVisible(false);
         chosen_job=String.valueOf(Worker_Type_Box.getSelectedItem());
         Chosen_Doctor_Name.setText(null);
         Chosen_Doctor_LastName.setText(null);
@@ -1645,12 +1680,13 @@ public class Manager extends javax.swing.JFrame {
         Salary_Confirm_Button.setEnabled(false);
         if(Worker_Type_Box.getSelectedItem()==null) New_Worker_Button.setEnabled(false);
         else New_Worker_Button.setEnabled(true);
-        Load_Workers_Name_List();
+        Load_Worker_Name_List();
     }//GEN-LAST:event_Worker_Type_BoxPopupMenuWillBecomeInvisible
 
     private void Workers_Name_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Workers_Name_ListMouseReleased
         if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2 && Workers_Name_List.getSelectedIndex() != -1) {
             Insert_Success_Label.setVisible(false);
+            Insert_Failure_Label.setVisible(false);
             Doctor_Salary.setEnabled(true);
             String temp=Workers_Name_List.getSelectedValue();
             String[] name=temp.split(" \\| ");
@@ -1671,13 +1707,16 @@ public class Manager extends javax.swing.JFrame {
     }//GEN-LAST:event_Workers_Name_ListMouseReleased
 
     private void Salary_Confirm_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Salary_Confirm_ButtonActionPerformed
+        Insert_Success_Label.setVisible(false);
+        Insert_Failure_Label.setVisible(false);
         try{
             String query = "update salaries set salary=? where salaries.username='"+chosen_worker+"'";
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setString(1,Doctor_Salary.getText());
             pstmt.executeUpdate();
             pstmt.close();
-        }catch(Exception e){System.out.println(e.getMessage());};
+            Insert_Success_Label.setVisible(true);
+        }catch(Exception e){Insert_Failure_Label.setVisible(true); System.out.println(e.getMessage());};
     }//GEN-LAST:event_Salary_Confirm_ButtonActionPerformed
 
     private void Doctor_SalaryKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Doctor_SalaryKeyTyped
@@ -1689,7 +1728,24 @@ public class Manager extends javax.swing.JFrame {
         else Salary_Confirm_Button.setEnabled(true);
     }//GEN-LAST:event_Doctor_SalaryKeyReleased
     
+    private void Load_Worker_Birth_Year(){
+        LocalDate localDate = LocalDate.now();
+        ArrayList year_month = new ArrayList();
+        year_month.add(null);
+        for(int i=localDate.getYear()-50;i<=localDate.getYear();i++) year_month.add(i);
+        Worker_Birth_Year.setModel(new DefaultComboBoxModel(year_month.toArray()));
+        year_month.clear();
+        year_month.add(null);
+        for(int i=1;i<=12;i++) {
+            if(i<10) year_month.add("0"+String.valueOf(i));
+            else year_month.add(i);
+        }
+        Worker_Birth_Month.setModel(new DefaultComboBoxModel(year_month.toArray()));
+    }
+    
     private void New_Worker_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_New_Worker_ButtonActionPerformed
+        Insert_Success_Label.setVisible(false);
+        Insert_Failure_Label.setVisible(false);
         Worker_Username.setText(null);
         Worker_Password.setText(null);
         Worker_Email.setText(null);
@@ -1709,9 +1765,40 @@ public class Manager extends javax.swing.JFrame {
         if(String.valueOf(Worker_Type_Box.getSelectedItem()).equals("Γραμματέας")) Insert_Worker_Data_Label.setText("ΕΙΣΑΓΕΤΕ ΤΑ ΣΤΟΙΧΕΙΑ ΤΟΥ ΓΡΑΜΜΑΤΕΑ");
         if(String.valueOf(Worker_Type_Box.getSelectedItem()).equals("Αποθηκάριος")) Insert_Worker_Data_Label.setText("ΕΙΣΑΓΕΤΕ ΤΑ ΣΤΟΙΧΕΙΑ ΤΟΥ ΑΠΟΘΗΚΑΡΙΟΥ");
         if(String.valueOf(Worker_Type_Box.getSelectedItem()).equals("Διευθυντής")) Insert_Worker_Data_Label.setText("ΕΙΣΑΓΕΤΕ ΤΑ ΣΤΟΙΧΕΙΑ ΤΟΥ ΔΙΕΥΘΥΝΤΗ");
+        Load_Worker_Birth_Year();
         CardLayout card = (CardLayout)Panel2.getLayout();
         card.show(Panel2, "New_Worker_Panel");
     }//GEN-LAST:event_New_Worker_ButtonActionPerformed
+
+    private void Worker_Birth_YearPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Worker_Birth_YearPopupMenuWillBecomeInvisible
+        if(Worker_Birth_Year.getSelectedItem()==null){
+            Worker_Birth_Month.setEnabled(false);
+            Worker_Birth_Month.setSelectedItem(null);
+            Worker_Birth_Day.setEnabled(false);
+            Worker_Birth_Day.setSelectedItem(null);
+        }else Worker_Birth_Month.setEnabled(true);
+    }//GEN-LAST:event_Worker_Birth_YearPopupMenuWillBecomeInvisible
+
+    private void Worker_Birth_MonthPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Worker_Birth_MonthPopupMenuWillBecomeInvisible
+        if(Worker_Birth_Month.getSelectedItem()==null){
+            Worker_Birth_Day.setEnabled(false);
+            Worker_Birth_Day.setSelectedItem(null);
+        }else{
+            ArrayList day = new ArrayList();
+            day.add(null);
+            Worker_Birth_Day.setEnabled(true);
+            int i=Integer.valueOf(String.valueOf(Worker_Birth_Month.getSelectedItem()));
+            int last_day=0;
+            if(i==1 || i==3 || i==5 || i==7 || i==8 || i==10 || i==12) last_day=31;
+            if(i==4 || i==6 || i==9 || i==11) last_day=30;
+            if(i==2) last_day=28;
+            for(int j=1;j<=last_day;j++) {
+                if(j<10) day.add("0"+String.valueOf(j));
+                else day.add(j);
+            }
+            Worker_Birth_Day.setModel(new DefaultComboBoxModel(day.toArray()));
+        }
+    }//GEN-LAST:event_Worker_Birth_MonthPopupMenuWillBecomeInvisible
 
     private void Worker_UsernameKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Worker_UsernameKeyReleased
         if(Worker_Username.getText().equals("") || Worker_Salary.getText().equals("")) Insert_New_Worker_Button.setEnabled(false);
@@ -1752,19 +1839,26 @@ public class Manager extends javax.swing.JFrame {
             pstmt.setDate(11,Date.valueOf(dtf.format(localDate)));
             pstmt.executeUpdate();
             pstmt.close();
-            CardLayout card = (CardLayout)Panel2.getLayout();
-            card.show(Panel2, "Main_Salary_Panel");
-            Load_Workers_Name_List();
-            Insert_Success_Label.setVisible(true);
+            try{  //insert misthos
+                query = "insert into salaries (username,salary) values (?,?)";
+                pstmt = conn.prepareStatement(query);
+                pstmt.setString(1,Worker_Username.getText());
+                pstmt.setString(2,Worker_Salary.getText());
+                pstmt.executeUpdate();
+                pstmt.close();
+                CardLayout card = (CardLayout)Panel2.getLayout();
+                card.show(Panel2, "Main_Salary_Panel");
+                Load_Worker_Name_List();
+                Insert_Success_Label.setVisible(true);
+            }catch(Exception e){try{Insert_Error_Label.setVisible(true); 
+                                    query = "delete from users where username='"+Worker_Username.getText()+"'";
+                                    pstmt = conn.prepareStatement(query);
+                                    pstmt.executeUpdate();
+                                    pstmt.close();
+                                }catch(Exception e2){System.out.println(e2.getMessage());};
+                                System.out.println(e.getMessage());};
         }catch(Exception e){Insert_Error_Label.setVisible(true); System.out.println(e.getMessage());};
-        try{  //insert misthos
-            String query = "insert into salaries (username,salary) values (?,?)";
-            PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setString(1,Worker_Username.getText());
-            pstmt.setString(2,Worker_Salary.getText());
-            pstmt.executeUpdate();
-            pstmt.close();
-        }catch(Exception e){System.out.println(e.getMessage());};
+        
     }//GEN-LAST:event_Insert_New_Worker_ButtonActionPerformed
     // </editor-fold>
     
@@ -1927,14 +2021,13 @@ public class Manager extends javax.swing.JFrame {
     private void Rec_Type_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Rec_Type_BoxPopupMenuWillBecomeInvisible
         Send_Button.setEnabled(false);
         Message_Text.setEnabled(false);
+        Message_Text.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
         Message_Text.setText("");
         if(Rec_Type_Box.getSelectedItem() == null) {
-            Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
             Rec_Name_Box.setEnabled(false);
             Rec_Name_Box.setSelectedItem(null);
         }
         else {
-            Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("EditorPane.background"));
             Rec_Name_Box.setEnabled(true);
             Load_Rec_Name_Box(String.valueOf(Rec_Type_Box.getSelectedItem()));
         }
@@ -1975,12 +2068,16 @@ public class Manager extends javax.swing.JFrame {
     private void Rec_Name_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Rec_Name_BoxPopupMenuWillBecomeInvisible
         Send_Button.setEnabled(false);
         Message_Text.setText("");
-        if(Rec_Name_Box.getSelectedItem() == null) Message_Text.setEnabled(false);
+        if(Rec_Name_Box.getSelectedItem() == null) {
+            Message_Text.setEnabled(false);
+            Message_Text.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
+        }
         else {
             String temp=String.valueOf(Rec_Name_Box.getSelectedItem());
             String[] receiver=temp.split(" \\| ");
             chosen_receiver=receiver[1];
             Message_Text.setEnabled(true);
+            Message_Text.setBackground(javax.swing.UIManager.getDefaults().getColor("EditorPane.background"));
         }
     }//GEN-LAST:event_Rec_Name_BoxPopupMenuWillBecomeInvisible
 

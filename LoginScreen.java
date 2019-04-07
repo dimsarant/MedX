@@ -422,29 +422,22 @@ public class LoginScreen extends javax.swing.JFrame {
     private void checkdb() {
         String UsernameInput=UsernameField.getText();
         String PasswordInput=String.valueOf(PasswordField.getPassword());
-        String password=null;
-        String job=null;
-        boolean UserFound=false;
+        Boolean UserFound=false;
         try{  //check an xrhsths uparxei se database
-            String query = "select username,password,job from users";
+            String query = "select username,password,job from users where username='"+UsernameInput+"'";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while(rs.next()){
-                username = rs.getString("username");
-                password = rs.getString("password");
-                job = rs.getString("job");
-                if(UsernameInput.equals(username) && PasswordInput.equals(password)) {
+                if(PasswordInput.equals(rs.getString("password"))) {
                     UserFound=true;
-                    break;
+                    username = rs.getString("username");
+                    accessgranted(rs.getString("job"));
                 }
             }
             rs.close();
             stmt.close();
         }catch(Exception e){System.out.println(e.getMessage());};
-        if(UserFound) {
-            accessgranted(job);
-        }
-        else accessdenied();
+        if(!UserFound) accessdenied();
     }
     
     

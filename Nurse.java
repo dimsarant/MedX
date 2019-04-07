@@ -27,7 +27,6 @@ public class Nurse extends javax.swing.JFrame {
         Button3.setVisible(false);
         Button4.setVisible(false);  
         this.setTitle("MedX - Καλώς ήρθες νοσηλευτή - "+user);
-        AutoCompleteDecorator.decorate(Rec_Name_Box);
     }
     // </editor-fold>
 
@@ -402,6 +401,7 @@ public class Nurse extends javax.swing.JFrame {
         New_Message.add(Rec_Type_Box);
         Rec_Type_Box.setBounds(110, 10, 110, 40);
 
+        AutoCompleteDecorator.decorate(Rec_Name_Box);
         Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
         Rec_Name_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Rec_Name_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
@@ -416,6 +416,7 @@ public class Nurse extends javax.swing.JFrame {
         New_Message.add(Rec_Name_Box);
         Rec_Name_Box.setBounds(230, 10, 270, 40);
 
+        Message_Text.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
         Message_Text.setColumns(20);
         Message_Text.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Message_Text.setLineWrap(true);
@@ -964,13 +965,15 @@ public class Nurse extends javax.swing.JFrame {
     }//GEN-LAST:event_Button4ActionPerformed
 
     private void Button5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button5ActionPerformed
-        Load_Incoming_Messages();
-        Load_Outgoing_Messages();
+        if(Button5.isSelected()) {
+            Load_Incoming_Messages();
+            Load_Outgoing_Messages();
+        }
         Check_Button(Button5);
     }//GEN-LAST:event_Button5ActionPerformed
 
     private void Button6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button6ActionPerformed
-        Load_Account();
+        if(Button6.isSelected()) Load_Account();
         Check_Button(Button6);
     }//GEN-LAST:event_Button6ActionPerformed
 
@@ -1029,6 +1032,18 @@ public class Nurse extends javax.swing.JFrame {
         if(Medicine_List.getModel().getSize()==0) Complete.setEnabled(true);
         else Complete.setEnabled(false);
     }//GEN-LAST:event_Give_Medicine_ButtonActionPerformed
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="Panel2">
+    
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="Panel3">
+    
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="Panel4">
+    
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel5">
@@ -1137,14 +1152,13 @@ public class Nurse extends javax.swing.JFrame {
     private void Rec_Type_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Rec_Type_BoxPopupMenuWillBecomeInvisible
         Send_Button.setEnabled(false);
         Message_Text.setEnabled(false);
+        Message_Text.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
         Message_Text.setText("");
         if(Rec_Type_Box.getSelectedItem() == null) {
-            Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
             Rec_Name_Box.setEnabled(false);
             Rec_Name_Box.setSelectedItem(null);
         }
         else {
-            Rec_Name_Box.setBackground(javax.swing.UIManager.getDefaults().getColor("EditorPane.background"));
             Rec_Name_Box.setEnabled(true);
             Load_Rec_Name_Box(String.valueOf(Rec_Type_Box.getSelectedItem()));
         }
@@ -1153,12 +1167,16 @@ public class Nurse extends javax.swing.JFrame {
     private void Rec_Name_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Rec_Name_BoxPopupMenuWillBecomeInvisible
         Send_Button.setEnabled(false);
         Message_Text.setText("");
-        if(Rec_Name_Box.getSelectedItem() == null) Message_Text.setEnabled(false);
+        if(Rec_Name_Box.getSelectedItem() == null) {
+            Message_Text.setEnabled(false);
+            Message_Text.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
+        }
         else {
             String temp=String.valueOf(Rec_Name_Box.getSelectedItem());
             String[] receiver=temp.split(" \\| ");
             chosen_receiver=receiver[1];
             Message_Text.setEnabled(true);
+            Message_Text.setBackground(javax.swing.UIManager.getDefaults().getColor("EditorPane.background"));
         }
     }//GEN-LAST:event_Rec_Name_BoxPopupMenuWillBecomeInvisible
 
@@ -1254,7 +1272,7 @@ public class Nurse extends javax.swing.JFrame {
             pstmt.executeUpdate();
             pstmt.close();
             user=Username.getText();
-            this.setTitle("MedX - Καλώς ήρθες διευθυντή - "+user);
+            this.setTitle("MedX - Καλώς ήρθες νοσηλευτή - "+user);
         }catch(Exception e){System.out.println(e.getMessage());};
         Load_Account();
     }//GEN-LAST:event_Account_Update_ButtonActionPerformed
