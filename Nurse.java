@@ -1,13 +1,13 @@
 package MedX;
 
     // <editor-fold defaultstate="collapsed" desc="Imports">
-import static MedX.Doctor.conn;
 import java.awt.CardLayout;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Calendar;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JToggleButton;
@@ -39,22 +39,24 @@ public class Nurse extends javax.swing.JFrame {
         Main_Schedule_Panel = new javax.swing.JPanel();
         Schedule_List_Scroll = new javax.swing.JScrollPane();
         Schedule_List = new javax.swing.JList<>();
-        Schedule = new javax.swing.JLabel();
+        Schedule_Label = new javax.swing.JLabel();
         Schedule_Expanded_Panel = new javax.swing.JPanel();
         Return_Button_Schedule = new javax.swing.JButton();
         Schedule_Expanded_Scroll = new javax.swing.JScrollPane();
-        Schedule_Expanded = new javax.swing.JList<>();
+        Schedule_Expanded_List = new javax.swing.JList<>();
         Panel1 = new javax.swing.JPanel();
         Select_Patient = new javax.swing.JLabel();
-        Treat_Patient_List = new javax.swing.JComboBox<>();
+        Treat_Patient_Box = new javax.swing.JComboBox<>();
         Doctor_Comments_Label = new javax.swing.JLabel();
         Description_Scroll = new javax.swing.JScrollPane();
-        Description = new javax.swing.JTextArea();
+        Treatment = new javax.swing.JTextArea();
         Medicine_Label = new javax.swing.JLabel();
         Medicine_Scroll = new javax.swing.JScrollPane();
         Medicine_List = new javax.swing.JList<>();
         Give_Medicine_Button = new javax.swing.JButton();
         Complete = new javax.swing.JButton();
+        Medicine_Hour_Label = new javax.swing.JLabel();
+        Medicine_Hour = new javax.swing.JTextField();
         Panel2 = new javax.swing.JPanel();
         Panel3 = new javax.swing.JPanel();
         Panel4 = new javax.swing.JPanel();
@@ -138,12 +140,7 @@ public class Nurse extends javax.swing.JFrame {
 
         Main_Schedule_Panel.setLayout(null);
 
-        Schedule_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Schedule_List.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "00:00-00:59 | ", "01:00-01:59 | ", "02:00-02:59 | ", "03:00-03:59 | ", "04:00-04:59 | ", "05:00-05:59 | ", "06:00-06:59 | ", "07:00-07:59 | ", "08:00-08:59 | ", "09:00-09:59 | ", "10:00-10:59 | ", "11:00-11:59 | ", "12:00-12:59 | ", "13:00-13:59 | ", "14:00-14:59 | ", "15:00-15:59 | ", "16:00-16:59 | ", "17:00-17:59 | ", "18:00-18:59 | ", "19:00-19:59 | ", "20:00-20:59 | ", "21:00-21:59 | ", "22:00-22:59 | ", "23:00-23:59 | " };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
+        Schedule_List.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         Schedule_List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         Schedule_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Schedule_List.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -156,11 +153,11 @@ public class Nurse extends javax.swing.JFrame {
         Main_Schedule_Panel.add(Schedule_List_Scroll);
         Schedule_List_Scroll.setBounds(20, 60, 480, 360);
 
-        Schedule.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        Schedule.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Schedule.setText("ΠΡΟΓΡΑΜΜΑ ΗΜΕΡΑΣ : YYYY/MM/DD");
-        Main_Schedule_Panel.add(Schedule);
-        Schedule.setBounds(20, 20, 480, 22);
+        Schedule_Label.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        Schedule_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Schedule_Label.setText("ΠΡΟΓΡΑΜΜΑ ΗΜΕΡΑΣ : YYYY/MM/DD");
+        Main_Schedule_Panel.add(Schedule_Label);
+        Schedule_Label.setBounds(20, 20, 480, 22);
 
         Panel0.add(Main_Schedule_Panel, "Main_Schedule_Panel");
 
@@ -180,19 +177,14 @@ public class Nurse extends javax.swing.JFrame {
         Schedule_Expanded_Panel.add(Return_Button_Schedule);
         Return_Button_Schedule.setBounds(369, 389, 130, 30);
 
-        Schedule_Expanded.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Schedule_Expanded.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        Schedule_Expanded.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        Schedule_Expanded.addMouseListener(new java.awt.event.MouseAdapter() {
+        Schedule_Expanded_List.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        Schedule_Expanded_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Schedule_Expanded_List.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
-                Schedule_ExpandedMouseReleased(evt);
+                Schedule_Expanded_ListMouseReleased(evt);
             }
         });
-        Schedule_Expanded_Scroll.setViewportView(Schedule_Expanded);
+        Schedule_Expanded_Scroll.setViewportView(Schedule_Expanded_List);
 
         Schedule_Expanded_Panel.add(Schedule_Expanded_Scroll);
         Schedule_Expanded_Scroll.setBounds(20, 20, 480, 400);
@@ -208,12 +200,20 @@ public class Nurse extends javax.swing.JFrame {
         Panel1.add(Select_Patient);
         Select_Patient.setBounds(80, 17, 120, 40);
 
-        Treat_Patient_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Treat_Patient_List.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        Treat_Patient_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        Treat_Patient_List.setFocusable(false);
-        Panel1.add(Treat_Patient_List);
-        Treat_Patient_List.setBounds(195, 15, 200, 40);
+        Treat_Patient_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Treat_Patient_Box.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Treat_Patient_Box.setFocusable(false);
+        Treat_Patient_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Treat_Patient_BoxPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
+        Panel1.add(Treat_Patient_Box);
+        Treat_Patient_Box.setBounds(195, 15, 200, 40);
 
         Doctor_Comments_Label.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Doctor_Comments_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -221,14 +221,14 @@ public class Nurse extends javax.swing.JFrame {
         Panel1.add(Doctor_Comments_Label);
         Doctor_Comments_Label.setBounds(20, 70, 310, 20);
 
-        Description.setEditable(false);
-        Description.setColumns(20);
-        Description.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Description.setLineWrap(true);
-        Description.setRows(5);
-        Description.setWrapStyleWord(true);
-        Description.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
-        Description_Scroll.setViewportView(Description);
+        Treatment.setEditable(false);
+        Treatment.setColumns(20);
+        Treatment.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Treatment.setLineWrap(true);
+        Treatment.setRows(5);
+        Treatment.setWrapStyleWord(true);
+        Treatment.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        Description_Scroll.setViewportView(Treatment);
 
         Panel1.add(Description_Scroll);
         Description_Scroll.setBounds(20, 90, 310, 270);
@@ -240,22 +240,23 @@ public class Nurse extends javax.swing.JFrame {
         Medicine_Label.setBounds(350, 70, 150, 20);
 
         Medicine_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Medicine_List.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Φάρμακο 1", "Φάρμακο 2", "Φάρμακο 3", "Φάρμακο 4", "Φάρμακο 5", "Φάρμακο 6", "Φάρμακο 7" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         Medicine_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Medicine_List.setFocusable(false);
+        Medicine_List.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                Medicine_ListMouseReleased(evt);
+            }
+        });
         Medicine_Scroll.setViewportView(Medicine_List);
 
         Panel1.add(Medicine_Scroll);
-        Medicine_Scroll.setBounds(350, 90, 150, 220);
+        Medicine_Scroll.setBounds(350, 140, 150, 220);
 
         Give_Medicine_Button.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Give_Medicine_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Check_Icon.png"))); // NOI18N
         Give_Medicine_Button.setText("Επιβεβαίωση");
         Give_Medicine_Button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Give_Medicine_Button.setEnabled(false);
         Give_Medicine_Button.setFocusable(false);
         Give_Medicine_Button.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         Give_Medicine_Button.addActionListener(new java.awt.event.ActionListener() {
@@ -264,7 +265,7 @@ public class Nurse extends javax.swing.JFrame {
             }
         });
         Panel1.add(Give_Medicine_Button);
-        Give_Medicine_Button.setBounds(355, 330, 140, 30);
+        Give_Medicine_Button.setBounds(355, 360, 140, 30);
 
         Complete.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Complete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Enter_Icon.png"))); // NOI18N
@@ -274,8 +275,27 @@ public class Nurse extends javax.swing.JFrame {
         Complete.setFocusPainted(false);
         Complete.setFocusable(false);
         Complete.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        Complete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CompleteActionPerformed(evt);
+            }
+        });
         Panel1.add(Complete);
-        Complete.setBounds(180, 380, 150, 40);
+        Complete.setBounds(90, 380, 150, 40);
+
+        Medicine_Hour_Label.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Medicine_Hour_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Medicine_Hour_Label.setText("Ώρα :");
+        Medicine_Hour_Label.setFocusable(false);
+        Panel1.add(Medicine_Hour_Label);
+        Medicine_Hour_Label.setBounds(350, 100, 50, 30);
+
+        Medicine_Hour.setEditable(false);
+        Medicine_Hour.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Medicine_Hour.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Medicine_Hour.setFocusable(false);
+        Panel1.add(Medicine_Hour);
+        Medicine_Hour.setBounds(400, 100, 100, 30);
 
         MainPanel.add(Panel1, "Panel1");
 
@@ -810,8 +830,11 @@ public class Nurse extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">
     static Connection conn=null;
     String user=null;
+    int hour_selected=0;
     String Medicine_Selected;
     String chosen_receiver=null;
+    String patient_selected_amka=null;
+    ArrayList Medicine_Total = new ArrayList();
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Account_Update_Button;
     private javax.swing.JTextField Adress;
@@ -829,7 +852,6 @@ public class Nurse extends javax.swing.JFrame {
     private javax.swing.JToggleButton Button6;
     private javax.swing.JButton Cancel_Button;
     private javax.swing.JButton Complete;
-    private javax.swing.JTextArea Description;
     private javax.swing.JScrollPane Description_Scroll;
     private javax.swing.JLabel Doctor_Comments_Label;
     private javax.swing.JLabel Edit_Information_Label;
@@ -845,6 +867,8 @@ public class Nurse extends javax.swing.JFrame {
     private javax.swing.JPanel MainPanel;
     private javax.swing.JPanel Main_Messages;
     private javax.swing.JPanel Main_Schedule_Panel;
+    private javax.swing.JTextField Medicine_Hour;
+    private javax.swing.JLabel Medicine_Hour_Label;
     private javax.swing.JLabel Medicine_Label;
     private javax.swing.JList<String> Medicine_List;
     private javax.swing.JScrollPane Medicine_Scroll;
@@ -881,10 +905,10 @@ public class Nurse extends javax.swing.JFrame {
     private javax.swing.JButton Refresh_Button;
     private javax.swing.JButton Return_Button_Message_Expanded;
     private javax.swing.JButton Return_Button_Schedule;
-    private javax.swing.JLabel Schedule;
-    private javax.swing.JList<String> Schedule_Expanded;
+    private javax.swing.JList<String> Schedule_Expanded_List;
     private javax.swing.JPanel Schedule_Expanded_Panel;
     private javax.swing.JScrollPane Schedule_Expanded_Scroll;
+    private javax.swing.JLabel Schedule_Label;
     private javax.swing.JList<String> Schedule_List;
     private javax.swing.JScrollPane Schedule_List_Scroll;
     private javax.swing.JLabel Select_Patient;
@@ -898,7 +922,8 @@ public class Nurse extends javax.swing.JFrame {
     private javax.swing.JTextField Tel_0;
     private javax.swing.JTextField Tel_1;
     private javax.swing.JLabel Tel_Label;
-    private javax.swing.JComboBox<String> Treat_Patient_List;
+    private javax.swing.JComboBox<String> Treat_Patient_Box;
+    private javax.swing.JTextArea Treatment;
     private javax.swing.JTextField Username;
     private javax.swing.JLabel Username_Label;
     // End of variables declaration//GEN-END:variables
@@ -945,10 +970,16 @@ public class Nurse extends javax.swing.JFrame {
     }
     
     private void Button0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button0ActionPerformed
+        if(Button0.isSelected()) {
+            CardLayout card = (CardLayout)Panel0.getLayout();
+            card.show(Panel0, "Main_Schedule_Panel");
+            Load_Schedule();
+        }
         Check_Button(Button0);
     }//GEN-LAST:event_Button0ActionPerformed
 
     private void Button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button1ActionPerformed
+        if(Button1.isSelected()) Load_Patient_Box();
         Check_Button(Button1);
     }//GEN-LAST:event_Button1ActionPerformed
 
@@ -985,10 +1016,63 @@ public class Nurse extends javax.swing.JFrame {
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel0">
+    private void Load_Schedule(){
+        Calendar cal = Calendar.getInstance();
+        java.util.Date today = new java.util.Date();
+        cal.setTime(today);
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH)+1;
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        int hour=0;
+        Schedule_Label.setText("ΠΡΟΓΡΑΜΜΑ ΗΜΕΡΑΣ : "+year+"-"+month+"-"+day);
+        DefaultListModel model = new DefaultListModel();
+        ArrayList schedule = new ArrayList();
+        try{
+            String query = "select count(AMKA) as count,medicine_time from patient_treatment where treated='0'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                String[] time=rs.getString("medicine_time").split(":");
+                hour=Integer.parseInt(time[0]);
+                for(int i=0;i<24;i++) {
+                    if(i==hour && rs.getInt("count")==1) schedule.add("Στις "+i+":00-"+(i+1)+":00 χρειάζεται φροντίδα "+rs.getString("count")+" ασθενής.");
+                    else if(i==hour) schedule.add("Στις "+i+":00-"+(i+1)+":00 χρειάζονται φροντίδα "+rs.getString("count")+" ασθενείς.");
+                }
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        for(int i=0;i<schedule.size();i++) {
+            
+            model.addElement(schedule.get(i));
+        }
+        Schedule_List.setModel(model);
+    }
+    
+    private void Load_Schedule_Expanded() {
+        ArrayList patients = new ArrayList();
+        try{
+            String query = "select patient_name,patient_lastname,patient.AMKA,medicine,medicine_time from patient inner join patient_treatment on patient.AMKA=patient_treatment.AMKA where treated='0'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                String[] time=rs.getString("medicine_time").split(":");
+                int hour=Integer.parseInt(time[0]);
+                if(hour==hour_selected) patients.add(rs.getString("patient_name")+" "+rs.getString("patient_lastname")+" | "+rs.getString("patient.AMKA")+" | στις: "+rs.getString("medicine_time"));
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        Schedule_Expanded_List.setModel(new DefaultComboBoxModel(patients.toArray()));
+    }
+    
     private void Schedule_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Schedule_ListMouseReleased
-        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2) {
+        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2 && Schedule_List.getSelectedIndex() != -1) {
             CardLayout card = (CardLayout)Panel0.getLayout();
             card.show(Panel0, "Schedule_Expanded_Panel");
+            String[] time=Schedule_List.getSelectedValue().split(" |:");
+            hour_selected=Integer.parseInt(time[1]);
+            Load_Schedule_Expanded();
         }
     }//GEN-LAST:event_Schedule_ListMouseReleased
     
@@ -997,7 +1081,7 @@ public class Nurse extends javax.swing.JFrame {
         card.show(Panel0, "Main_Schedule_Panel");
     }//GEN-LAST:event_Return_Button_ScheduleActionPerformed
 
-    private void Schedule_ExpandedMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Schedule_ExpandedMouseReleased
+    private void Schedule_Expanded_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Schedule_Expanded_ListMouseReleased
         if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2) {
             CardLayout card = (CardLayout)MainPanel.getLayout();
             card.show(MainPanel, "Panel1");
@@ -1006,32 +1090,176 @@ public class Nurse extends javax.swing.JFrame {
             Button0.setSelected(false);
             Button0.setEnabled(false);
             Check_Button(Button1);
+            String[] patient=Schedule_Expanded_List.getSelectedValue().split(" \\| ");
+            patient_selected_amka=patient[1];
+            Load_Patient_Box();
+            Load_Patient();
         }
-    }//GEN-LAST:event_Schedule_ExpandedMouseReleased
+    }//GEN-LAST:event_Schedule_Expanded_ListMouseReleased
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel1">
-    private void Give_Medicine_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Give_Medicine_ButtonActionPerformed
-        ArrayList Medicine_Total = new ArrayList();
-        if(Medicine_List.getSelectedIndex() != -1) {
-            DefaultListModel model = new DefaultListModel();
-            int[] index = Medicine_List.getSelectedIndices();
-            for(int i=0;i<Medicine_List.getModel().getSize();i++){
-                Medicine_Total.add(String.valueOf( Medicine_List.getModel().getElementAt(i)));
-            }
-            for(int i=Medicine_Total.size()-1;i>=0;i--) {
-                for (int j=0;j<index.length;j++) {
-                    if(i==index[j]) Medicine_Total.remove(i);
+    private void Load_Patient_Box() {
+        String[] patient=new String[2];
+        ArrayList patients = new ArrayList();
+        patients.add(null);
+        try{
+            String query = "select patient_name,patient_lastname,patient.AMKA from patient inner join patient_treatment on patient.AMKA=patient_treatment.AMKA where treated='0' order by patient_name ASC";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                patients.add(rs.getString("patient_name")+" "+rs.getString("patient_lastname")+" | "+rs.getString("AMKA"));
+                if(patient_selected_amka!=null && patient_selected_amka.equals(rs.getString("AMKA"))) {
+                    patient[0]=rs.getString("patient_name")+" "+rs.getString("patient_lastname");
+                    patient[1]=patient_selected_amka;
                 }
             }
+            rs.close();
+            stmt.close();
+            }catch(Exception e){System.out.println(e.getMessage());};
+        Treat_Patient_Box.setModel(new DefaultComboBoxModel(patients.toArray()));
+        if(patient_selected_amka!=null) Treat_Patient_Box.setSelectedItem(patient[0]+" | "+patient[1]);
+    }
+    
+    private void Load_Patient(){
+        try{
+            String prescription = null;
+            String query = "select treatment,medicine,medicine_time from patient_treatment where AMKA='"+patient_selected_amka+"'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                Treatment.setText(rs.getString("treatment"));
+                prescription=rs.getString("medicine");
+                Medicine_Hour.setText(rs.getString("medicine_time"));
+            }
+            rs.close();
+            stmt.close();
+            DefaultListModel model = new DefaultListModel();
+            Medicine_Total.clear();
+            if(prescription!=null){
+            String[] medicines = prescription.split(",");
+            for(int i=0;i<medicines.length;i++){
+                Medicine_Total.add(medicines[i]);
+            }
+            for(int i=0;i<Medicine_Total.size();i++) {
+                model.addElement(Medicine_Total.get(i));
+            }
+            }
+            Medicine_List.setModel(model);
+        }catch(Exception e){System.out.println(e.getMessage());};
+    }
+    
+    private void Treat_Patient_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Treat_Patient_BoxPopupMenuWillBecomeInvisible
+        Treatment.setText(null);
+        Medicine_Hour.setText(null);
+        DefaultListModel model = new DefaultListModel();
+        model.addElement(null);
+        Medicine_List.setModel(model);
+        Give_Medicine_Button.setEnabled(false);
+        patient_selected_amka=null;
+        if(Treat_Patient_Box.getSelectedItem()!=null) {
+            String[] patient=(String.valueOf(Treat_Patient_Box.getSelectedItem())).split(" \\| ");
+            patient_selected_amka=patient[1];
+            Load_Patient();
+        }
+        if(Medicine_List.getModel().getSize()==0) Complete.setEnabled(true);
+        else Complete.setEnabled(false);
+    }//GEN-LAST:event_Treat_Patient_BoxPopupMenuWillBecomeInvisible
+    
+    private void Give_Medicine_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Give_Medicine_ButtonActionPerformed
+        Give_Medicine_Button.setEnabled(false);
+        if(Medicine_List.getSelectedIndex() != -1) {
+            ArrayList medicine_names = new ArrayList();
+            ArrayList medicine_quantity = new ArrayList();
+            ArrayList medicine_price = new ArrayList();
+            int medicines_cost=0;
+            try{
+                String query = "select name,quantity,sell_price from medicine";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query);
+                while(rs.next()){
+                    medicine_names.add(rs.getString("name"));
+                    medicine_quantity.add(rs.getInt("quantity"));
+                    medicine_price.add(rs.getInt("sell_price"));
+                }
+                rs.close();
+                stmt.close();
+            }catch(Exception e){System.out.println(e.getMessage());};
+            DefaultListModel model = new DefaultListModel();
+            int[] index = Medicine_List.getSelectedIndices();
+            for(int i=Medicine_Total.size()-1;i>=0;i--) {
+                for (int j=0;j<index.length;j++) {
+                    if(i==index[j]) {
+                        for (int h = 0; h < medicine_names.size(); h++) {
+                            if(medicine_names.get(h).equals(Medicine_Total.get(i))){
+                                try{
+                                    String query = "update medicine set quantity=? where name='"+medicine_names.get(h)+"'";
+                                    PreparedStatement pstmt = conn.prepareStatement(query);
+                                    pstmt.setInt(1,(Integer)medicine_quantity.get(h)-1);
+                                    pstmt.executeUpdate();
+                                    pstmt.close();
+                                    medicines_cost+=(Integer)medicine_price.get(h);
+                                }catch(Exception e){System.out.println(e.getMessage());};
+                            }
+                        }
+                        Medicine_Total.remove(i);
+                    }
+                }
+            }
+            try{
+                String query = "select medicine_cost from patient_treatment";
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query);
+                while(rs.next()){
+                    medicines_cost+=rs.getInt("medicine_cost");
+                }
+                rs.close();
+                stmt.close();
+            }catch(Exception e){System.out.println(e.getMessage());};
+            String prescription = Medicine_Total.toString();
+            if(!Medicine_Total.isEmpty()) prescription = prescription.replace("[","").replace("]","").replace(" ","");
+            else prescription=null;
+            try{
+                String query = "update patient_treatment set medicine=?,medicine_cost=? where AMKA='"+patient_selected_amka+"'";
+                PreparedStatement pstmt = conn.prepareStatement(query);
+                pstmt.setString(1,prescription);
+                pstmt.setInt(2,medicines_cost);
+                pstmt.executeUpdate();
+                pstmt.close();
+            }catch(Exception e){System.out.println(e.getMessage());};
             for(int j=0;j<Medicine_Total.size();j++) {
                 model.addElement(Medicine_Total.get(j));
             }
             Medicine_List.setModel(model);
         }
-        if(Medicine_List.getModel().getSize()==0) Complete.setEnabled(true);
+        if(Medicine_List.getModel().getSize()==0) {
+            Complete.setEnabled(true);
+        }
         else Complete.setEnabled(false);
     }//GEN-LAST:event_Give_Medicine_ButtonActionPerformed
+
+    private void Medicine_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Medicine_ListMouseReleased
+        if(Medicine_List.getSelectedIndex() != -1) {
+            Give_Medicine_Button.setEnabled(true);
+        }else Give_Medicine_Button.setEnabled(false);
+    }//GEN-LAST:event_Medicine_ListMouseReleased
+
+    private void CompleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CompleteActionPerformed
+        try{
+            String query = "update patient_treatment set treated='1' where AMKA='"+patient_selected_amka+"'";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.executeUpdate();
+            pstmt.close();
+            Complete.setEnabled(false);
+            patient_selected_amka=null;
+            Load_Patient_Box();
+            Treatment.setText(null);
+            Medicine_Hour.setText(null);
+            DefaultListModel model = new DefaultListModel();
+            model.addElement(null);
+            Medicine_List.setModel(model);
+        }catch(Exception e){System.out.println(e.getMessage());};
+    }//GEN-LAST:event_CompleteActionPerformed
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel2">

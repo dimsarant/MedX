@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JToggleButton;
@@ -1345,11 +1346,9 @@ public class StoreKeeper extends javax.swing.JFrame {
             }
             rs.close();
             stmt.close();
-        }catch(Exception e){System.out.println(e.getMessage());};
-        try{
-            String query = "select name,quantity from misc";
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
+            query = "select name,quantity from misc";
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(query);
             while(rs.next()){
                 misc_names.add(rs.getString("name"));
                 misc_quantity.add(rs.getInt("quantity"));
@@ -1387,39 +1386,32 @@ public class StoreKeeper extends javax.swing.JFrame {
                 }
             }
         }
+        Integer year=Calendar.getInstance().get(Calendar.YEAR);
+        Integer month=Calendar.getInstance().get(Calendar.MONTH)+1;
         try{
-            String query = "select medicine_costs from money where type='Outcome'";
+            String query = "insert into outcome (year,month) values (?,?)";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1,year);
+            pstmt.setInt(2,month);
+        }catch(Exception e){System.out.println(e.getMessage());};
+        try{
+            String query = "select medicine_costs,hospital_costs from outcome where year="+year+" and month="+month;
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while(rs.next()){
                 medicine_costs+=rs.getInt("medicine_costs");
-            }
-            rs.close();
-            stmt.close();
-        }catch(Exception e){System.out.println(e.getMessage());};
-        try{
-                String query = "update money set medicine_costs=? where type='Outcome'";
-                PreparedStatement pstmt = conn.prepareStatement(query);
-                pstmt.setInt(1,medicine_costs);
-                pstmt.executeUpdate();
-                pstmt.close();
-        }catch(Exception e){System.out.println(e.getMessage());};
-        try{
-            String query = "select hospital_costs from money where type='Outcome'";
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-            while(rs.next()){
                 hospital_costs+=rs.getInt("hospital_costs");
             }
             rs.close();
             stmt.close();
         }catch(Exception e){System.out.println(e.getMessage());};
         try{
-                String query = "update money set hospital_costs=? where type='Outcome'";
-                PreparedStatement pstmt = conn.prepareStatement(query);
-                pstmt.setInt(1,hospital_costs);
-                pstmt.executeUpdate();
-                pstmt.close();
+            String query = "update outcome set medicine_costs=?,hospital_costs=? where year="+year+" and month="+month;
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1,medicine_costs);
+            pstmt.setInt(2,hospital_costs);
+            pstmt.executeUpdate();
+            pstmt.close();
         }catch(Exception e){System.out.println(e.getMessage());};
         Confirm_Order_Button.setEnabled(false);
         order.clear();
@@ -1427,10 +1419,6 @@ public class StoreKeeper extends javax.swing.JFrame {
         model.removeAllElements();
         Order_Cost();
     }//GEN-LAST:event_Confirm_Order_ButtonActionPerformed
-    // </editor-fold>
-    
-    // <editor-fold defaultstate="collapsed" desc="Panel1">
-    
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel2">

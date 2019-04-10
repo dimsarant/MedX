@@ -1,15 +1,19 @@
 package MedX;
 
     // <editor-fold defaultstate="collapsed" desc="Imports">
+import static MedX.Doctor.conn;
 import java.awt.CardLayout;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
 import javax.swing.JToggleButton;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
     // </editor-fold>
@@ -38,11 +42,11 @@ public class Secretary extends javax.swing.JFrame {
         Main_Schedule_Panel = new javax.swing.JPanel();
         Schedule_List_Scroll = new javax.swing.JScrollPane();
         Schedule_List = new javax.swing.JList<>();
-        Schedule = new javax.swing.JLabel();
+        Schedule_Label = new javax.swing.JLabel();
         Schedule_Expanded_Panel = new javax.swing.JPanel();
         Return_Button_Schedule = new javax.swing.JButton();
         Schedule_Expanded_Scroll = new javax.swing.JScrollPane();
-        Schedule_Expanded = new javax.swing.JList<>();
+        Schedule_Expanded_List = new javax.swing.JList<>();
         Panel1 = new javax.swing.JPanel();
         Main_Patient_Panel = new javax.swing.JPanel();
         Select_Patient = new javax.swing.JLabel();
@@ -64,7 +68,7 @@ public class Secretary extends javax.swing.JFrame {
         Patient_AFM = new javax.swing.JTextField();
         Patient_ID = new javax.swing.JTextField();
         Patient_AMKA = new javax.swing.JTextField();
-        Patient_Gender = new javax.swing.JTextField();
+        Patient_Gender = new javax.swing.JComboBox<>();
         Patient_Age = new javax.swing.JTextField();
         Patient_Room = new javax.swing.JTextField();
         Patient_Update_Button = new javax.swing.JButton();
@@ -93,7 +97,7 @@ public class Secretary extends javax.swing.JFrame {
         New_Patient_AFM = new javax.swing.JTextField();
         New_Patient_ID = new javax.swing.JTextField();
         New_Patient_AMKA = new javax.swing.JTextField();
-        New_Patient_Gender = new javax.swing.JTextField();
+        New_Patient_Gender = new javax.swing.JComboBox<>();
         New_Patient_Age = new javax.swing.JTextField();
         New_Patient_Room = new javax.swing.JTextField();
         New_Patient_Description_Scroll = new javax.swing.JScrollPane();
@@ -109,13 +113,16 @@ public class Secretary extends javax.swing.JFrame {
         New_Insert_fail = new javax.swing.JLabel();
         Panel2 = new javax.swing.JPanel();
         Select_CheckOut_Patient_Label = new javax.swing.JLabel();
-        CheckOut_Patient_List = new javax.swing.JComboBox<>();
+        CheckOut_Patient_Box = new javax.swing.JComboBox<>();
         Confirm_CheckOut_Button = new javax.swing.JButton();
-        Patient_CheckOut_Cost_Label = new javax.swing.JLabel();
-        Patient_CheckOut_Cost = new javax.swing.JTextField();
-        CheckOut_Euro_Label = new javax.swing.JLabel();
+        Patient_Cost_Label = new javax.swing.JLabel();
+        Patient_Cost = new javax.swing.JTextField();
+        Cost_Euro_Label = new javax.swing.JLabel();
         Patient_Payment_Method_Label = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        Payment_Type_Box = new javax.swing.JComboBox<>();
+        Medicine_Cost = new javax.swing.JTextField();
+        Medicine_Cost_Label = new javax.swing.JLabel();
+        Medicine_Cost_Euro_Label = new javax.swing.JLabel();
         Panel3 = new javax.swing.JPanel();
         Worker_Label = new javax.swing.JLabel();
         Reset_Worker_Password = new javax.swing.JCheckBox();
@@ -221,12 +228,7 @@ public class Secretary extends javax.swing.JFrame {
 
         Main_Schedule_Panel.setLayout(null);
 
-        Schedule_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Schedule_List.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "00:00-00:59 | ", "01:00-01:59 | ", "02:00-02:59 | ", "03:00-03:59 | ", "04:00-04:59 | ", "05:00-05:59 | ", "06:00-06:59 | ", "07:00-07:59 | ", "08:00-08:59 | ", "09:00-09:59 | ", "10:00-10:59 | ", "11:00-11:59 | ", "12:00-12:59 | ", "13:00-13:59 | ", "14:00-14:59 | ", "15:00-15:59 | ", "16:00-16:59 | ", "17:00-17:59 | ", "18:00-18:59 | ", "19:00-19:59 | ", "20:00-20:59 | ", "21:00-21:59 | ", "22:00-22:59 | ", "23:00-23:59 | " };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
+        Schedule_List.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         Schedule_List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         Schedule_List.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
@@ -238,11 +240,11 @@ public class Secretary extends javax.swing.JFrame {
         Main_Schedule_Panel.add(Schedule_List_Scroll);
         Schedule_List_Scroll.setBounds(20, 60, 480, 360);
 
-        Schedule.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        Schedule.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Schedule.setText("ΠΡΟΓΡΑΜΜΑ ΗΜΕΡΑΣ : YYYY/MM/DD");
-        Main_Schedule_Panel.add(Schedule);
-        Schedule.setBounds(20, 20, 480, 22);
+        Schedule_Label.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        Schedule_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Schedule_Label.setText("ΠΡΟΓΡΑΜΜΑ ΗΜΕΡΑΣ : YYYY/MM/DD");
+        Main_Schedule_Panel.add(Schedule_Label);
+        Schedule_Label.setBounds(20, 20, 480, 22);
 
         Panel0.add(Main_Schedule_Panel, "Main_Schedule_Panel");
 
@@ -261,18 +263,13 @@ public class Secretary extends javax.swing.JFrame {
         Schedule_Expanded_Panel.add(Return_Button_Schedule);
         Return_Button_Schedule.setBounds(369, 389, 130, 30);
 
-        Schedule_Expanded.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Schedule_Expanded.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        Schedule_Expanded.addMouseListener(new java.awt.event.MouseAdapter() {
+        Schedule_Expanded_List.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        Schedule_Expanded_List.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
-                Schedule_ExpandedMouseReleased(evt);
+                Schedule_Expanded_ListMouseReleased(evt);
             }
         });
-        Schedule_Expanded_Scroll.setViewportView(Schedule_Expanded);
+        Schedule_Expanded_Scroll.setViewportView(Schedule_Expanded_List);
 
         Schedule_Expanded_Panel.add(Schedule_Expanded_Scroll);
         Schedule_Expanded_Scroll.setBounds(20, 20, 480, 400);
@@ -429,9 +426,11 @@ public class Secretary extends javax.swing.JFrame {
         Patient_AMKA.setBounds(350, 150, 150, 40);
 
         Patient_Gender.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Patient_Gender.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Patient_Gender.setDisabledTextColor(new java.awt.Color(204, 204, 204));
+        Patient_Gender.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Άνδρας", "Γυναίκα" }));
+        Patient_Gender.setSelectedIndex(-1);
+        Patient_Gender.setSelectedItem(null);
         Patient_Gender.setEnabled(false);
+        Patient_Gender.setFocusable(false);
         Main_Patient_Panel.add(Patient_Gender);
         Patient_Gender.setBounds(15, 220, 150, 40);
 
@@ -651,8 +650,10 @@ public class Secretary extends javax.swing.JFrame {
         New_Patient_AMKA.setBounds(350, 150, 150, 40);
 
         New_Patient_Gender.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        New_Patient_Gender.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        New_Patient_Gender.setDisabledTextColor(new java.awt.Color(204, 204, 204));
+        New_Patient_Gender.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Άνδρας", "Γυναίκα" }));
+        New_Patient_Gender.setSelectedIndex(-1);
+        New_Patient_Gender.setSelectedItem(null);
+        New_Patient_Gender.setFocusable(false);
         New_Patient_Panel.add(New_Patient_Gender);
         New_Patient_Gender.setBounds(15, 220, 150, 40);
 
@@ -775,53 +776,103 @@ public class Secretary extends javax.swing.JFrame {
         Panel2.add(Select_CheckOut_Patient_Label);
         Select_CheckOut_Patient_Label.setBounds(110, 60, 290, 40);
 
-        CheckOut_Patient_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        CheckOut_Patient_List.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        CheckOut_Patient_List.setFocusable(false);
-        Panel2.add(CheckOut_Patient_List);
-        CheckOut_Patient_List.setBounds(110, 100, 290, 40);
+        CheckOut_Patient_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        CheckOut_Patient_Box.setFocusable(false);
+        CheckOut_Patient_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                CheckOut_Patient_BoxPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
+        Panel2.add(CheckOut_Patient_Box);
+        CheckOut_Patient_Box.setBounds(110, 100, 290, 40);
 
         Confirm_CheckOut_Button.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Confirm_CheckOut_Button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/MedX/images/Enter_Icon.png"))); // NOI18N
         Confirm_CheckOut_Button.setText("ΕΠΙΒΕΒΑΙΩΣΗ");
+        Confirm_CheckOut_Button.setEnabled(false);
         Confirm_CheckOut_Button.setFocusPainted(false);
         Confirm_CheckOut_Button.setFocusable(false);
         Confirm_CheckOut_Button.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        Confirm_CheckOut_Button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Confirm_CheckOut_ButtonActionPerformed(evt);
+            }
+        });
         Panel2.add(Confirm_CheckOut_Button);
-        Confirm_CheckOut_Button.setBounds(180, 270, 140, 40);
+        Confirm_CheckOut_Button.setBounds(190, 330, 140, 40);
 
-        Patient_CheckOut_Cost_Label.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Patient_CheckOut_Cost_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Patient_CheckOut_Cost_Label.setText("Κόστος Περίθαλψης:");
-        Patient_CheckOut_Cost_Label.setFocusable(false);
-        Panel2.add(Patient_CheckOut_Cost_Label);
-        Patient_CheckOut_Cost_Label.setBounds(100, 180, 140, 20);
+        Patient_Cost_Label.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Patient_Cost_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Patient_Cost_Label.setText("Κόστος Περίθαλψης:");
+        Patient_Cost_Label.setFocusable(false);
+        Panel2.add(Patient_Cost_Label);
+        Patient_Cost_Label.setBounds(100, 170, 140, 20);
 
-        Patient_CheckOut_Cost.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        Patient_CheckOut_Cost.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        Patient_CheckOut_Cost.setDisabledTextColor(new java.awt.Color(204, 204, 204));
-        Panel2.add(Patient_CheckOut_Cost);
-        Patient_CheckOut_Cost.setBounds(100, 200, 140, 30);
+        Patient_Cost.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
+        Patient_Cost.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Patient_Cost.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Patient_Cost.setDisabledTextColor(new java.awt.Color(204, 204, 204));
+        Patient_Cost.setFocusable(false);
+        Panel2.add(Patient_Cost);
+        Patient_Cost.setBounds(100, 190, 140, 30);
 
-        CheckOut_Euro_Label.setFont(new java.awt.Font("Arial", 0, 20)); // NOI18N
-        CheckOut_Euro_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        CheckOut_Euro_Label.setText("€");
-        CheckOut_Euro_Label.setFocusable(false);
-        Panel2.add(CheckOut_Euro_Label);
-        CheckOut_Euro_Label.setBounds(240, 200, 20, 30);
+        Cost_Euro_Label.setFont(new java.awt.Font("Arial", 0, 20)); // NOI18N
+        Cost_Euro_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Cost_Euro_Label.setText("€");
+        Cost_Euro_Label.setFocusable(false);
+        Panel2.add(Cost_Euro_Label);
+        Cost_Euro_Label.setBounds(240, 190, 20, 30);
 
         Patient_Payment_Method_Label.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Patient_Payment_Method_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Patient_Payment_Method_Label.setText("Τρόπος Πληρωμής:");
         Patient_Payment_Method_Label.setFocusable(false);
         Panel2.add(Patient_Payment_Method_Label);
-        Patient_Payment_Method_Label.setBounds(280, 180, 140, 20);
+        Patient_Payment_Method_Label.setBounds(280, 200, 140, 20);
 
-        jComboBox1.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Μετρητά", "Πιστωτική Κάρτα", "Τραπεζικός Λογαριασμός" }));
-        jComboBox1.setFocusable(false);
-        Panel2.add(jComboBox1);
-        jComboBox1.setBounds(280, 200, 140, 30);
+        Payment_Type_Box.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        Payment_Type_Box.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Μετρητά", "Πιστωτική Κάρτα", "Τραπεζική Μεταφορά" }));
+        Payment_Type_Box.setSelectedIndex(-1);
+        Payment_Type_Box.setSelectedItem(null);
+        Payment_Type_Box.setEnabled(false);
+        Payment_Type_Box.setFocusable(false);
+        Payment_Type_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Payment_Type_BoxPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
+        Panel2.add(Payment_Type_Box);
+        Payment_Type_Box.setBounds(280, 220, 140, 30);
+
+        Medicine_Cost.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
+        Medicine_Cost.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Medicine_Cost.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        Medicine_Cost.setDisabledTextColor(new java.awt.Color(204, 204, 204));
+        Medicine_Cost.setFocusable(false);
+        Panel2.add(Medicine_Cost);
+        Medicine_Cost.setBounds(100, 250, 140, 30);
+
+        Medicine_Cost_Label.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Medicine_Cost_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Medicine_Cost_Label.setText("Κόστος Φαρμάκων:");
+        Medicine_Cost_Label.setFocusable(false);
+        Panel2.add(Medicine_Cost_Label);
+        Medicine_Cost_Label.setBounds(100, 230, 140, 20);
+
+        Medicine_Cost_Euro_Label.setFont(new java.awt.Font("Arial", 0, 20)); // NOI18N
+        Medicine_Cost_Euro_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Medicine_Cost_Euro_Label.setText("€");
+        Medicine_Cost_Euro_Label.setFocusable(false);
+        Panel2.add(Medicine_Cost_Euro_Label);
+        Medicine_Cost_Euro_Label.setBounds(240, 250, 20, 30);
 
         MainPanel.add(Panel2, "Panel2");
 
@@ -1578,10 +1629,11 @@ public class Secretary extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">
     static Connection conn=null;
     String user=null;
+    int hour_selected=0;
     String chosen_receiver=null;
     String chosen_patient_amka=null;
     String chosen_worker=null;
-    
+    String checkout_patient=null;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Account_Update_Button;
     private javax.swing.JTextField Adress;
@@ -1608,9 +1660,9 @@ public class Secretary extends javax.swing.JFrame {
     private javax.swing.JToggleButton Button6;
     private javax.swing.JButton Cancel_Button;
     private javax.swing.JButton Cancel_New_Patient_Button;
-    private javax.swing.JLabel CheckOut_Euro_Label;
-    private javax.swing.JComboBox<String> CheckOut_Patient_List;
+    private javax.swing.JComboBox<String> CheckOut_Patient_Box;
     private javax.swing.JButton Confirm_CheckOut_Button;
+    private javax.swing.JLabel Cost_Euro_Label;
     private javax.swing.JLabel Delete_Success;
     private javax.swing.JLabel Edit_Information_Label;
     private javax.swing.JTextField Email;
@@ -1629,6 +1681,9 @@ public class Secretary extends javax.swing.JFrame {
     private javax.swing.JPanel Main_Messages;
     private javax.swing.JPanel Main_Patient_Panel;
     private javax.swing.JPanel Main_Schedule_Panel;
+    private javax.swing.JTextField Medicine_Cost;
+    private javax.swing.JLabel Medicine_Cost_Euro_Label;
+    private javax.swing.JLabel Medicine_Cost_Label;
     private javax.swing.JScrollPane Message_Area_Scroll;
     private javax.swing.JTabbedPane Message_Box;
     private javax.swing.JButton Message_Delete_Button;
@@ -1654,7 +1709,7 @@ public class Secretary extends javax.swing.JFrame {
     private javax.swing.JButton New_Patient_Button;
     private javax.swing.JLabel New_Patient_Description_Label;
     private javax.swing.JScrollPane New_Patient_Description_Scroll;
-    private javax.swing.JTextField New_Patient_Gender;
+    private javax.swing.JComboBox<String> New_Patient_Gender;
     private javax.swing.JLabel New_Patient_Gender_Label;
     private javax.swing.JTextField New_Patient_ID;
     private javax.swing.JLabel New_Patient_ID_Label;
@@ -1686,11 +1741,11 @@ public class Secretary extends javax.swing.JFrame {
     private javax.swing.JLabel Patient_AMKA_Label;
     private javax.swing.JTextField Patient_Age;
     private javax.swing.JLabel Patient_Age_Label;
-    private javax.swing.JTextField Patient_CheckOut_Cost;
-    private javax.swing.JLabel Patient_CheckOut_Cost_Label;
+    private javax.swing.JTextField Patient_Cost;
+    private javax.swing.JLabel Patient_Cost_Label;
     private javax.swing.JLabel Patient_Description_Label;
     private javax.swing.JScrollPane Patient_Description_Scroll;
-    private javax.swing.JTextField Patient_Gender;
+    private javax.swing.JComboBox<String> Patient_Gender;
     private javax.swing.JLabel Patient_Gender_Label;
     private javax.swing.JTextField Patient_ID;
     private javax.swing.JLabel Patient_ID_Label;
@@ -1705,6 +1760,7 @@ public class Secretary extends javax.swing.JFrame {
     private javax.swing.JTextField Patient_Telephone;
     private javax.swing.JLabel Patient_Telephone_Label;
     private javax.swing.JButton Patient_Update_Button;
+    private javax.swing.JComboBox<String> Payment_Type_Box;
     private javax.swing.JComboBox<String> Rec_Name_Box;
     private javax.swing.JComboBox<String> Rec_Type_Box;
     private javax.swing.JLabel Recepient;
@@ -1712,10 +1768,10 @@ public class Secretary extends javax.swing.JFrame {
     private javax.swing.JCheckBox Reset_Worker_Password;
     private javax.swing.JButton Return_Button_Message_Expanded;
     private javax.swing.JButton Return_Button_Schedule;
-    private javax.swing.JLabel Schedule;
-    private javax.swing.JList<String> Schedule_Expanded;
+    private javax.swing.JList<String> Schedule_Expanded_List;
     private javax.swing.JPanel Schedule_Expanded_Panel;
     private javax.swing.JScrollPane Schedule_Expanded_Scroll;
+    private javax.swing.JLabel Schedule_Label;
     private javax.swing.JList<String> Schedule_List;
     private javax.swing.JScrollPane Schedule_List_Scroll;
     private javax.swing.JLabel Select_CheckOut_Patient_Label;
@@ -1754,7 +1810,6 @@ public class Secretary extends javax.swing.JFrame {
     private javax.swing.JButton Worker_Update_Button;
     private javax.swing.JTextField Worker_Username;
     private javax.swing.JLabel Worker_Username_Label;
-    private javax.swing.JComboBox<String> jComboBox1;
     // End of variables declaration//GEN-END:variables
     // </editor-fold>
     
@@ -1799,6 +1854,7 @@ public class Secretary extends javax.swing.JFrame {
     }
     
     private void Button0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button0ActionPerformed
+        if(Button0.isSelected()) Load_Schedule();
         Check_Button(Button0);
     }//GEN-LAST:event_Button0ActionPerformed
 
@@ -1808,6 +1864,7 @@ public class Secretary extends javax.swing.JFrame {
     }//GEN-LAST:event_Button1ActionPerformed
 
     private void Button2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button2ActionPerformed
+        if(Button2.isSelected()) Load_CheckOut_Patient_Box();
         Check_Button(Button2);
     }//GEN-LAST:event_Button2ActionPerformed
 
@@ -1840,10 +1897,63 @@ public class Secretary extends javax.swing.JFrame {
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel0">
+    private void Load_Schedule(){
+        Calendar cal = Calendar.getInstance();
+        java.util.Date today = new java.util.Date();
+        cal.setTime(today);
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH)+1;
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        int hour=0;
+        Schedule_Label.setText("ΠΡΟΓΡΑΜΜΑ ΗΜΕΡΑΣ : "+year+"-"+month+"-"+day);
+        DefaultListModel model = new DefaultListModel();
+        ArrayList schedule = new ArrayList();
+        try{
+            String query = "select count(AMKA) as count,check_time from patient_treatment where check_out='1' and treated='1'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                String[] time=rs.getString("check_time").split(":");
+                hour=Integer.parseInt(time[0]);
+                for(int i=0;i<24;i++) {
+                    if(i==hour && rs.getInt("count")==1) schedule.add("Στις "+i+":00-"+(i+1)+":00 ζητήθηκε "+rs.getString("count")+" εξιτήριο.");
+                    else if(i==hour) schedule.add("Στις "+i+":00-"+(i+1)+":00 ζητήθηκαν "+rs.getString("count")+" εξιτήρια.");
+                }
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        for(int i=0;i<schedule.size();i++) {
+            
+            model.addElement(schedule.get(i));
+        }
+        Schedule_List.setModel(model);
+    }
+    
+    private void Load_Schedule_Expanded() {
+        ArrayList patients = new ArrayList();
+        try{
+            String query = "select patient_name,patient_lastname,patient.AMKA,check_time from patient inner join patient_treatment on patient.AMKA=patient_treatment.AMKA where check_out='1' and treated='1'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                String[] time=rs.getString("check_time").split(":");
+                int hour=Integer.parseInt(time[0]);
+                if(hour==hour_selected) patients.add(rs.getString("patient_name")+" "+rs.getString("patient_lastname")+" | "+rs.getString("patient.AMKA")+" | στις: "+rs.getString("check_time"));
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        Schedule_Expanded_List.setModel(new DefaultComboBoxModel(patients.toArray()));
+    }
+    
     private void Schedule_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Schedule_ListMouseReleased
-        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2) {
+        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2 && Schedule_List.getSelectedIndex() != -1) {
             CardLayout card = (CardLayout)Panel0.getLayout();
             card.show(Panel0, "Schedule_Expanded_Panel");
+            String[] time=Schedule_List.getSelectedValue().split(" |:");
+            hour_selected=Integer.parseInt(time[1]);
+            Load_Schedule_Expanded();
         }
     }//GEN-LAST:event_Schedule_ListMouseReleased
 
@@ -1856,6 +1966,7 @@ public class Secretary extends javax.swing.JFrame {
     
     // <editor-fold defaultstate="collapsed" desc="Panel1">
     private void Load_Treat_Patient_Box(){
+        String[] patient=new String[2];
         ArrayList patients = new ArrayList();
         patients.add(null);
         try{
@@ -1864,12 +1975,17 @@ public class Secretary extends javax.swing.JFrame {
             ResultSet rs = stmt.executeQuery(query);
             while(rs.next()){
                 patients.add(rs.getString("patient_name")+" "+rs.getString("patient_lastname")+" | "+rs.getString("AMKA"));
+                if(chosen_patient_amka!=null && chosen_patient_amka.equals(rs.getString("AMKA"))) {
+                    patient[0]=rs.getString("patient_name")+" "+rs.getString("patient_lastname");
+                    patient[1]=chosen_patient_amka;
+                }
             }
             rs.close();
             stmt.close();
             }catch(Exception e){System.out.println(e.getMessage());};
         Treat_Patient_Box.setModel(new DefaultComboBoxModel(patients.toArray()));
-        if(chosen_patient_amka!=null) Treat_Patient_Box.setSelectedItem(Patient_Name.getText()+" "+Patient_LastName.getText()+" | "+chosen_patient_amka);
+        if(chosen_patient_amka!=null) Treat_Patient_Box.setSelectedItem(patient[0]+" | "+patient[1]);
+        
     }
     
     private void Load_Patient() {
@@ -1884,7 +2000,7 @@ public class Secretary extends javax.swing.JFrame {
                 Patient_AFM.setText(rs.getString("AFM"));
                 Patient_ID.setText(rs.getString("ID_NUM"));
                 Patient_AMKA.setText(rs.getString("AMKA"));
-                Patient_Gender.setText(rs.getString("gender"));
+                Patient_Gender.setSelectedItem(rs.getString("gender"));
                 Patient_Age.setText(rs.getString("age"));
             }
             rs.close();
@@ -1930,12 +2046,14 @@ public class Secretary extends javax.swing.JFrame {
             Patient_AFM.setText(null);
             Patient_ID.setText(null);
             Patient_AMKA.setText(null);
-            Patient_Gender.setText(null);
+            Patient_Gender.setSelectedItem(null);
+            Patient_Gender.setSelectedIndex(-1);
             Patient_Age.setText(null);
             Patient_Room.setText(null);
             Patient_Reason.setText(null);
             Patient_Reason.setBackground(javax.swing.UIManager.getDefaults().getColor("ComboBox.disabledBackground"));
             Patient_Update_Button.setEnabled(false);
+            chosen_patient_amka=null;
         }
         else{
             Patient_Name.setEnabled(true);
@@ -1954,7 +2072,8 @@ public class Secretary extends javax.swing.JFrame {
             Patient_AFM.setText(null);
             Patient_ID.setText(null);
             Patient_AMKA.setText(null);
-            Patient_Gender.setText(null);
+            Patient_Gender.setSelectedItem(null);
+            Patient_Gender.setSelectedIndex(-1);
             Patient_Age.setText(null);
             Patient_Room.setText(null);
             Patient_Reason.setText(null);
@@ -1978,7 +2097,7 @@ public class Secretary extends javax.swing.JFrame {
             pstmt.setString(4,Patient_AFM.getText());
             pstmt.setString(5,Patient_ID.getText());
             pstmt.setString(6,Patient_AMKA.getText());
-            pstmt.setString(7,Patient_Gender.getText());
+            pstmt.setString(7,(String)Patient_Gender.getSelectedItem());
             pstmt.setString(8,Patient_Age.getText());
             pstmt.executeUpdate();
             pstmt.close();
@@ -2004,7 +2123,8 @@ public class Secretary extends javax.swing.JFrame {
         New_Patient_AFM.setText(null);
         New_Patient_ID.setText(null);
         New_Patient_AMKA.setText(null);
-        New_Patient_Gender.setText(null);
+        New_Patient_Gender.setSelectedItem(null);
+        New_Patient_Gender.setSelectedIndex(-1);
         New_Patient_Age.setText(null);
         New_Patient_Room.setText(null);
         New_Patient_Reason.setText(null);
@@ -2032,63 +2152,74 @@ public class Secretary extends javax.swing.JFrame {
             pstmt.setString(4,New_Patient_AFM.getText());
             pstmt.setString(5,New_Patient_ID.getText());
             pstmt.setString(6,New_Patient_AMKA.getText());
-            pstmt.setString(7,New_Patient_Gender.getText());
+            pstmt.setString(7,(String)New_Patient_Gender.getSelectedItem());
             pstmt.setString(8,New_Patient_Age.getText());
             pstmt.executeUpdate();
             pstmt.close();
-        }catch(Exception e){System.out.println(e.getMessage());};
+            query = "insert into patient_treatment (AMKA,reason) values (?,?)";
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1,New_Patient_AMKA.getText());
+            pstmt.setString(2,New_Patient_Reason.getText());
+            pstmt.executeUpdate();
+            pstmt.close();
         if(!Appointment_Check.isSelected()){
-            try{  //insert stoixeia
-                String query = "insert into patient_room (AMKA,room) values (?,?)";
-                PreparedStatement pstmt = conn.prepareStatement(query);
-                pstmt.setString(1,New_Patient_AMKA.getText());
-                pstmt.setString(2,New_Patient_Room.getText());
-                pstmt.executeUpdate();
-                pstmt.close();
-                query = "insert into patient_treatment (AMKA,reason) values (?,?)";
-                pstmt = conn.prepareStatement(query);
-                pstmt.setString(1,New_Patient_AMKA.getText());
-                pstmt.setString(2,New_Patient_Reason.getText());
-                pstmt.executeUpdate();
-                pstmt.close();
-                Insert_Success.setVisible(true);
-                chosen_patient_amka=New_Patient_AMKA.getText();
-                Load_Patient();
-                Load_Treat_Patient_Box();
-                CardLayout card = (CardLayout)Panel1.getLayout();
-                card.show(Panel1, "Main_Patient_Panel");
-            }catch(Exception e){try{New_Insert_fail.setVisible(true); 
-                                    String query = "delete from patient where AMKA='"+New_Patient_AMKA.getText()+"'";
-                                    PreparedStatement pstmt = conn.prepareStatement(query);
-                                    pstmt.executeUpdate();
-                                    pstmt.close();
-                                }catch(Exception e2){System.out.println(e2.getMessage());};
-                                System.out.println(e.getMessage());};
+            query = "insert into patient_room (AMKA,room) values (?,?)";
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1,New_Patient_AMKA.getText());
+            pstmt.setString(2,New_Patient_Room.getText());
+            pstmt.executeUpdate();
+            pstmt.close();
         }else{
-            try{  //insert stoixeia
-                String query = "insert into patient_treatment (AMKA,docs_user,reason,date_time) values (?,?)";
-                PreparedStatement pstmt = conn.prepareStatement(query);
-                pstmt.setString(1,New_Patient_AMKA.getText());
-                pstmt.setString(2,String.valueOf(Apointment_Doctor_Box.getSelectedItem()));
-                pstmt.setString(3,New_Patient_Reason.getText());
-                String date_time=String.valueOf(Appointment_Year_List.getSelectedItem())+"-"+String.valueOf(Appointment_Month_List.getSelectedItem())+"-"+String.valueOf(Appointment_Day_List.getSelectedItem())+" "+String.valueOf(Appointment_Hour_List.getSelectedItem())+":"+String.valueOf(Appointment_Minute_List.getSelectedItem())+":00";
-                pstmt.setString(4,date_time);
-                pstmt.executeUpdate();
-                pstmt.close();
-                Insert_Success.setVisible(true);
-                chosen_patient_amka=New_Patient_AMKA.getText();
-                Load_Patient();
-                Load_Treat_Patient_Box();
-                CardLayout card = (CardLayout)Panel1.getLayout();
-                card.show(Panel1, "Main_Patient_Panel");
-            }catch(Exception e){try{New_Insert_fail.setVisible(true);
-                                    String query = "delete from patient where AMKA='"+New_Patient_AMKA.getText()+"'";
-                                    PreparedStatement pstmt = conn.prepareStatement(query);
-                                    pstmt.executeUpdate();
-                                    pstmt.close();
-                                }catch(Exception e2){System.out.println(e2.getMessage());};
-                                System.out.println(e.getMessage());};
+            query = "insert into patient_appointment (AMKA,doc_user,date,time) values (?,?,?,?)";
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1,New_Patient_AMKA.getText());
+            if(Apointment_Doctor_Box.getSelectedItem()!=null){
+                String[] doc=String.valueOf(Apointment_Doctor_Box.getSelectedItem()).split(" \\| ");
+                pstmt.setString(2,doc[1]);
+            }
+            String date=String.valueOf(Appointment_Year_List.getSelectedItem())+"-"+String.valueOf(Appointment_Month_List.getSelectedItem())+"-"+String.valueOf(Appointment_Day_List.getSelectedItem());
+            String time=String.valueOf(Appointment_Hour_List.getSelectedItem())+":"+String.valueOf(Appointment_Minute_List.getSelectedItem())+":00";
+            pstmt.setString(3,date);
+            pstmt.setString(4,time);
+            pstmt.executeUpdate();
+            pstmt.close();
+            query = "insert into worker_schedule (username,date,time) values (?,?,?)";
+            pstmt = conn.prepareStatement(query);
+            String[] doc=String.valueOf(Apointment_Doctor_Box.getSelectedItem()).split(" \\| ");
+            pstmt.setString(1,doc[1]);
+            pstmt.setString(2,date);
+            pstmt.setString(3,time);
+            pstmt.executeUpdate();
+            pstmt.close();
         }
+        Insert_Success.setVisible(true);
+        chosen_patient_amka=New_Patient_AMKA.getText();
+        Treat_Patient_Box.setSelectedItem(New_Patient_Name.getText()+" "+New_Patient_LastName.getText()+" | "+chosen_patient_amka);
+        Patient_Name.setEnabled(true);
+        Patient_LastName.setEnabled(true);
+        Patient_Telephone.setEnabled(true);
+        Patient_AFM.setEnabled(true);
+        Patient_ID.setEnabled(true);
+        Patient_AMKA.setEnabled(true);
+        Patient_Gender.setEnabled(true);
+        Patient_Age.setEnabled(true);
+        Patient_Room.setEnabled(true);
+        Patient_Reason.setEnabled(true);
+        Patient_Reason.setBackground(javax.swing.UIManager.getDefaults().getColor("EditorPane.background"));
+        Load_Patient();
+        Load_Treat_Patient_Box();
+        CardLayout card = (CardLayout)Panel1.getLayout();
+        card.show(Panel1, "Main_Patient_Panel");
+        }catch(SQLException e){ try{
+                                System.out.println(e.getMessage());
+                                New_Insert_fail.setVisible(true);
+                                String query = "delete from patient where AMKA='"+New_Patient_AMKA.getText()+"'";
+                                PreparedStatement pstmt = conn.prepareStatement(query);
+                                pstmt.executeUpdate();
+                                pstmt.close();
+                             }catch(Exception e2){System.out.println(e2.getMessage());};
+                             }
+;
     }//GEN-LAST:event_Insert_New_Patient_ButtonActionPerformed
     
     private void Load_Apointment_Doctor_Box(){
@@ -2204,7 +2335,7 @@ public class Secretary extends javax.swing.JFrame {
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel2">
-    private void Schedule_ExpandedMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Schedule_ExpandedMouseReleased
+    private void Schedule_Expanded_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Schedule_Expanded_ListMouseReleased
         if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2) {
             CardLayout card = (CardLayout)MainPanel.getLayout();
             card.show(MainPanel, "Panel2");
@@ -2213,8 +2344,128 @@ public class Secretary extends javax.swing.JFrame {
             Button0.setSelected(false);
             Button0.setEnabled(false);
             Check_Button(Button2);
+            String[] patient=Schedule_Expanded_List.getSelectedValue().split(" \\| ");
+            checkout_patient=patient[1];
+            Load_CheckOut_Patient_Box();
+            Calculate_Patient_CheckOut_Cost();
         }
-    }//GEN-LAST:event_Schedule_ExpandedMouseReleased
+    }//GEN-LAST:event_Schedule_Expanded_ListMouseReleased
+    
+    private void Load_CheckOut_Patient_Box(){
+        String[] patient=new String[2];
+        ArrayList patients = new ArrayList();
+        patients.add(null);
+        try{
+            String query = "select patient_name,patient_lastname,patient.AMKA from patient inner join patient_treatment on patient.AMKA=patient_treatment.AMKA where check_out='1' and treated='1'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                    patients.add(rs.getString("patient_name")+" "+rs.getString("patient_lastname")+" | "+rs.getString("AMKA"));
+                    if(checkout_patient!=null && checkout_patient.equals(rs.getString("AMKA"))) {
+                    patient[0]=rs.getString("patient_name")+" "+rs.getString("patient_lastname");
+                    patient[1]=checkout_patient;
+                }
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        CheckOut_Patient_Box.setModel(new DefaultComboBoxModel(patients.toArray()));
+        if(checkout_patient!=null) CheckOut_Patient_Box.setSelectedItem(patient[0]+" | "+patient[1]);
+    }
+    
+    private void Calculate_Patient_CheckOut_Cost(){
+        Payment_Type_Box.setEnabled(true);
+        try{
+            String query = "select patient_name,patient_lastname,patient.AMKA,cost,medicine_cost from patient inner join patient_treatment on patient.AMKA=patient_treatment.AMKA where patient.AMKA='"+checkout_patient+"'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                    Patient_Cost.setText(rs.getString("cost"));
+                    Medicine_Cost.setText(rs.getString("medicine_cost"));
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+    }
+
+    private void CheckOut_Patient_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_CheckOut_Patient_BoxPopupMenuWillBecomeInvisible
+        Payment_Type_Box.setSelectedItem(null);
+        Payment_Type_Box.setSelectedIndex(-1);
+        Patient_Cost.setText(null);
+        Medicine_Cost.setText(null);
+        Confirm_CheckOut_Button.setEnabled(false);
+        if(CheckOut_Patient_Box.getSelectedItem()==null){
+            Payment_Type_Box.setEnabled(false);
+            checkout_patient=null;
+        }else{
+            String[] temp=((String)CheckOut_Patient_Box.getSelectedItem()).split(" \\| ");
+            checkout_patient=temp[1];
+            Calculate_Patient_CheckOut_Cost();
+        }
+    }//GEN-LAST:event_CheckOut_Patient_BoxPopupMenuWillBecomeInvisible
+
+    private void Payment_Type_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Payment_Type_BoxPopupMenuWillBecomeInvisible
+        if(CheckOut_Patient_Box.getSelectedIndex()==0){
+            Confirm_CheckOut_Button.setEnabled(false);
+        }else{
+            Confirm_CheckOut_Button.setEnabled(true);
+        }
+    }//GEN-LAST:event_Payment_Type_BoxPopupMenuWillBecomeInvisible
+
+    private void Confirm_CheckOut_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Confirm_CheckOut_ButtonActionPerformed
+        Integer cost=0;
+        Integer medicine_cost=0;
+        Integer patients_income=0;
+        Integer medicine_income=0;
+        Integer year=Calendar.getInstance().get(Calendar.YEAR);
+        Integer month=Calendar.getInstance().get(Calendar.MONTH)+1;
+        try{
+            String query = "insert into income (year,month) values (?,?)";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1,year);
+            pstmt.setInt(2,month);
+        }catch(Exception e){System.out.println(e.getMessage());};
+        try{
+            String query = "select patients_income,medicine_income from income where year="+year+" and month="+month;
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                patients_income+=rs.getInt("patients_income");
+                medicine_income+=rs.getInt("medicine_income");
+            }
+            rs.close();
+            stmt.close();
+            query = "select cost,medicine_cost from patient_treatment where AMKA='"+checkout_patient+"'";
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(query);
+            while(rs.next()){
+                cost+=rs.getInt("cost");
+                medicine_cost+=rs.getInt("medicine_cost");
+            }
+            rs.close();
+            stmt.close();
+            
+        }catch(Exception e){System.out.println(e.getMessage());};
+        try{
+            String query = "update income set patients_income=?,medicine_income=? where year="+year+" and month="+month;
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1,patients_income+cost);
+            pstmt.setInt(2,medicine_income+medicine_cost);
+            pstmt.executeUpdate();
+            pstmt.close();
+            query = "delete from patient where AMKA='"+checkout_patient+"'";
+            pstmt = conn.prepareStatement(query);
+            pstmt.executeUpdate();
+            pstmt.close();
+            checkout_patient=null;
+            Load_CheckOut_Patient_Box();
+            Payment_Type_Box.setSelectedItem(null);
+            Payment_Type_Box.setSelectedIndex(-1);
+            Patient_Cost.setText(null);
+            Medicine_Cost.setText(null);
+            Confirm_CheckOut_Button.setEnabled(false);
+       }catch(Exception e){System.out.println(e.getMessage());};
+    }//GEN-LAST:event_Confirm_CheckOut_ButtonActionPerformed
     // </editor-fold>
     
     //                                                                                              <editor-fold defaultstate="collapsed" desc="Panel3">
@@ -2308,6 +2559,8 @@ public class Secretary extends javax.swing.JFrame {
         if(Worker_Name_Box.getSelectedItem()==null){
             Reset_Boxes();
         }else{
+            Worker_Birth_Month.setEnabled(false);
+            Worker_Birth_Day.setEnabled(false);
             Worker_Username.setEnabled(true);
             Reset_Worker_Password.setEnabled(true);
             Worker_Email.setEnabled(true);
@@ -2337,7 +2590,7 @@ public class Secretary extends javax.swing.JFrame {
         if(i==2) last_day=28;
         for(int j=1;j<=last_day;j++) {
             if(j<10) day.add("0"+String.valueOf(j));
-            else day.add(j);
+            else day.add(String.valueOf(j));
         }
         Worker_Birth_Day.setModel(new DefaultComboBoxModel(day.toArray()));
         Worker_Birth_Day.setSelectedItem(birth_day);

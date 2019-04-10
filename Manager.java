@@ -11,9 +11,9 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
 import javax.swing.JToggleButton;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
     // </editor-fold>
@@ -29,6 +29,7 @@ public class Manager extends javax.swing.JFrame {
         BackgroundImage.requestFocus();
         Button4.setVisible(false);
         this.setTitle("MedX - Καλώς ήρθες διευθυντή - "+user);
+        Load_Worker_Type_List();
     }
     // </editor-fold>
     
@@ -41,11 +42,11 @@ public class Manager extends javax.swing.JFrame {
         Main_Schedule_Panel = new javax.swing.JPanel();
         Schedule_List_Scroll = new javax.swing.JScrollPane();
         Schedule_List = new javax.swing.JList<>();
-        Schedule = new javax.swing.JLabel();
+        Schedule_Label = new javax.swing.JLabel();
         Schedule_Expanded_Panel = new javax.swing.JPanel();
         Return_Button_Schedule = new javax.swing.JButton();
         Schedule_Expanded_Scroll = new javax.swing.JScrollPane();
-        Schedule_Expanded = new javax.swing.JList<>();
+        Schedule_Expanded_List = new javax.swing.JList<>();
         Panel1 = new javax.swing.JPanel();
         Workers_Schedule_Panel = new javax.swing.JPanel();
         Worker_Label = new javax.swing.JLabel();
@@ -125,6 +126,9 @@ public class Manager extends javax.swing.JFrame {
         Medicine_Costs = new javax.swing.JTextField();
         Hospital_Costs = new javax.swing.JTextField();
         Outcome_Total = new javax.swing.JTextField();
+        Date_Label = new javax.swing.JLabel();
+        Chosen_Year_Box = new javax.swing.JComboBox<>();
+        Chosen_Month_Box = new javax.swing.JComboBox<>();
         Panel4 = new javax.swing.JPanel();
         Panel5 = new javax.swing.JPanel();
         Main_Messages = new javax.swing.JPanel();
@@ -206,12 +210,7 @@ public class Manager extends javax.swing.JFrame {
 
         Main_Schedule_Panel.setLayout(null);
 
-        Schedule_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Schedule_List.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "00:00-00:59 | ", "01:00-01:59 | ", "02:00-02:59 | ", "03:00-03:59 | ", "04:00-04:59 | ", "05:00-05:59 | ", "06:00-06:59 | ", "07:00-07:59 | ", "08:00-08:59 | ", "09:00-09:59 | ", "10:00-10:59 | ", "11:00-11:59 | ", "12:00-12:59 | ", "13:00-13:59 | ", "14:00-14:59 | ", "15:00-15:59 | ", "16:00-16:59 | ", "17:00-17:59 | ", "18:00-18:59 | ", "19:00-19:59 | ", "20:00-20:59 | ", "21:00-21:59 | ", "22:00-22:59 | ", "23:00-23:59 | " };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
+        Schedule_List.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         Schedule_List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         Schedule_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Schedule_List.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -224,11 +223,11 @@ public class Manager extends javax.swing.JFrame {
         Main_Schedule_Panel.add(Schedule_List_Scroll);
         Schedule_List_Scroll.setBounds(20, 60, 480, 360);
 
-        Schedule.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        Schedule.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Schedule.setText("ΠΡΟΓΡΑΜΜΑ ΗΜΕΡΑΣ : YYYY/MM/DD");
-        Main_Schedule_Panel.add(Schedule);
-        Schedule.setBounds(20, 20, 480, 22);
+        Schedule_Label.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        Schedule_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Schedule_Label.setText("ΠΡΟΓΡΑΜΜΑ ΗΜΕΡΑΣ : YYYY/MM/DD");
+        Main_Schedule_Panel.add(Schedule_Label);
+        Schedule_Label.setBounds(20, 20, 480, 22);
 
         Panel0.add(Main_Schedule_Panel, "Main_Schedule_Panel");
 
@@ -248,19 +247,14 @@ public class Manager extends javax.swing.JFrame {
         Schedule_Expanded_Panel.add(Return_Button_Schedule);
         Return_Button_Schedule.setBounds(369, 389, 130, 30);
 
-        Schedule_Expanded.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Schedule_Expanded.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        Schedule_Expanded.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        Schedule_Expanded.addMouseListener(new java.awt.event.MouseAdapter() {
+        Schedule_Expanded_List.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        Schedule_Expanded_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Schedule_Expanded_List.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
-                Schedule_ExpandedMouseReleased(evt);
+                Schedule_Expanded_ListMouseReleased(evt);
             }
         });
-        Schedule_Expanded_Scroll.setViewportView(Schedule_Expanded);
+        Schedule_Expanded_Scroll.setViewportView(Schedule_Expanded_List);
 
         Schedule_Expanded_Panel.add(Schedule_Expanded_Scroll);
         Schedule_Expanded_Scroll.setBounds(20, 20, 480, 400);
@@ -283,33 +277,81 @@ public class Manager extends javax.swing.JFrame {
         Worker_Type_List.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Γιατρός", "Νοσοκόμος", "Γραμματέας", "Διευθυντής" }));
         Worker_Type_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Worker_Type_List.setFocusable(false);
+        Worker_Type_List.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Worker_Type_ListPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
         Workers_Schedule_Panel.add(Worker_Type_List);
         Worker_Type_List.setBounds(120, 10, 100, 40);
 
         AutoCompleteDecorator.decorate(Worker_Name_Box);
         Worker_Name_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Worker_Name_Box.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        Worker_Name_Box.setEnabled(false);
+        Worker_Name_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Worker_Name_BoxPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
         Workers_Schedule_Panel.add(Worker_Name_Box);
         Worker_Name_Box.setBounds(230, 10, 270, 40);
 
         Worker_Year.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         Worker_Year.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030", "2031", "2032", "2033", "2034", "2035", "2036", "2037", "2038", "2039", "2040", "2041", "2042", "2043", "2044", "2045", "2046", "2047", "2048", "2049", "2050" }));
         Worker_Year.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Worker_Year.setEnabled(false);
         Worker_Year.setFocusable(false);
+        Worker_Year.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Worker_YearPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
         Workers_Schedule_Panel.add(Worker_Year);
         Worker_Year.setBounds(150, 80, 80, 30);
 
         Worker_Month.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         Worker_Month.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" }));
         Worker_Month.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Worker_Month.setEnabled(false);
         Worker_Month.setFocusable(false);
+        Worker_Month.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Worker_MonthPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
         Workers_Schedule_Panel.add(Worker_Month);
         Worker_Month.setBounds(230, 80, 60, 30);
 
         Worker_Day.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         Worker_Day.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30" }));
         Worker_Day.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Worker_Day.setEnabled(false);
         Worker_Day.setFocusable(false);
+        Worker_Day.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Worker_DayPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
         Workers_Schedule_Panel.add(Worker_Day);
         Worker_Day.setBounds(290, 80, 60, 30);
 
@@ -321,11 +363,6 @@ public class Manager extends javax.swing.JFrame {
         Worker_Date_Label.setBounds(150, 60, 200, 20);
 
         Worker_Schedule_List.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        Worker_Schedule_List.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "00:00-00:59 | ", "01:00-01:59 | ", "02:00-02:59 | ", "03:00-03:59 | ", "04:00-04:59 | ", "05:00-05:59 | ", "06:00-06:59 | ", "07:00-07:59 | ", "08:00-08:59 | ", "09:00-09:59 | ", "10:00-10:59 | ", "11:00-11:59 | ", "12:00-12:59 | ", "13:00-13:59 | ", "14:00-14:59 | ", "15:00-15:59 | ", "16:00-16:59 | ", "17:00-17:59 | ", "18:00-18:59 | ", "19:00-19:59 | ", "20:00-20:59 | ", "21:00-21:59 | ", "22:00-22:59 | ", "23:00-23:59 | " };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         Worker_Schedule_List.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         Worker_Schedule_List.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         Worker_Schedule_List.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -686,50 +723,50 @@ public class Manager extends javax.swing.JFrame {
 
         Panel3.setLayout(null);
         Panel3.add(SeparatorHorTop1);
-        SeparatorHorTop1.setBounds(22, 16, 220, 10);
+        SeparatorHorTop1.setBounds(22, 46, 220, 10);
         Panel3.add(SeparatorHorBot1);
         SeparatorHorBot1.setBounds(22, 415, 220, 10);
 
         SeperatorVerLef1.setOrientation(javax.swing.SwingConstants.VERTICAL);
         Panel3.add(SeperatorVerLef1);
-        SeperatorVerLef1.setBounds(21, 16, 10, 400);
+        SeperatorVerLef1.setBounds(21, 46, 10, 370);
 
         SeperatorVerRig1.setOrientation(javax.swing.SwingConstants.VERTICAL);
         Panel3.add(SeperatorVerRig1);
-        SeperatorVerRig1.setBounds(242, 16, 10, 400);
+        SeperatorVerRig1.setBounds(242, 46, 10, 370);
         Panel3.add(SeparatorHorTop2);
-        SeparatorHorTop2.setBounds(271, 16, 219, 10);
+        SeparatorHorTop2.setBounds(271, 46, 219, 10);
         Panel3.add(SeparatorHorBot2);
         SeparatorHorBot2.setBounds(270, 415, 220, 10);
 
         SeperatorVerLef2.setOrientation(javax.swing.SwingConstants.VERTICAL);
         Panel3.add(SeperatorVerLef2);
-        SeperatorVerLef2.setBounds(270, 16, 10, 400);
+        SeperatorVerLef2.setBounds(270, 46, 10, 370);
 
         SeperatorVerRig2.setOrientation(javax.swing.SwingConstants.VERTICAL);
         Panel3.add(SeperatorVerRig2);
-        SeperatorVerRig2.setBounds(490, 16, 10, 400);
+        SeperatorVerRig2.setBounds(490, 46, 10, 370);
 
         Income_Label.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         Income_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Income_Label.setText("ΕΣΟΔΑ");
         Income_Label.setFocusable(false);
         Panel3.add(Income_Label);
-        Income_Label.setBounds(20, 30, 220, 20);
+        Income_Label.setBounds(20, 60, 220, 20);
 
         Patients_Income_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Patients_Income_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Patients_Income_Label.setText("ΕΣΟΔΑ ΑΠΟ ΑΣΘΕΝΕΙΣ");
         Patients_Income_Label.setFocusable(false);
         Panel3.add(Patients_Income_Label);
-        Patients_Income_Label.setBounds(50, 70, 160, 20);
+        Patients_Income_Label.setBounds(50, 100, 160, 20);
 
         Medicines_Income_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Medicines_Income_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Medicines_Income_Label.setText("ΕΣΟΔΑ ΑΠΟ ΦΑΡΜΑΚΑ");
         Medicines_Income_Label.setFocusable(false);
         Panel3.add(Medicines_Income_Label);
-        Medicines_Income_Label.setBounds(50, 140, 160, 20);
+        Medicines_Income_Label.setBounds(50, 170, 160, 20);
 
         Income_Total_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Income_Total_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -743,14 +780,14 @@ public class Manager extends javax.swing.JFrame {
         Patients_Income.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Patients_Income.setDisabledTextColor(new java.awt.Color(204, 204, 204));
         Panel3.add(Patients_Income);
-        Patients_Income.setBounds(50, 90, 160, 40);
+        Patients_Income.setBounds(50, 120, 160, 40);
 
         Medicines_Income.setEditable(false);
         Medicines_Income.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Medicines_Income.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Medicines_Income.setDisabledTextColor(new java.awt.Color(204, 204, 204));
         Panel3.add(Medicines_Income);
-        Medicines_Income.setBounds(50, 160, 160, 40);
+        Medicines_Income.setBounds(50, 190, 160, 40);
 
         Income_Total.setEditable(false);
         Income_Total.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
@@ -764,28 +801,28 @@ public class Manager extends javax.swing.JFrame {
         Outcome_Label.setText("ΕΞΟΔΑ");
         Outcome_Label.setFocusable(false);
         Panel3.add(Outcome_Label);
-        Outcome_Label.setBounds(270, 30, 220, 20);
+        Outcome_Label.setBounds(270, 60, 220, 20);
 
         Workers_Salary_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Workers_Salary_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Workers_Salary_Label.setText("ΜΙΣΘΟΙ ΕΡΓΑΖΟΜΕΝΩΝ");
         Workers_Salary_Label.setFocusable(false);
         Panel3.add(Workers_Salary_Label);
-        Workers_Salary_Label.setBounds(300, 70, 160, 20);
+        Workers_Salary_Label.setBounds(300, 100, 160, 20);
 
         Medicine_Costs_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Medicine_Costs_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Medicine_Costs_Label.setText("ΕΞΟΔΑ ΑΠΟ ΦΑΡΜΑΚΑ");
         Medicine_Costs_Label.setFocusable(false);
         Panel3.add(Medicine_Costs_Label);
-        Medicine_Costs_Label.setBounds(300, 140, 160, 20);
+        Medicine_Costs_Label.setBounds(300, 170, 160, 20);
 
         Hospital_Costs_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Hospital_Costs_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Hospital_Costs_Label.setText("ΕΞΟΔΑ ΝΟΣΟΚΟΜΕΙΟΥ");
         Hospital_Costs_Label.setFocusable(false);
         Panel3.add(Hospital_Costs_Label);
-        Hospital_Costs_Label.setBounds(300, 210, 160, 20);
+        Hospital_Costs_Label.setBounds(300, 240, 160, 20);
 
         Outcome_Total_Label.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Outcome_Total_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -799,21 +836,21 @@ public class Manager extends javax.swing.JFrame {
         Workers_Salary.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Workers_Salary.setDisabledTextColor(new java.awt.Color(204, 204, 204));
         Panel3.add(Workers_Salary);
-        Workers_Salary.setBounds(300, 90, 160, 40);
+        Workers_Salary.setBounds(300, 120, 160, 40);
 
         Medicine_Costs.setEditable(false);
         Medicine_Costs.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Medicine_Costs.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Medicine_Costs.setDisabledTextColor(new java.awt.Color(204, 204, 204));
         Panel3.add(Medicine_Costs);
-        Medicine_Costs.setBounds(300, 160, 160, 40);
+        Medicine_Costs.setBounds(300, 190, 160, 40);
 
         Hospital_Costs.setEditable(false);
         Hospital_Costs.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         Hospital_Costs.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         Hospital_Costs.setDisabledTextColor(new java.awt.Color(204, 204, 204));
         Panel3.add(Hospital_Costs);
-        Hospital_Costs.setBounds(300, 230, 160, 40);
+        Hospital_Costs.setBounds(300, 260, 160, 40);
 
         Outcome_Total.setEditable(false);
         Outcome_Total.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
@@ -821,6 +858,43 @@ public class Manager extends javax.swing.JFrame {
         Outcome_Total.setDisabledTextColor(new java.awt.Color(204, 204, 204));
         Panel3.add(Outcome_Total);
         Outcome_Total.setBounds(300, 350, 160, 40);
+
+        Date_Label.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        Date_Label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Date_Label.setText("ΗΜΕΡΟΜΗΝΙΑ");
+        Date_Label.setFocusable(false);
+        Panel3.add(Date_Label);
+        Date_Label.setBounds(110, 10, 150, 30);
+
+        Chosen_Year_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Chosen_Year_Box.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Chosen_Year_Box.setFocusable(false);
+        Chosen_Year_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Chosen_Year_BoxPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
+        Panel3.add(Chosen_Year_Box);
+        Chosen_Year_Box.setBounds(260, 10, 60, 30);
+
+        Chosen_Month_Box.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        Chosen_Month_Box.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        Chosen_Month_Box.setFocusable(false);
+        Chosen_Month_Box.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                Chosen_Month_BoxPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
+        Panel3.add(Chosen_Month_Box);
+        Chosen_Month_Box.setBounds(320, 10, 45, 30);
 
         MainPanel.add(Panel3, "Panel3");
 
@@ -1354,9 +1428,13 @@ public class Manager extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">
     static Connection conn=null;
     String user=null;
+    int hour_selected=0;
+    String worker_history_chosen=null;
     String chosen_job=null;
     String chosen_worker=null;
     String chosen_receiver=null;
+    Integer year_budget=0;
+    Integer month_budget=0;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Account_Update_Button;
     private javax.swing.JTextField Adress;
@@ -1379,6 +1457,9 @@ public class Manager extends javax.swing.JFrame {
     private javax.swing.JLabel Chosen_Doctor_LastName_Label;
     private javax.swing.JTextField Chosen_Doctor_Name;
     private javax.swing.JLabel Chosen_Doctor_Name_Label;
+    private javax.swing.JComboBox<String> Chosen_Month_Box;
+    private javax.swing.JComboBox<String> Chosen_Year_Box;
+    private javax.swing.JLabel Date_Label;
     private javax.swing.JTextField Doctor_Salary;
     private javax.swing.JLabel Doctor_Salary_Label;
     private javax.swing.JLabel Edit_Information_Label;
@@ -1450,10 +1531,10 @@ public class Manager extends javax.swing.JFrame {
     private javax.swing.JButton Return_Button_Schedule;
     private javax.swing.JButton Salary_Confirm_Button;
     private javax.swing.JLabel Salary_Euro_Label0;
-    private javax.swing.JLabel Schedule;
-    private javax.swing.JList<String> Schedule_Expanded;
+    private javax.swing.JList<String> Schedule_Expanded_List;
     private javax.swing.JPanel Schedule_Expanded_Panel;
     private javax.swing.JScrollPane Schedule_Expanded_Scroll;
+    private javax.swing.JLabel Schedule_Label;
     private javax.swing.JList<String> Schedule_List;
     private javax.swing.JScrollPane Schedule_List_Scroll;
     private javax.swing.JButton Send_Button;
@@ -1556,6 +1637,7 @@ public class Manager extends javax.swing.JFrame {
     }
     
     private void Button0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button0ActionPerformed
+        if(Button0.isSelected()) Load_Schedule();
         Check_Button(Button0);
     }//GEN-LAST:event_Button0ActionPerformed
 
@@ -1572,7 +1654,10 @@ public class Manager extends javax.swing.JFrame {
     }//GEN-LAST:event_Button2ActionPerformed
 
     private void Button3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Button3ActionPerformed
-        if(Button3.isSelected()) Load_Money();
+        if(Button3.isSelected()) {
+            Load_Time_Boxes();
+            Load_Budget();
+        }
         Check_Button(Button3);
     }//GEN-LAST:event_Button3ActionPerformed
 
@@ -1601,10 +1686,65 @@ public class Manager extends javax.swing.JFrame {
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel0">
+    private void Load_Schedule(){
+        Calendar cal = Calendar.getInstance();
+        java.util.Date today = new java.util.Date();
+        cal.setTime(today);
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH)+1;
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        int hour=0;
+        Schedule_Label.setText("ΠΡΟΓΡΑΜΜΑ ΗΜΕΡΑΣ : "+year+"-"+month+"-"+day);
+        DefaultListModel model = new DefaultListModel();
+        ArrayList schedule = new ArrayList();
+        try{
+            String query = "select count(time) as count,time from worker_schedule where date between '"+year+"-"+month+"-"+day+" 00:00:00' AND '"+year+"-"+month+"-"+(day+1)+" 23:59:59' order by time ASC";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                String[] time=rs.getString("time").split(":");
+                hour=Integer.parseInt(time[0]);
+                for(int i=0;i<24;i++) {
+                    if(i==hour && rs.getInt("count")==1) schedule.add("Στις "+i+":00-"+(i+1)+":00 έχει ραντεβού "+rs.getString("count")+" εργαζόμενος.");
+                    else if(i==hour) schedule.add("Στις "+i+":00-"+(i+1)+":00 έχουν ραντεβού "+rs.getString("count")+" εργαζόμενοι.");
+                }
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        for(int i=0;i<schedule.size();i++) {
+            
+            model.addElement(schedule.get(i));
+        }
+        Schedule_List.setModel(model);
+    }
+    
+    private void Load_Schedule_Expanded() {
+        Calendar cal = Calendar.getInstance();
+        java.util.Date today = new java.util.Date();
+        cal.setTime(today);
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH)+1;
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        ArrayList schedule = new ArrayList();
+        try{
+            String query = "select users.username,name,lastname,time from worker_schedule inner join users on users.username=worker_schedule.username where date between '"+year+"-"+month+"-"+day+" 00:00:00' AND '"+year+"-"+month+"-"+(day+1)+" 23:59:59' order by time ASC";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                schedule.add("Ο "+rs.getString("name")+" "+rs.getString("lastname")+" | "+rs.getString("username")+" | έχει ραντεβού στις "+rs.getTime("time"));
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        Schedule_Expanded_List.setModel(new DefaultComboBoxModel(schedule.toArray()));
+    }
+    
     private void Schedule_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Schedule_ListMouseReleased
-        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2) {
+        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2 && Schedule_List.getSelectedIndex() != -1) {
             CardLayout card = (CardLayout)Panel0.getLayout();
             card.show(Panel0, "Schedule_Expanded_Panel");
+            Load_Schedule_Expanded();
         }
     }//GEN-LAST:event_Schedule_ListMouseReleased
 
@@ -1613,8 +1753,8 @@ public class Manager extends javax.swing.JFrame {
         card.show(Panel0, "Main_Schedule_Panel");
     }//GEN-LAST:event_Return_Button_ScheduleActionPerformed
 
-    private void Schedule_ExpandedMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Schedule_ExpandedMouseReleased
-        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2) {
+    private void Schedule_Expanded_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Schedule_Expanded_ListMouseReleased
+        if(evt.getButton() == evt.BUTTON1 && evt.getClickCount() == 2 && Schedule_Expanded_List.getSelectedIndex() != -1) {
             CardLayout card = (CardLayout)MainPanel.getLayout();
             card.show(MainPanel, "Panel1");
             Button1.setSelected(true);
@@ -1622,11 +1762,188 @@ public class Manager extends javax.swing.JFrame {
             Button0.setSelected(false);
             Button0.setEnabled(false);
             Check_Button(Button1);
+            String[] worker=Schedule_Expanded_List.getSelectedValue().split(" \\| ");
+            worker_history_chosen=worker[1];
         }
-    }//GEN-LAST:event_Schedule_ExpandedMouseReleased
+    }//GEN-LAST:event_Schedule_Expanded_ListMouseReleased
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel1">
+    private void Load_Worker_Type_List(){
+        ArrayList jobs = new ArrayList();
+        jobs.add(null);
+        jobs.add("Γιατρός");
+        jobs.add("Νοσηλευτής");
+        jobs.add("Γραμματέας");
+        jobs.add("Αποθηκάριος");
+        jobs.add("Διευθυντής");
+        Worker_Type_List.setModel(new DefaultComboBoxModel(jobs.toArray()));
+    }
+    
+    private void Load_Worker_Name_Box(String job){
+        String[] worker=new String[2];
+        ArrayList workers = new ArrayList();
+        workers.add(null);
+        try{
+            String query = "select username,name,lastname from users where job='"+job+"'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                workers.add(rs.getString("name")+" "+rs.getString("lastname")+" | "+rs.getString("username"));
+                if(worker_history_chosen!=null && worker_history_chosen.equals(rs.getString("username"))) {
+                    worker[0]=rs.getString("name")+" "+rs.getString("lastname");
+                    worker[1]=worker_history_chosen;
+                }
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        Worker_Name_Box.setModel(new DefaultComboBoxModel(workers.toArray()));
+        if(worker_history_chosen!=null) Worker_Name_Box.setSelectedItem(worker[0]+" | "+worker[1]);
+    }
+    
+    private void Load_Worker_Year_Month_Hours(){
+        LocalDate localDate = LocalDate.now();
+        ArrayList temp = new ArrayList();
+        temp.add(null);
+        temp.add(localDate.getYear());
+        Worker_Year.setModel(new DefaultComboBoxModel(temp.toArray()));
+        temp.clear();
+        temp.add(null);
+        for(int i=1;i<=12;i++) temp.add(i);
+        Worker_Month.setModel(new DefaultComboBoxModel(temp.toArray()));
+    }
+    
+    private void Load_Worker_Schedule(){
+        if((String.valueOf(Worker_Type_List.getSelectedItem()).equals("Γιατρός"))) {
+            int year = (Integer)Worker_Year.getSelectedItem();
+            int month = (Integer)Worker_Month.getSelectedItem();
+            int day = (Integer)Worker_Day.getSelectedItem();
+            int hour=0;
+            DefaultListModel model = new DefaultListModel();
+            ArrayList schedule = new ArrayList();
+            try{
+            String query = "select count(AMKA) as count,time from patient_appointment where doc_user='"+worker_history_chosen+"' and date between '"+year+"-"+month+"-"+day+" 00:00:00' AND '"+year+"-"+month+"-"+(day+1)+" 23:59:59' order by time ASC";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                String[] time=rs.getString("time").split(":");
+                hour=Integer.parseInt(time[0]);
+                for(int i=0;i<24;i++) {
+                    if(i==hour && rs.getInt("count")==1) schedule.add("Στις "+i+":00-"+(i+1)+":00 έχει "+rs.getString("count")+" ασθενή.");
+                    else if(i==hour) schedule.add("Στις "+i+":00-"+(i+1)+":00 έχει "+rs.getString("count")+" ασθενείς.");
+                }
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        for(int i=0;i<schedule.size();i++) {
+            
+            model.addElement(schedule.get(i));
+        }
+        Worker_Schedule_List.setModel(model);
+        }
+        else if((String.valueOf(Worker_Type_List.getSelectedItem()).equals("Νοσηλευτής"))){
+        
+        }
+        else if((String.valueOf(Worker_Type_List.getSelectedItem()).equals("Γραμματέας"))){
+            System.out.println("grammateas");
+        DefaultListModel model = new DefaultListModel();
+        ArrayList schedule = new ArrayList();
+        try{
+            String query = "select count(AMKA) as count,check_time from patient_treatment where check_out='1'";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                String[] time=rs.getString("check_time").split(":");
+                int hour=Integer.parseInt(time[0]);
+                for(int i=0;i<24;i++) {
+                    if(i==hour && rs.getInt("count")==1) schedule.add("Στις "+i+":00-"+(i+1)+":00 βγήκε "+rs.getString("count")+" εξιτήριο.");
+                    else if(i==hour) schedule.add("Στις "+i+":00-"+(i+1)+":00 βγήκαν "+rs.getString("count")+" ασθενείς.");
+                }
+            }
+            rs.close();
+            stmt.close();
+        }catch(Exception e){System.out.println(e.getMessage());};
+        for(int i=0;i<schedule.size();i++) {
+            
+            model.addElement(schedule.get(i));
+        }
+        Worker_Schedule_List.setModel(model);
+        }
+    }
+
+    private void Worker_Type_ListPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Worker_Type_ListPopupMenuWillBecomeInvisible
+        worker_history_chosen=null;
+        Worker_Year.setEnabled(false);
+        Worker_Year.setSelectedItem(null);
+        Worker_Month.setEnabled(false);
+        Worker_Month.setSelectedItem(null);
+        Worker_Day.setEnabled(false);
+        Worker_Day.setSelectedItem(null);
+        if(Worker_Type_List.getSelectedItem() == null) {
+            Worker_Name_Box.setEnabled(false);
+            Worker_Name_Box.setSelectedItem(null);
+        }
+        else {
+            Worker_Name_Box.setEnabled(true);
+            Load_Worker_Name_Box(String.valueOf(Worker_Type_List.getSelectedItem()));
+        }
+    }//GEN-LAST:event_Worker_Type_ListPopupMenuWillBecomeInvisible
+
+    private void Worker_Name_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Worker_Name_BoxPopupMenuWillBecomeInvisible
+        worker_history_chosen=null;
+        Worker_Month.setEnabled(false);
+        Worker_Month.setSelectedItem(null);
+        Worker_Day.setEnabled(false);
+        Worker_Day.setSelectedItem(null);
+        if(Worker_Name_Box.getSelectedItem() == null) {
+            Worker_Year.setEnabled(false);
+            Worker_Year.setSelectedItem(null);
+        }
+        else {
+            Worker_Year.setEnabled(true);
+            String[] worker=(String.valueOf(Worker_Name_Box.getSelectedItem())).split(" \\| ");
+            worker_history_chosen=worker[1];
+            Load_Worker_Year_Month_Hours();
+        }
+    }//GEN-LAST:event_Worker_Name_BoxPopupMenuWillBecomeInvisible
+
+    private void Worker_YearPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Worker_YearPopupMenuWillBecomeInvisible
+        Worker_Day.setEnabled(false);
+        Worker_Month.setSelectedItem(null);
+        Worker_Day.setSelectedItem(null);
+        if(Worker_Year.getSelectedItem()==null){
+            Worker_Month.setEnabled(false);
+        }else Worker_Month.setEnabled(true);
+    }//GEN-LAST:event_Worker_YearPopupMenuWillBecomeInvisible
+
+    private void Worker_MonthPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Worker_MonthPopupMenuWillBecomeInvisible
+        Worker_Day.setSelectedItem(null);
+        if(Worker_Month.getSelectedItem()==null){
+            Worker_Day.setEnabled(false);
+        }else{
+            ArrayList day = new ArrayList();
+            day.add(null);
+            Worker_Day.setEnabled(true);
+            int i=Integer.valueOf(String.valueOf(Worker_Month.getSelectedItem()));
+            int last_day=0;
+            if(i==1 || i==3 || i==5 || i==7 || i==8 || i==10 || i==12) last_day=31;
+            if(i==4 || i==6 || i==9 || i==11) last_day=30;
+            if(i==2) last_day=28;
+            for(int j=1;j<=last_day;j++) day.add(j);
+            Worker_Day.setModel(new DefaultComboBoxModel(day.toArray()));
+        }
+    }//GEN-LAST:event_Worker_MonthPopupMenuWillBecomeInvisible
+
+    private void Worker_DayPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Worker_DayPopupMenuWillBecomeInvisible
+        if(Worker_Day.getSelectedItem()==null){
+            
+        }else{
+            Load_Worker_Schedule();
+        }
+    }//GEN-LAST:event_Worker_DayPopupMenuWillBecomeInvisible
+    
     private void Worker_Schedule_ListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Worker_Schedule_ListMouseReleased
         // TODO add your handling code here:
     }//GEN-LAST:event_Worker_Schedule_ListMouseReleased
@@ -1732,7 +2049,7 @@ public class Manager extends javax.swing.JFrame {
         LocalDate localDate = LocalDate.now();
         ArrayList year_month = new ArrayList();
         year_month.add(null);
-        for(int i=localDate.getYear()-50;i<=localDate.getYear();i++) year_month.add(i);
+        for(int i=localDate.getYear()-70;i<=localDate.getYear();i++) year_month.add(i);
         Worker_Birth_Year.setModel(new DefaultComboBoxModel(year_month.toArray()));
         year_month.clear();
         year_month.add(null);
@@ -1863,36 +2180,69 @@ public class Manager extends javax.swing.JFrame {
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Panel3">
-    private void Load_Money(){
+    private void Load_Time_Boxes(){
+        ArrayList years = new ArrayList();
+        ArrayList months = new ArrayList();
+        try{
+            String query = "select distinct year from outcome";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                years.add(rs.getInt("year"));
+            }
+            rs.close();
+            stmt.close();
+            Chosen_Year_Box.setModel(new DefaultComboBoxModel(years.toArray()));
+            if(year_budget==0) {
+                Chosen_Year_Box.setSelectedIndex(Chosen_Year_Box.getItemCount()-1);
+                year_budget=(Integer)Chosen_Year_Box.getSelectedItem();
+            }
+            Chosen_Year_Box.setSelectedItem(year_budget);
+            query = "select distinct month from outcome";
+            stmt = conn.createStatement();
+             rs = stmt.executeQuery(query);
+            while(rs.next()){
+                months.add(rs.getInt("month"));
+            }
+            rs.close();
+            stmt.close();
+            Chosen_Month_Box.setModel(new DefaultComboBoxModel(months.toArray()));
+            if(month_budget==0) {
+                Chosen_Month_Box.setSelectedIndex(Chosen_Month_Box.getItemCount()-1);
+                month_budget=(Integer)Chosen_Month_Box.getSelectedItem();
+            }
+            Chosen_Month_Box.setSelectedItem(month_budget);
+        }catch(Exception e){System.out.println(e.getMessage());};
+    }
+    
+    private void Chosen_Year_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Chosen_Year_BoxPopupMenuWillBecomeInvisible
+        year_budget=(Integer)Chosen_Year_Box.getSelectedItem();
+        Load_Budget();
+    }//GEN-LAST:event_Chosen_Year_BoxPopupMenuWillBecomeInvisible
+
+    private void Chosen_Month_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Chosen_Month_BoxPopupMenuWillBecomeInvisible
+        month_budget=(Integer)Chosen_Month_Box.getSelectedItem();
+        Load_Budget();
+    }//GEN-LAST:event_Chosen_Month_BoxPopupMenuWillBecomeInvisible
+    
+    private void Load_Budget(){
         int income=0;
         int outcome=0;
         try{
-            String query = "select sum(salary) as money from salaries";
+            String query = "select salaries_sum,medicine_costs,hospital_costs from outcome where year='"+year_budget+"' AND month='"+month_budget+"'";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while(rs.next()){
-                Workers_Salary.setText(rs.getString("money")+"€");
-                outcome+=rs.getInt("money");
-            }
-            rs.close();
-            stmt.close();
-        }catch(Exception e){System.out.println(e.getMessage());};
-        try{
-            String query = "select medicine_costs,hospital_costs from money where type='Outcome'";
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-            while(rs.next()){
+                Workers_Salary.setText(rs.getString("salaries_sum")+"€");
                 Medicine_Costs.setText(rs.getString("medicine_costs")+"€");
                 Hospital_Costs.setText(rs.getString("hospital_costs")+"€");
-                outcome+=rs.getInt("medicine_costs")+rs.getInt("hospital_costs");
+                outcome+=rs.getInt("salaries_sum")+rs.getInt("medicine_costs")+rs.getInt("hospital_costs");
             }
             rs.close();
             stmt.close();
-        }catch(Exception e){System.out.println(e.getMessage());};
-        try{
-            String query = "select patients_income,medicine_income from money where type='Income'";
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
+            query = "select patients_income,medicine_income from income where year='"+year_budget+"' AND month='"+month_budget+"'";
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(query);
             while(rs.next()){
                 Patients_Income.setText(rs.getString("patients_income")+"€");
                 Medicines_Income.setText(rs.getString("medicine_income")+"€");
