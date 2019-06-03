@@ -1027,21 +1027,23 @@ public class Nurse extends javax.swing.JFrame {
         Schedule_Label.setText("ΠΡΟΓΡΑΜΜΑ ΗΜΕΡΑΣ : "+year+"-"+month+"-"+day);
         DefaultListModel model = new DefaultListModel();
         ArrayList schedule = new ArrayList();
+        int patient_count[] = new int[24];
         try{
-            String query = "select count(AMKA) as count,medicine_time from patient_treatment where treated='0'";
+            String query = "select AMKA,medicine_time from patient_treatment where treated='0'";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while(rs.next()){
                 String[] time=rs.getString("medicine_time").split(":");
                 hour=Integer.parseInt(time[0]);
-                for(int i=0;i<24;i++) {
-                    if(i==hour && rs.getInt("count")==1) schedule.add("Στις "+i+":00-"+(i+1)+":00 χρειάζεται φροντίδα "+rs.getString("count")+" ασθενής.");
-                    else if(i==hour) schedule.add("Στις "+i+":00-"+(i+1)+":00 χρειάζονται φροντίδα "+rs.getString("count")+" ασθενείς.");
-                }
+                patient_count[hour]++;
             }
             rs.close();
             stmt.close();
         }catch(Exception e){System.out.println(e.getMessage());};
+        for(int i=0;i<24;i++) {
+            if( patient_count[i]==1) schedule.add("Στις "+i+":00-"+i+":59 χρειάζεται φροντίδα 1 ασθενής.");
+            else if(patient_count[i]>1) schedule.add("Στις "+i+":00-"+i+":59 χρειάζονται φροντίδα "+patient_count[i]+" ασθενείς.");
+        }
         for(int i=0;i<schedule.size();i++) {
             
             model.addElement(schedule.get(i));

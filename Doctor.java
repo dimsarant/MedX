@@ -1997,6 +1997,7 @@ public class Doctor extends javax.swing.JFrame {
     }
     
     private void Load_Patient_Card() {
+        Patient_History_Button.setEnabled(false);
         try{
             String query = "select patient_name,patient_lastname,tel,gender,age from patient where AMKA='"+patient_selected_amka+"'";
             Statement stmt = conn.createStatement();
@@ -2034,10 +2035,24 @@ public class Doctor extends javax.swing.JFrame {
       }
     }
     
+    private void Check_History_Button() {
+        try{
+            String query = "select distinct AMKA from patient_history where AMKA="+patient_selected_amka;
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next()){
+                Patient_History_Button.setEnabled(true);
+            }
+            rs.close();
+            stmt.close();
+            }catch(Exception e){System.out.println(e.getMessage());};
+    }
+    
     private void Patient_Card_ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Patient_Card_ButtonActionPerformed
         Insert_Success.setVisible(false);
         Insert_Fail.setVisible(false);
         Load_Patient_Card();
+        Check_History_Button();
         CardLayout card = (CardLayout)Panel1.getLayout();
         card.show(Panel1, "Patient_Card");
     }//GEN-LAST:event_Patient_Card_ButtonActionPerformed
@@ -2476,6 +2491,7 @@ public class Doctor extends javax.swing.JFrame {
     }
     
     private void Patient_History_BoxPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_Patient_History_BoxPopupMenuWillBecomeInvisible
+        Reset_History();
         if(Patient_History_Box.getSelectedItem()==null){
             Patient_Date_History_Box.setEnabled(false);
             patient_history_amka=null;
