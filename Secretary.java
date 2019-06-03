@@ -1908,21 +1908,23 @@ public class Secretary extends javax.swing.JFrame {
         Schedule_Label.setText("ΠΡΟΓΡΑΜΜΑ ΗΜΕΡΑΣ : "+year+"-"+month+"-"+day);
         DefaultListModel model = new DefaultListModel();
         ArrayList schedule = new ArrayList();
+        int patient_count[] = new int[24];
         try{
-            String query = "select count(AMKA) as count,check_time from patient_treatment where check_out='1' and treated='1'";
+            String query = "select check_time from patient_treatment where check_out='1' and treated='1'";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while(rs.next()){
                 String[] time=rs.getString("check_time").split(":");
                 hour=Integer.parseInt(time[0]);
-                for(int i=0;i<24;i++) {
-                    if(i==hour && rs.getInt("count")==1) schedule.add("Στις "+i+":00-"+(i+1)+":00 ζητήθηκε "+rs.getString("count")+" εξιτήριο.");
-                    else if(i==hour) schedule.add("Στις "+i+":00-"+(i+1)+":00 ζητήθηκαν "+rs.getString("count")+" εξιτήρια.");
-                }
+                patient_count[hour]++;
             }
             rs.close();
             stmt.close();
         }catch(Exception e){System.out.println(e.getMessage());};
+        for(int i=0;i<24;i++) {
+            if( patient_count[i]==1) schedule.add("Στις "+i+":00-"+i+":59 ζητήθηκε 1 εξιτήριο.");
+            else if(patient_count[i]>1) schedule.add("Στις "+i+":00-"+i+":59 ζητήθηκαν "+patient_count[i]+" εξιτήρια.");
+        }
         for(int i=0;i<schedule.size();i++) {
             
             model.addElement(schedule.get(i));
@@ -2250,11 +2252,11 @@ public class Secretary extends javax.swing.JFrame {
         Appointment_Month_List.setModel(new DefaultComboBoxModel(temp.toArray()));
         temp.clear();
         temp.add(null);
-        for(int i=1;i<=23;i++) temp.add(i);
+        for(int i=0;i<=23;i++) temp.add(i);
         Appointment_Hour_List.setModel(new DefaultComboBoxModel(temp.toArray()));
         temp.clear();
         temp.add(null);
-        for(int i=1;i<=59;i++) temp.add(i);
+        for(int i=0;i<=59;i++) temp.add(i);
         Appointment_Minute_List.setModel(new DefaultComboBoxModel(temp.toArray()));
     }
     

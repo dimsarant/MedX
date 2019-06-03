@@ -1815,21 +1815,23 @@ public class Doctor extends javax.swing.JFrame {
         Schedule_Label.setText("ΡΑΝΤΕΒΟΥ ΗΜΕΡΑΣ : "+year+"-"+month+"-"+day);
         DefaultListModel model = new DefaultListModel();
         ArrayList schedule = new ArrayList();
+        int patient_count[] = new int[24];
         try{
-            String query = "select count(AMKA) as count,time from patient_appointment where doc_user='"+user+"' and date between '"+year+"-"+month+"-"+day+" 00:00:00' AND '"+year+"-"+month+"-"+(day+1)+" 23:59:59' order by time ASC";
+            String query = "select time from patient_appointment where doc_user='"+user+"' and date between '"+year+"-"+month+"-"+day+" 00:00:00' AND '"+year+"-"+month+"-"+(day+1)+" 23:59:59' order by time ASC";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while(rs.next()){
                 String[] time=rs.getString("time").split(":");
                 hour=Integer.parseInt(time[0]);
-                for(int i=0;i<24;i++) {
-                    if(i==hour && rs.getInt("count")==1) schedule.add("Στις "+i+":00-"+(i+1)+":00 έχεις "+rs.getString("count")+" ασθενή.");
-                    else if(i==hour) schedule.add("Στις "+i+":00-"+(i+1)+":00 έχεις "+rs.getString("count")+" ασθενείς.");
-                }
+                patient_count[hour]++;
             }
             rs.close();
             stmt.close();
         }catch(Exception e){System.out.println(e.getMessage());};
+        for(int i=0;i<24;i++) {
+            if( patient_count[i]==1) schedule.add("Στις "+i+":00-"+i+":59 έχεις 1 ασθενή.");
+            else if(patient_count[i]>1) schedule.add("Στις "+i+":00-"+i+":59 έχεις "+patient_count[i]+" ασθενείς.");
+        }
         for(int i=0;i<schedule.size();i++) {
             
             model.addElement(schedule.get(i));
@@ -1838,14 +1840,21 @@ public class Doctor extends javax.swing.JFrame {
     }
     
     private void Load_Schedule_Expanded() {
+        Calendar cal = Calendar.getInstance();
+        Date today = new Date();
+        cal.setTime(today);
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH)+1;
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        int hour=0;
         ArrayList patients = new ArrayList();
         try{
-            String query = "select patient_name,patient_lastname,patient.AMKA,time from patient inner join patient_appointment on patient.AMKA=patient_appointment.AMKA";
+            String query = "select patient_name,patient_lastname,patient.AMKA,time from patient inner join patient_appointment on patient.AMKA=patient_appointment.AMKA and date between '"+year+"-"+month+"-"+day+" 00:00:00' AND '"+year+"-"+month+"-"+(day+1)+" 23:59:59' order by time ASC";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while(rs.next()){
                 String[] time=rs.getString("time").split(":");
-                int hour=Integer.parseInt(time[0]);
+                hour=Integer.parseInt(time[0]);
                 if(hour==hour_selected) patients.add(rs.getString("patient_name")+" "+rs.getString("patient_lastname")+" | "+rs.getString("patient.AMKA")+" | στις: "+rs.getString("time"));
             }
             rs.close();
